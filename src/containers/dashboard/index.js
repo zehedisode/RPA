@@ -130,11 +130,6 @@ class Dashboard extends React.Component {
               console.log('this.state.tabIdToPlay:>>', this.state.tabIdToPlay)
 
               if (Ext.isFirefox()) {
-                // below code doesn't work if it runs in IDE, but works if it runs in sidePanel or background
-                // Ext.sidebarAction.open()
-                // firefox issue as expected: sidebarAction.open may only be called from a user input handler
-                // csIpc.ask('PANEL_SHOW_SIDEBAR') 
-
                 const userResponse = confirm('Yan paneli açmak için Tamam\'a tıklayın ve ardından araç çubuğundaki uzantı simgesine tıklayın.')
                 if (!userResponse) return
 
@@ -148,18 +143,48 @@ class Dashboard extends React.Component {
 
                 return
               } else {
+                // Determine target tabId
+                let targetTabId = this.state.tabIdToPlay;
 
-                await chrome.sidePanel.open({
-                  tabId: this.state.tabIdToPlay
-                }).then((x) => {
-                  getSaveTestCase().save().then(() => {
-                    window.close()
-                  }).catch((err) => {
-                    console.log('getSaveTestCase err:>>', err)
+                if (!targetTabId) {
+                  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+                  if (tabs && tabs[0]) {
+                    targetTabId = tabs[0].id;
+                  }
+                }
+
+                const openSidePanel = async (id) => {
+                  if (id) {
+                    return chrome.sidePanel.open({ tabId: id });
+                  } else {
+                    return chrome.sidePanel.open({}); // Global side panel
+                  }
+                };
+
+                openSidePanel(targetTabId)
+                  .then(() => {
+                    getSaveTestCase().save().then(() => {
+                      window.close()
+                    }).catch((err) => {
+                      console.log('getSaveTestCase err:>>', err)
+                    })
                   })
-                }).catch((err) => {
-                  console.log('#25: open', err)
-                })
+                  .catch((err) => {
+                    console.log('#25: open first attempt failed', err);
+                    // Fallback to global side panel
+                    openSidePanel()
+                      .then(() => {
+                        getSaveTestCase().save().then(() => {
+                          window.close()
+                        }).catch((err) => {
+                          console.log('getSaveTestCase err:>>', err)
+                        })
+                      })
+                      .catch((err2) => {
+                        console.log('#25: open second attempt failed', err2);
+                        message.error('Yan panel açılamadı. Lütfen eklentiyi kapatıp açmayı deneyin.');
+                      });
+                  });
               }
             }}
           >
