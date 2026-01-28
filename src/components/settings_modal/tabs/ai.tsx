@@ -16,7 +16,7 @@ interface AiTabProps {
 
 interface AiTabAppState {
   anthropicAPIKey: string
-  prompt: string 
+  prompt: string
   promptResponse: string
   error: string
 }
@@ -29,7 +29,7 @@ class AITab extends React.Component<AiTabProps, AiTabAppState> {
 
   state: AiTabAppState = {
     anthropicAPIKey: '',
-    prompt: 'Explain a random Ui.Vision command', 
+    prompt: 'Explain a random Ui.Vision command',
     promptResponse: '',
     error: ''
   }
@@ -66,17 +66,17 @@ class AITab extends React.Component<AiTabProps, AiTabAppState> {
     return (
       <div className="ai-tab">
         <div className="row" style={{ marginBottom: '20px' }}>
-          The AI commands feature is currently experimental/beta. It uses the Anthropic API. To enable the AI commands, please enter your
-          (free) Anthropic API key below{' '}
+          Yapay zeka komutları özelliği şu anda deneysel/beta aşamasındadır. Anthropic API'sini kullanır. Yapay zeka komutlarını etkinleştirmek için lütfen aşağıya
+          (ücretsiz) Anthropic API anahtarınızı girin{' '}
           <a href="https://goto.ui.vision/x/idehelp?help=ai" target="_blank">
             {' '}
-            (more information)
+            (daha fazla bilgi)
           </a>
           :
         </div>
 
         <div className="ai-settings-item">
-          <span className="label-text">API Key:</span>
+          <span className="label-text">API Anahtarı:</span>
           <Input
             type="text"
             value={this.state.anthropicAPIKey}
@@ -89,10 +89,10 @@ class AITab extends React.Component<AiTabProps, AiTabAppState> {
             onClick={() => {
               if (this.props.config.anthropicAPIKey) {
                 Modal.confirm({
-                  title: 'Confirm',
-                  content: 'Do you want to overwrite the existing API key?',
-                  okText: 'Yes',
-                  cancelText: 'No',
+                  title: 'Onayla',
+                  content: 'Mevcut API anahtarının üzerine yazmak istiyor musunuz?',
+                  okText: 'Evet',
+                  cancelText: 'Hayır',
                   onOk: () => {
                     onConfigChange('anthropicAPIKey', this.state.anthropicAPIKey)
                     this.setState({ anthropicAPIKey: '' })
@@ -103,33 +103,33 @@ class AITab extends React.Component<AiTabProps, AiTabAppState> {
                 this.setState({ anthropicAPIKey: '' })
               }
             }}
-            // disabled={this.state.anthropicAPIKey == this.props.config.anthropicAPIKey}
+          // disabled={this.state.anthropicAPIKey == this.props.config.anthropicAPIKey}
           >
-            Save
+            Kaydet
           </Button>
         </div>
         <div className="ai-settings-item">
-          <span className="label-text">Prompt:</span>
+          <span className="label-text">İstem (Prompt):</span>
           <Input
             type="text"
-            value={this.state.prompt || 'Hello Claude'} //is this text used anywhere?
+            value={this.state.prompt || 'Merhaba Claude'} //is this text used anywhere?
             onChange={(e) => {
               this.setState({ prompt: e.target.value })
             }}
           />
           <Button type="primary" onClick={this.onClickTestPrompt}>
-            Test
+            Test Et
           </Button>
         </div>
         <div className="row" style={{ marginBottom: '10px' }}>
-          Anthropic API (Claude) Answer:
+          Anthropic API (Claude) Yanıtı:
         </div>
         <div className="ai-response">
           <pre>{this.state.promptResponse}</pre>
         </div>
         <div className="ai-settings-item">
           <span className="label-text">
-            <strong>aiComputerUse:</strong> Max loops before stopping:{' '}
+            <strong>aiComputerUse:</strong> Durmadan önceki maksimum döngü:{' '}
           </span>
           <Input
             type="number"
@@ -148,11 +148,11 @@ class AITab extends React.Component<AiTabProps, AiTabAppState> {
             }}
             checked={this.props.config.useInitialPromptInAiChat}
           >
-            AI Chat in sidebar. Use initial prompt.
+            Yan panelde AI Sohbeti. Başlangıç istemini kullan.
           </Checkbox>
           <Input
             type="text"
-            value={this.props.config.aiChatSidebarPrompt || 'Describe what you see, in 10 words or less.'} 
+            value={this.props.config.aiChatSidebarPrompt || 'Gördüğünü 10 kelime veya daha azıyla açıkla.'}
             onChange={(e) => {
               onConfigChange('aiChatSidebarPrompt', e.target.value)
             }}

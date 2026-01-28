@@ -830,17 +830,17 @@ class Header extends React.Component {
               disabled={!getLicenseService().isProLicense()}
               className={cn({ "need-pro": !getLicenseService().isProLicense() })}
             >
-              Use{" "}
+              Şunu kullan:{" "}
               <a
                 href="https://goto.ui.vision/x/idehelp?help=ocrenterprise"
                 target="_blank"
               >
-                Local Enterprise OCR Server
+                Yerel Kurumsal OCR Sunucusu
               </a>{" "}
-              (Requires XModules Enterprise Edition)
+              (XModules Kurumsal Sürüm Gerektirir)
               <br />
               <div className="row offline-modal-row">
-                <span className="offline-modal-label">Local OCR</span>
+                <span className="offline-modal-label">Yerel OCR</span>
                 <Input
                   type="text"
                   style={{ width: "200px" }}
@@ -2132,14 +2132,14 @@ class Header extends React.Component {
                               Ext.runtime.getManifest().version
                             )}
                           >
-                            Check for update
+                            Güncelleştirmeleri Denetle
                           </a>
                         </div>
                       ) : (
                         <div className="status-box">
-                          <span>Not Installed</span>
+                          <span>Yüklü Değil</span>
                           <a href={getXLocal().downloadLink()} target="_blank">
-                            Download it
+                            Buradan İndir
                           </a>
                         </div>
                       )}
@@ -2148,7 +2148,7 @@ class Header extends React.Component {
                   <div className="row">
                     <p style={{ textAlign: "right", marginTop: "10px" }}>
                       <a onClick={() => this.showSettingsOfflineModal()}>
-                        Advanced:Connect Enterprise OCR Server
+                        Gelişmiş: Kurumsal OCR Sunucusuna Bağlan
                       </a>
                     </p>
                   </div>
