@@ -1023,11 +1023,320 @@ class Header extends React.Component {
       >
         <Tabs
           type="card"
-          activeKey={this.props.ui.settingsTab || "replay"}
+          activeKey={this.props.ui.settingsTab || "floating-buttons"}
           onChange={(activeKey) =>
             this.props.updateUI({ settingsTab: activeKey })
           }
           items={[
+            {
+              key: 'floating-buttons',
+              label: 'Butonlar',
+              children: (
+                <>
+                  <div style={{ marginBottom: '16px' }}>
+                    <p style={{ marginBottom: '8px', color: '#666' }}>
+                      Web sayfalarına makro çalıştırma butonları ekleyin. Butonlar belirtilen URL'lerde otomatik olarak görünür.
+                    </p>
+                  </div>
+
+                  <div style={{ marginBottom: '16px', padding: '12px', background: '#f5f5f5', borderRadius: '6px' }}>
+                    <h4 style={{ margin: '0 0 12px 0' }}>Yeni Buton Ekle</h4>
+                    <Form layout="vertical">
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <Form.Item label="URL Kalıbı (örn: *youtube.com*)">
+                            <Input
+                              value={this.state.newButtonUrlPattern || ''}
+                              onChange={(e) => this.setState({ newButtonUrlPattern: e.target.value })}
+                              placeholder="*youtube.com*"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item label="Makro Adı">
+                            <Input
+                              value={this.state.newButtonMacroName || ''}
+                              onChange={(e) => this.setState({ newButtonMacroName: e.target.value })}
+                              placeholder="makro_adi"
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={8}>
+                          <Form.Item label="Buton Yazısı">
+                            <Input
+                              value={this.state.newButtonLabel || ''}
+                              onChange={(e) => this.setState({ newButtonLabel: e.target.value })}
+                              placeholder="▶ Çalıştır"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                          <Form.Item label="Konum">
+                            <Select
+                              value={this.state.newButtonPosition || 'bottom-right'}
+                              onChange={(val) => this.setState({ newButtonPosition: val })}
+                              style={{ width: '100%' }}
+                            >
+                              <Select.Option value="bottom-right">Sağ Alt</Select.Option>
+                              <Select.Option value="bottom-left">Sol Alt</Select.Option>
+                              <Select.Option value="top-right">Sağ Üst</Select.Option>
+                              <Select.Option value="top-left">Sol Üst</Select.Option>
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                          <Form.Item label="Renk">
+                            <Input
+                              type="color"
+                              value={this.state.newButtonColor || '#4CAF50'}
+                              onChange={(e) => this.setState({ newButtonColor: e.target.value })}
+                              style={{ width: '100%', height: '32px', padding: '2px' }}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          const urlPattern = this.state.newButtonUrlPattern?.trim()
+                          const macroName = this.state.newButtonMacroName?.trim()
+                          const label = this.state.newButtonLabel?.trim() || '▶ Çalıştır'
+                          const position = this.state.newButtonPosition || 'bottom-right'
+                          const color = this.state.newButtonColor || '#4CAF50'
+
+                          if (!urlPattern || !macroName) {
+                            message.error('URL kalıbı ve makro adı zorunludur')
+                            return
+                          }
+
+                          const newButton = {
+                            id: Date.now().toString(),
+                            urlPattern,
+                            macroName,
+                            label,
+                            position,
+                            color
+                          }
+
+                          const currentButtons = this.props.config.floatingButtons || []
+                          onConfigChange('floatingButtons', [...currentButtons, newButton])
+
+                          this.setState({
+                            newButtonUrlPattern: '',
+                            newButtonMacroName: '',
+                            newButtonLabel: '',
+                            newButtonPosition: 'bottom-right',
+                            newButtonColor: '#4CAF50'
+                          })
+
+                          message.success('Buton eklendi!')
+                        }}
+                      >
+                        Ekle
+                      </Button>
+                    </Form>
+                  </div>
+
+                  <div>
+                    <h4>Mevcut Butonlar</h4>
+                    {(!this.props.config.floatingButtons || this.props.config.floatingButtons.length === 0) ? (
+                      <p style={{ color: '#999' }}>Henüz buton eklenmedi.</p>
+                    ) : (
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr style={{ background: '#fafafa' }}>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Sıra</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>URL Kalıbı</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Makro</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Yazı</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Konum</th>
+                            <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>İşlem</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(this.props.config.floatingButtons || []).map((btn, index) => (
+                            <tr key={btn.id}>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                                <Button.Group>
+                                  <Button
+                                    size="small"
+                                    disabled={index === 0}
+                                    onClick={() => {
+                                      const buttons = [...this.props.config.floatingButtons];
+                                      if (index > 0) {
+                                        [buttons[index - 1], buttons[index]] = [buttons[index], buttons[index - 1]];
+                                        onConfigChange('floatingButtons', buttons);
+                                      }
+                                    }}
+                                  >⬆️</Button>
+                                  <Button
+                                    size="small"
+                                    disabled={index === (this.props.config.floatingButtons.length - 1)}
+                                    onClick={() => {
+                                      const buttons = [...this.props.config.floatingButtons];
+                                      if (index < buttons.length - 1) {
+                                        [buttons[index], buttons[index + 1]] = [buttons[index + 1], buttons[index]];
+                                        onConfigChange('floatingButtons', buttons);
+                                      }
+                                    }}
+                                  >⬇️</Button>
+                                </Button.Group>
+                              </td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.urlPattern}</td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.macroName}</td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                                <span style={{
+                                  background: btn.color,
+                                  color: '#fff',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px'
+                                }}>
+                                  {btn.label}
+                                </span>
+                              </td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.position}</td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
+                                <Button
+                                  size="small"
+                                  danger
+                                  onClick={() => {
+                                    const updatedButtons = this.props.config.floatingButtons.filter(b => b.id !== btn.id)
+                                    onConfigChange('floatingButtons', updatedButtons)
+                                    message.success('Buton silindi')
+                                  }}
+                                >
+                                  Sil
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                </>
+              )
+            },
+            {
+              key: "backup",
+              label: "Yedekleme",
+              className: "backup-pane",
+              children: (
+                <>
+                  <h4>Otomatik Yedekleme</h4>
+                  <p>
+                    Otomatik yedekleme hatırlatıcısı, makroları ve diğer verileri
+                    düzenli olarak ZIP arşivi olarak dışa aktarmanıza yardımcı olur.
+                    Bir tarayıcı uzantısı olarak Ui.Vision verilerini{" "}
+                    <em>tarayıcı uzantısının içinde</em> saklamak zorundadır. Bu,
+                    uzantıyı kaldırdığınızda verilerin de silineceği anlamına gelir.
+                    Bu nedenle yedeklerin olması iyidir! File Access XModule'ün sabit
+                    disk depolama modu etkinse, yedekleme arşivinin bu dosyaları
+                    içerdiğini unutmayın.
+                  </p>
+                  <div className="row">
+                    <Checkbox
+                      onClick={(e) =>
+                        onConfigChange("enableAutoBackup", !e.target.checked)
+                      }
+                      checked={this.props.config.enableAutoBackup}
+                    />
+                    <span>Yedekleme hatırlatıcısını göster: her</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      disabled={!this.props.config.enableAutoBackup}
+                      value={this.props.config.autoBackupInterval}
+                      onChange={(e) =>
+                        onConfigChange("autoBackupInterval", e.target.value)
+                      }
+                      style={{ width: "60px" }}
+                    />
+                    <span> günde bir</span>
+                  </div>
+                  <div className="row">
+                    <p>Yedekleme <span style={{ fontWeight: "bold" }}>makrolar, görseller ve CSV dosyalarını</span> içerir.</p>
+                  </div>
+                  <div className="row">
+                    <Button type="primary" onClick={() => this.props.runBackup()}>
+                      Yedeği Şimdi Çalıştır
+                    </Button>
+                    <span> Şimdi bir yedekleme ZIP dosyası oluşturun.</span>
+                  </div>
+                  <div style={{ paddingTop: "30px" }} className="row">
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        const $input = document.getElementById("select_zip_file");
+
+                        if ($input) {
+                          $input.click();
+                        }
+                      }}
+                    >
+                      Verileri Yedekten Geri Yükle
+                    </Button>
+                    <span>
+                      {" "}
+                      Içe aktarmak için bir yedek ZIP dosyası seçin (
+                      <a
+                        href="https://goto.ui.vision/x/idehelp?help=bkup_import"
+                        target="_blank"
+                      >
+                        daha fazla bilgi
+                      </a>
+                      ).{" "}
+                    </span>
+
+                    <input
+                      type="file"
+                      accept=".zip"
+                      id="select_zip_file"
+                      ref={(ref) => {
+                        this.zipFileInput = ref;
+                      }}
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        setTimeout(() => {
+                          this.zipFileInput.value = null;
+                        }, 500);
+
+                        const file = e.target.files[0];
+
+                        restoreBackup({
+                          file,
+                          storage: getStorageManager().getCurrentStrategyType(),
+                        }).then(
+                          (result) => {
+                            getStorageManager().emit(StorageManagerEvent.ForceReload);
+                            message.success("Yedek geri yüklendi");
+
+                            this.props.addLog(
+                              "info",
+                              [
+                                "Yedek geri yüklendi:",
+                                `${result.count.macro} makro`,
+                                `${result.count.testSuite} test paketi`,
+                                `${result.count.csv} csv`,
+                                `${result.count.screenshot} ekran görüntüsü`,
+                                `${result.count.vision} görsel`,
+                              ].join("\n")
+                            );
+                          },
+                          (e) => {
+                            message.error("Geri yükleme başarısız: " + e.message);
+                            console.error(e);
+                          }
+                        );
+                      }}
+                    />
+                  </div>
+                </>
+              )
+            },
             {
               key: "replay",
               label: "Replay",
@@ -2346,123 +2655,6 @@ class Header extends React.Component {
               )
             },
             {
-              key: "backup",
-              label: "Yedekleme",
-              className: "backup-pane",
-              children: (
-                <>
-                  <h4>Otomatik Yedekleme</h4>
-                  <p>
-                    Otomatik yedekleme hatırlatıcısı, makroları ve diğer verileri
-                    düzenli olarak ZIP arşivi olarak dışa aktarmanıza yardımcı olur.
-                    Bir tarayıcı uzantısı olarak Ui.Vision verilerini{" "}
-                    <em>tarayıcı uzantısının içinde</em> saklamak zorundadır. Bu,
-                    uzantıyı kaldırdığınızda verilerin de silineceği anlamına gelir.
-                    Bu nedenle yedeklerin olması iyidir! File Access XModule'ün sabit
-                    disk depolama modu etkinse, yedekleme arşivinin bu dosyaları
-                    içerdiğini unutmayın.
-                  </p>
-                  <div className="row">
-                    <Checkbox
-                      onClick={(e) =>
-                        onConfigChange("enableAutoBackup", !e.target.checked)
-                      }
-                      checked={this.props.config.enableAutoBackup}
-                    />
-                    <span>Yedekleme hatırlatıcısını göster: her</span>
-                    <Input
-                      type="number"
-                      min={1}
-                      disabled={!this.props.config.enableAutoBackup}
-                      value={this.props.config.autoBackupInterval}
-                      onChange={(e) =>
-                        onConfigChange("autoBackupInterval", e.target.value)
-                      }
-                      style={{ width: "60px" }}
-                    />
-                    <span> günde bir</span>
-                  </div>
-                  <div className="row">
-                    <p>Yedekleme <span style={{ fontWeight: "bold" }}>makrolar, görseller ve CSV dosyalarını</span> içerir.</p>
-                  </div>
-                  <div className="row">
-                    <Button type="primary" onClick={() => this.props.runBackup()}>
-                      Yedeği Şimdi Çalıştır
-                    </Button>
-                    <span> Şimdi bir yedekleme ZIP dosyası oluşturun.</span>
-                  </div>
-                  <div style={{ paddingTop: "30px" }} className="row">
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        const $input = document.getElementById("select_zip_file");
-
-                        if ($input) {
-                          $input.click();
-                        }
-                      }}
-                    >
-                      Verileri Yedekten Geri Yükle
-                    </Button>
-                    <span>
-                      {" "}
-                      Içe aktarmak için bir yedek ZIP dosyası seçin (
-                      <a
-                        href="https://goto.ui.vision/x/idehelp?help=bkup_import"
-                        target="_blank"
-                      >
-                        daha fazla bilgi
-                      </a>
-                      ).{" "}
-                    </span>
-
-                    <input
-                      type="file"
-                      accept=".zip"
-                      id="select_zip_file"
-                      ref={(ref) => {
-                        this.zipFileInput = ref;
-                      }}
-                      style={{ display: "none" }}
-                      onChange={(e) => {
-                        setTimeout(() => {
-                          this.zipFileInput.value = null;
-                        }, 500);
-
-                        const file = e.target.files[0];
-
-                        restoreBackup({
-                          file,
-                          storage: getStorageManager().getCurrentStrategyType(),
-                        }).then(
-                          (result) => {
-                            getStorageManager().emit(StorageManagerEvent.ForceReload);
-                            message.success("Yedek geri yüklendi");
-
-                            this.props.addLog(
-                              "info",
-                              [
-                                "Yedek geri yüklendi:",
-                                `${result.count.macro} makro`,
-                                `${result.count.testSuite} test paketi`,
-                                `${result.count.csv} csv`,
-                                `${result.count.screenshot} ekran görüntüsü`,
-                                `${result.count.vision} görsel`,
-                              ].join("\n")
-                            );
-                          },
-                          (e) => {
-                            message.error("Geri yükleme başarısız: " + e.message);
-                            console.error(e);
-                          }
-                        );
-                      }}
-                    />
-                  </div>
-                </>
-              )
-            },
-            {
               key: 'security',
               label: 'Güvenlik',
               className: 'security-pane',
@@ -2871,200 +3063,7 @@ class Header extends React.Component {
                   </div>
                 </>
               )
-            },
-            {
-              key: 'floating-buttons',
-              label: 'Butonlar',
-              children: (
-                <>
-                  <div style={{ marginBottom: '16px' }}>
-                    <p style={{ marginBottom: '8px', color: '#666' }}>
-                      Web sayfalarına makro çalıştırma butonları ekleyin. Butonlar belirtilen URL'lerde otomatik olarak görünür.
-                    </p>
-                  </div>
-
-                  <div style={{ marginBottom: '16px', padding: '12px', background: '#f5f5f5', borderRadius: '6px' }}>
-                    <h4 style={{ margin: '0 0 12px 0' }}>Yeni Buton Ekle</h4>
-                    <Form layout="vertical">
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <Form.Item label="URL Kalıbı (örn: *youtube.com*)">
-                            <Input
-                              value={this.state.newButtonUrlPattern || ''}
-                              onChange={(e) => this.setState({ newButtonUrlPattern: e.target.value })}
-                              placeholder="*youtube.com*"
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                          <Form.Item label="Makro Adı">
-                            <Input
-                              value={this.state.newButtonMacroName || ''}
-                              onChange={(e) => this.setState({ newButtonMacroName: e.target.value })}
-                              placeholder="makro_adi"
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={8}>
-                          <Form.Item label="Buton Yazısı">
-                            <Input
-                              value={this.state.newButtonLabel || ''}
-                              onChange={(e) => this.setState({ newButtonLabel: e.target.value })}
-                              placeholder="▶ Çalıştır"
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={8}>
-                          <Form.Item label="Konum">
-                            <Select
-                              value={this.state.newButtonPosition || 'bottom-right'}
-                              onChange={(val) => this.setState({ newButtonPosition: val })}
-                              style={{ width: '100%' }}
-                            >
-                              <Select.Option value="bottom-right">Sağ Alt</Select.Option>
-                              <Select.Option value="bottom-left">Sol Alt</Select.Option>
-                              <Select.Option value="top-right">Sağ Üst</Select.Option>
-                              <Select.Option value="top-left">Sol Üst</Select.Option>
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                        <Col span={8}>
-                          <Form.Item label="Renk">
-                            <Input
-                              type="color"
-                              value={this.state.newButtonColor || '#4CAF50'}
-                              onChange={(e) => this.setState({ newButtonColor: e.target.value })}
-                              style={{ width: '100%', height: '32px', padding: '2px' }}
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          const urlPattern = this.state.newButtonUrlPattern?.trim()
-                          const macroName = this.state.newButtonMacroName?.trim()
-                          const label = this.state.newButtonLabel?.trim() || '▶ Çalıştır'
-                          const position = this.state.newButtonPosition || 'bottom-right'
-                          const color = this.state.newButtonColor || '#4CAF50'
-
-                          if (!urlPattern || !macroName) {
-                            message.error('URL kalıbı ve makro adı zorunludur')
-                            return
-                          }
-
-                          const newButton = {
-                            id: Date.now().toString(),
-                            urlPattern,
-                            macroName,
-                            label,
-                            position,
-                            color
-                          }
-
-                          const currentButtons = this.props.config.floatingButtons || []
-                          onConfigChange('floatingButtons', [...currentButtons, newButton])
-
-                          this.setState({
-                            newButtonUrlPattern: '',
-                            newButtonMacroName: '',
-                            newButtonLabel: '',
-                            newButtonPosition: 'bottom-right',
-                            newButtonColor: '#4CAF50'
-                          })
-
-                          message.success('Buton eklendi!')
-                        }}
-                      >
-                        Ekle
-                      </Button>
-                    </Form>
-                  </div>
-
-                  <div>
-                    <h4>Mevcut Butonlar</h4>
-                    {(!this.props.config.floatingButtons || this.props.config.floatingButtons.length === 0) ? (
-                      <p style={{ color: '#999' }}>Henüz buton eklenmedi.</p>
-                    ) : (
-                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                          <tr style={{ background: '#fafafa' }}>
-                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Sıra</th>
-                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>URL Kalıbı</th>
-                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Makro</th>
-                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Yazı</th>
-                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Konum</th>
-                            <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>İşlem</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {(this.props.config.floatingButtons || []).map((btn, index) => (
-                            <tr key={btn.id}>
-                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                                <Button.Group>
-                                  <Button
-                                    size="small"
-                                    disabled={index === 0}
-                                    onClick={() => {
-                                      const buttons = [...this.props.config.floatingButtons];
-                                      if (index > 0) {
-                                        [buttons[index - 1], buttons[index]] = [buttons[index], buttons[index - 1]];
-                                        onConfigChange('floatingButtons', buttons);
-                                      }
-                                    }}
-                                  >⬆️</Button>
-                                  <Button
-                                    size="small"
-                                    disabled={index === (this.props.config.floatingButtons.length - 1)}
-                                    onClick={() => {
-                                      const buttons = [...this.props.config.floatingButtons];
-                                      if (index < buttons.length - 1) {
-                                        [buttons[index], buttons[index + 1]] = [buttons[index + 1], buttons[index]];
-                                        onConfigChange('floatingButtons', buttons);
-                                      }
-                                    }}
-                                  >⬇️</Button>
-                                </Button.Group>
-                              </td>
-                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.urlPattern}</td>
-                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.macroName}</td>
-                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                                <span style={{
-                                  background: btn.color,
-                                  color: '#fff',
-                                  padding: '2px 8px',
-                                  borderRadius: '4px',
-                                  fontSize: '12px'
-                                }}>
-                                  {btn.label}
-                                </span>
-                              </td>
-                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.position}</td>
-                              <td style={{ padding: '8px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
-                                <Button
-                                  size="small"
-                                  danger
-                                  onClick={() => {
-                                    const updatedButtons = this.props.config.floatingButtons.filter(b => b.id !== btn.id)
-                                    onConfigChange('floatingButtons', updatedButtons)
-                                    message.success('Buton silindi')
-                                  }}
-                                >
-                                  Sil
-                                </Button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
-                </>
-              )
             }
-
           ]}
         >
         </Tabs>
