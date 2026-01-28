@@ -46,7 +46,7 @@ class Files extends React.Component {
     folderToImport: '/'
   }
 
-  unbindKeydown = () => {}
+  unbindKeydown = () => { }
   // unbindScroll = () => {}
 
   // Rename relative
@@ -91,7 +91,7 @@ class Files extends React.Component {
 
   changeTestCase = (id) => {
     return new Promise((resolve) => {
-      if (this.props.status !== C.APP_STATUS.NORMAL)  return resolve(false)
+      if (this.props.status !== C.APP_STATUS.NORMAL) return resolve(false)
       if (this.props.editing.meta.src && this.props.editing.meta.src.id === id) return resolve(true)
 
       const go = () => {
@@ -109,35 +109,35 @@ class Files extends React.Component {
   }
 
   playTestCase = (id) => {
-    if (this.props.status !== C.APP_STATUS.NORMAL)  return
+    if (this.props.status !== C.APP_STATUS.NORMAL) return
 
     this.changeTestCase(id)
-    .then(shouldPlay => {
-      if (!shouldPlay)  return
+      .then(shouldPlay => {
+        if (!shouldPlay) return
 
-      setTimeout(() => {
-        const { commands } = this.props.editing
-        const openTc  = commands.find(item => item.cmd.toLowerCase() === 'open')
-        const { src } = this.props.editing.meta
-        const getMacroName = () => {
-          return src && src.name && src.name.length ? src.name : 'Untitled'
-        }
-        const getMacroId = () => {
-          return src ? src.id : C.UNTITLED_ID
-        }
+        setTimeout(() => {
+          const { commands } = this.props.editing
+          const openTc = commands.find(item => item.cmd.toLowerCase() === 'open')
+          const { src } = this.props.editing.meta
+          const getMacroName = () => {
+            return src && src.name && src.name.length ? src.name : 'Untitled'
+          }
+          const getMacroId = () => {
+            return src ? src.id : C.UNTITLED_ID
+          }
 
-        this.props.playerPlay({
-          macroId:    getMacroId(),
-          title:      getMacroName(),
-          extra:      { id: getMacroId() },
-          mode:       getPlayer().C.MODE.STRAIGHT,
-          startIndex: 0,
-          startUrl:   openTc ? openTc.target : null,
-          resources:  commands,
-          postDelay:  this.props.player.playInterval * 1000
-        })
-      }, 500)
-    })
+          this.props.playerPlay({
+            macroId: getMacroId(),
+            title: getMacroName(),
+            extra: { id: getMacroId() },
+            mode: getPlayer().C.MODE.STRAIGHT,
+            startIndex: 0,
+            startUrl: openTc ? openTc.target : null,
+            resources: commands,
+            postDelay: this.props.player.playInterval * 1000
+          })
+        }, 500)
+      })
   }
 
   onJsonOrZipFileChange = (e) => {
@@ -151,7 +151,7 @@ class Files extends React.Component {
   addTestCase = () => {
     return getSaveTestCase().saveOrNot().then(() => {
       this.props.macroCreateFile({
-        dir:  '/'
+        dir: '/'
       })
     })
   }
@@ -168,8 +168,8 @@ class Files extends React.Component {
 
   onMoveNode = (sourceId, targetId, isDirectory) => {
     this.props.macroMoveEntry({
-      entryId:  sourceId,
-      dirId:    targetId,
+      entryId: sourceId,
+      dirId: targetId,
       isSourceDirectory: isDirectory
     })
   }
@@ -200,12 +200,12 @@ class Files extends React.Component {
     })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.bindKeydown()
     this.applyTreeViewScrollTop()
   }
 
-  bindKeydown () {
+  bindKeydown() {
     const fn = (e) => {
       if (!this.props.canUseKeyboardShortcuts) {
         return
@@ -230,7 +230,7 @@ class Files extends React.Component {
     this.unbindKeydown = () => document.removeEventListener('keydown', fn, true)
   }
 
-  renderMacros () {
+  renderMacros() {
     const { filteredMacroFileNodeData } = this.props
 
     if (this.props.isLoadingMacros && this.props.isMacroFolderNodeListEmpty) {
@@ -255,7 +255,7 @@ class Files extends React.Component {
     )
   }
 
-  showContextMenuForEntry (entry, e) {
+  showContextMenuForEntry(entry, e) {
     switch (entry.type) {
       case FileNodeType.File:
         return this.showContextMenuForMacro(entry, e)
@@ -265,24 +265,24 @@ class Files extends React.Component {
     }
   }
 
-  showContextMenuForFolder (folderEntry, e) {
+  showContextMenuForFolder(folderEntry, e) {
     e.stopPropagation()
     e.preventDefault()
 
     return showContextMenu({
       x: e.clientX,
       y: e.clientY,
-      onHide: () => {},
+      onHide: () => { },
       menuItems: [
         {
           type: MenuItemType.Button,
           disabled: !getLicenseService().canPerform(Feature.Edit),
           data: {
-            content: 'New macro',
+            content: 'Yeni Makro',
             onClick: () => {
               return getSaveTestCase().saveOrNot().then(() => {
                 this.props.macroCreateFile({
-                  dir:  folderEntry.entryPath
+                  dir: folderEntry.entryPath
                 })
               });
             }
@@ -291,11 +291,11 @@ class Files extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'New folder',
+            content: 'Yeni Klasör',
             onClick: () => {
               this.props.macroCreateFolder({
                 name: 'untitled',
-                dir:  folderEntry.entryPath
+                dir: folderEntry.entryPath
               })
             }
           }
@@ -303,10 +303,10 @@ class Files extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Rename',
+            content: 'Yeniden Adlandır',
             onClick: () => {
               this.props.macroRenameFolder({
-                dir:  folderEntry.entryPath
+                dir: folderEntry.entryPath
               })
             }
           }
@@ -314,10 +314,10 @@ class Files extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Delete',
+            content: 'Sil',
             onClick: () => {
               this.props.macroDeleteFolder({
-                dir:  folderEntry.entryPath
+                dir: folderEntry.entryPath
               })
             }
           }
@@ -337,15 +337,15 @@ class Files extends React.Component {
               })
 
               getPlayer({ name: 'testSuite' }).play({
-                title:      folderName,
-                mode:       getPlayer().C.MODE.STRAIGHT,
+                title: folderName,
+                mode: getPlayer().C.MODE.STRAIGHT,
                 startIndex: 0,
-                resources:  macros.map(item => ({
-                  id:       item.id,
-                  loops:    1
+                resources: macros.map(item => ({
+                  id: item.id,
+                  loops: 1
                 })),
                 extra: {
-                  id:   folderEntry.id,
+                  id: folderEntry.id,
                   name: folderName
                 }
               })
@@ -370,17 +370,17 @@ class Files extends React.Component {
                 })
 
                 getPlayer({ name: 'testSuite' }).play({
-                  title:      folderName,
-                  mode:       loops === 1 ? getPlayer().C.MODE.STRAIGHT : getPlayer().C.MODE.LOOP,
+                  title: folderName,
+                  mode: loops === 1 ? getPlayer().C.MODE.STRAIGHT : getPlayer().C.MODE.LOOP,
                   loopsStart: 1,
-                  loopsEnd:   loops,
+                  loopsEnd: loops,
                   startIndex: 0,
-                  resources:  macros.map(item => ({
-                    id:       item.id,
-                    loops:    1
+                  resources: macros.map(item => ({
+                    id: item.id,
+                    loops: 1
                   })),
                   extra: {
-                    id:   folderEntry.id,
+                    id: folderEntry.id,
                     name: folderName
                   }
                 })
@@ -401,10 +401,10 @@ class Files extends React.Component {
                   onCancel: () => Promise.resolve(true),
                   onOk: playInLoops
                 })
-                .catch(e => {
-                  message.error(e.message)
-                  setTimeout(run, 0)
-                })
+                  .catch(e => {
+                    message.error(e.message)
+                    setTimeout(run, 0)
+                  })
               }
 
               return run()
@@ -437,12 +437,12 @@ class Files extends React.Component {
     this.changeTestCase(id).then(async () => {
       const tabId = await getActiveTabId()
       if (tabId) {
-          showPanelWindow()
+        showPanelWindow()
       }
     })
   }
 
-  showContextMenuForMacro (macroEntry, event) {
+  showContextMenuForMacro(macroEntry, event) {
     const { macros } = this.props
     const macroNode = macros.find(item => item.fullPath === macroEntry.id)
 
@@ -456,19 +456,19 @@ class Files extends React.Component {
     const e = {
       clientX: event.clientX,
       clientY: event.clientY,
-      stopPropagation: () => {},
-      preventDefault: () => {}
+      stopPropagation: () => { },
+      preventDefault: () => { }
     }
 
     return showContextMenu({
       x: e.clientX,
       y: e.clientY,
-      onHide: () => {},
+      onHide: () => { },
       menuItems: [
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Play',
+            content: 'Oynat',
             onClick: () => {
               this.playTestCase(macroNode.fullPath)
             }
@@ -477,44 +477,44 @@ class Files extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Testsuite: Play from here',
+            content: 'Test Paketi: Buradan Oynat',
             onClick: () => {
               const macroStorage = getStorageManager().getMacroStorage()
-              const path      = macroStorage.getPathLib()
-              const dirPath   = path.dirname(macroEntry.entryPath)
+              const path = macroStorage.getPathLib()
+              const dirPath = path.dirname(macroEntry.entryPath)
 
               return macroStorage.list(dirPath)
-              .then(entries => {
-                const macros = entries.filter(entry => entry.isFile)
-                const index  = macros.findIndex(macro => macro.fullPath === macroEntry.entryPath)
+                .then(entries => {
+                  const macros = entries.filter(entry => entry.isFile)
+                  const index = macros.findIndex(macro => macro.fullPath === macroEntry.entryPath)
 
-                if (index === -1) {
-                  return
-                }
-
-                const folderName = path.basename(dirPath)
-
-                getPlayer({ name: 'testSuite' }).play({
-                  title:      folderName,
-                  mode:       getPlayer().C.MODE.STRAIGHT,
-                  startIndex: index,
-                  resources:  macros.map(item => ({
-                    id:       item.fullPath,
-                    loops:    1
-                  })),
-                  extra: {
-                    id:   dirPath,
-                    name: folderName
+                  if (index === -1) {
+                    return
                   }
+
+                  const folderName = path.basename(dirPath)
+
+                  getPlayer({ name: 'testSuite' }).play({
+                    title: folderName,
+                    mode: getPlayer().C.MODE.STRAIGHT,
+                    startIndex: index,
+                    resources: macros.map(item => ({
+                      id: item.fullPath,
+                      loops: 1
+                    })),
+                    extra: {
+                      id: dirPath,
+                      name: folderName
+                    }
+                  })
                 })
-              })
             }
           }
         },
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Rename..',
+            content: 'Yeniden Adlandır..',
             onClick: () => {
               return getSaveTestCase().saveOrNot().then(() => {
                 this.setState({
@@ -529,7 +529,7 @@ class Files extends React.Component {
           type: MenuItemType.Button,
           disabled: !getLicenseService().canPerform(Feature.Edit),
           data: {
-            content: 'Duplicate..',
+            content: 'Çoğalt..',
             onClick: () => {
               return getSaveTestCase().saveOrNot().then(() => {
                 this.props.duplicateTestCase(macroNode)
@@ -544,7 +544,7 @@ class Files extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Edit (in IDE)',
+            content: 'Düzenle (IDE)',
             onClick: () => {
               this.onClickEditInIDE(macroNode.fullPath)
             }
@@ -558,7 +558,7 @@ class Files extends React.Component {
           type: MenuItemType.Button,
           disabled: !getLicenseService().canPerform(Feature.Edit),
           data: {
-            content: 'Delete',
+            content: 'Sil',
             onClick: () => {
               const go = () => {
                 return this.props.removeTestCase(macroNode.fullPath)
@@ -574,28 +574,28 @@ class Files extends React.Component {
               }
 
               Modal.confirm({
-                title: 'Sure to delete?',
+                title: 'Silmek istediğinize emin misiniz?',
                 content: `Do you really want to delete "${macroNode.name}"?`,
-                okText: 'Delete',
+                okText: 'Kaydet',
                 cancelText: 'Cancel',
                 onOk: go,
-                onCancel: () => {}
+                onCancel: () => { }
               })
             }
           }
         }
       ]
-      .filter(x => x)
+        .filter(x => x)
     })
   }
 
-  getTestCaseMenuItems () {
+  getTestCaseMenuItems() {
     const onClickMenuItem = ({ key }) => {
       switch (key) {
         case 'new_macro_folder': {
           this.props.macroCreateFolder({
             name: 'untitled',
-            dir:  '/'
+            dir: '/'
           })
           break
         }
@@ -618,27 +618,27 @@ class Files extends React.Component {
 
           return Promise.all(
             this.props.macros.map(macroNode => {
-              const dirPath   = path.dirname(macroNode.relativePath)
-              const fileName  = path.basename(macroNode.relativePath)
-              const folder    = getFolder(dirPath, zip)
+              const dirPath = path.dirname(macroNode.relativePath)
+              const fileName = path.basename(macroNode.relativePath)
+              const folder = getFolder(dirPath, zip)
 
               return getStorageManager().getMacroStorage().read(macroNode.fullPath, 'Text')
-              .then(macro => {
-                folder.file(fileName, toJSONString({
-                  name:     macro.name,
-                  commands: macro.data.commands
-                }, {
-                  ignoreTargetOptions: this.props.ignoreTargetOptions
-                }))
-              })
+                .then(macro => {
+                  folder.file(fileName, toJSONString({
+                    name: macro.name,
+                    commands: macro.data.commands
+                  }, {
+                    ignoreTargetOptions: this.props.ignoreTargetOptions
+                  }))
+                })
             })
           )
-          .then(() => {
-            return zip.generateAsync({ type: 'blob' })
-            .then(function (blob) {
-              FileSaver.saveAs(blob, 'all_test_cases.zip');
+            .then(() => {
+              return zip.generateAsync({ type: 'blob' })
+                .then(function (blob) {
+                  FileSaver.saveAs(blob, 'all_test_cases.zip');
+                })
             })
-          })
         }
 
         case 'import_json': {
@@ -657,21 +657,21 @@ class Files extends React.Component {
     const menuItems = [
       {
         key: 'new_macro_folder',
-        label: 'New Folder',
+        label: 'Yeni Klasör',
         onClick: () => {
           onClickMenuItem({ key: 'new_macro_folder' })
         }
       },
       {
         key: 'export_all_json',
-        label: 'Export All (JSON)',
+        label: 'Tümünü Dışa Aktar (JSON)',
         onClick: () => {
           onClickMenuItem({ key: 'export_all_json' })
         }
       },
       {
         key: 'import_json',
-        label: 'Import JSON or ZIP',
+        label: 'JSON veya ZIP İçe Aktar',
         onClick: () => {
           onClickMenuItem({ key: 'import_json' })
         }
@@ -681,10 +681,10 @@ class Files extends React.Component {
     return menuItems
   }
 
-  renderRenameModal () {
+  renderRenameModal() {
     return (
       <Modal
-        title="Rename the macro as.."
+        title="Makroyu yeniden adlandır.."
         okText="Save"
         cancelText="Cancel"
         open={this.state.showRename}
@@ -704,7 +704,7 @@ class Files extends React.Component {
     )
   }
 
-  renderShowListAction () {
+  renderShowListAction() {
     return (
       <ResourceNotLoaded
         name="Macro list"
@@ -716,13 +716,13 @@ class Files extends React.Component {
     )
   }
 
-  render () {
+  render() {
     if (!this.props.shouldLoadResources) {
       return this.renderShowListAction()
     }
 
     if (this.props.isPlaying && this.props.macros.length > config.performanceLimit.fileCount) {
-      return <div className="hidden-during-replay">{ M.contentHidden }</div>
+      return <div className="hidden-during-replay">{M.contentHidden}</div>
     }
 
     return (
@@ -734,18 +734,18 @@ class Files extends React.Component {
           id="select_json_files_for_macros"
           onChange={this.onJsonOrZipFileChange}
           ref={ref => { this.jsonFileInput = ref }}
-          style={{display: 'none'}}
+          style={{ display: 'none' }}
         />
         <div className="test-case-actions">
           <Dropdown
             menu={{ items: this.getTestCaseMenuItems() }}
-            trigger={['click']}            
+            trigger={['click']}
           >
-          <Button shape="circle">
-              <FolderAddOutlined  />   
-          </Button>
+            <Button shape="circle">
+              <FolderAddOutlined />
+            </Button>
           </Dropdown>
-          <Input.Search style={{ flex: 1 }} placeholder="search macro" value={ this.props.searchText } onChange={ e => this.props.setMacroQuery(e.target.value) } />
+          <Input.Search style={{ flex: 1 }} placeholder="makro ara" value={this.props.searchText} onChange={e => this.props.setMacroQuery(e.target.value)} />
         </div>
         {this.renderMacros()}
         {this.renderRenameModal()}
@@ -774,5 +774,5 @@ export default connect(
     filteredMacroFileNodeData: getFilteredMacroFileNodeData(state),
     canUseKeyboardShortcuts: isFocusOnSidebar(state) && state.ui.sidebarTab !== 'test_suites'
   }),
-  dispatch => bindActionCreators({...actions, ...simpleActions}, dispatch)
+  dispatch => bindActionCreators({ ...actions, ...simpleActions }, dispatch)
 )(Files)

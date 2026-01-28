@@ -18,7 +18,7 @@ import { DevicePixelRatioService } from '../../services/dpr'
 import { ViewportRectService } from '../../services/viewport_rect'
 import config from '../../config';
 import { getState, updateState } from '../common/global_state'
-import  interceptLog from '@/common/intercept_log'
+import interceptLog from '@/common/intercept_log'
 
 interceptLog()
 
@@ -30,8 +30,8 @@ if (window.top === window && !isFirefox()) {
 
 const MASK_CLICK_FADE_TIMEOUT = 2000
 const oops = process.env.NODE_ENV === 'production'
-                ? () => {}
-                : (e) => log.error(e.stack)
+  ? () => { }
+  : (e) => log.error(e.stack)
 
 const state = {
   status: C.CONTENT_SCRIPT_STATUS.NORMAL,
@@ -66,12 +66,12 @@ const superCsIpc =
     }
 
 const calcSelectFrameCmds = (frameStack) => {
-  var xs  = state.recordingFrameStack
-  var ys  = frameStack
+  var xs = state.recordingFrameStack
+  var ys = frameStack
   var len = Math.min(xs.length, ys.length)
   var tpl = { cmd: 'selectFrame', url: window.location.href }
   var ret = []
-  var i   = 0
+  var i = 0
 
   for (i = 0; i < len; i++) {
     if (xs[i] !== ys[i]) {
@@ -129,8 +129,8 @@ const getMask = (function () {
 
     factory = inspector.maskFactory()
 
-    const maskClick   = factory.gen({ background: 'green', border: '2px solid purple' })
-    const maskHover   = factory.gen({ background: '#ffa800', border: '2px solid purple' })
+    const maskClick = factory.gen({ background: 'green', border: '2px solid purple' })
+    const maskHover = factory.gen({ background: '#ffa800', border: '2px solid purple' })
 
     addLogoImg(maskClick)
     addLogoImg(maskHover)
@@ -149,10 +149,10 @@ const createLogoImg = () => {
   // So there are cases when content_script.js is run as injected js, where `Ext.runtime.getURL`
   // is not available
   // Weird enough, `Ext.runtime.getURL` always works well in macOS
-  const url   = Ext.runtime.getURL ? Ext.runtime.getURL('logo.png') : ''
-  const img   = new Image()
+  const url = Ext.runtime.getURL ? Ext.runtime.getURL('logo.png') : ''
+  const img = new Image()
 
-  img.src     = url
+  img.src = url
   return img
 }
 
@@ -162,10 +162,10 @@ const addWaitInCommand = (cmdObj) => {
   switch (cmd) {
     case 'click':
     case 'clickAt':
-      return {...cmdObj, cmd: 'clickAndWait', value: ''}
+      return { ...cmdObj, cmd: 'clickAndWait', value: '' }
 
     case 'select':
-      return {...cmdObj, cmd: 'selectAndWait'}
+      return { ...cmdObj, cmd: 'selectAndWait' }
 
     default:
       return cmdObj
@@ -175,13 +175,13 @@ const addWaitInCommand = (cmdObj) => {
 // report recorded commands to background.
 // transform `leave` event to clickAndWait / selectAndWait event based on the last command
 const reportCommand = (function () {
-  const LEAVE_INTERVAL  = 500
-  let last              = null
-  let lastTime          = null
-  let timer             = null
+  const LEAVE_INTERVAL = 500
+  let last = null
+  let lastTime = null
+  let timer = null
 
   return (obj) => {
-    obj = {...obj, url: window.location.href}
+    obj = { ...obj, url: window.location.href }
 
     log('to report', obj)
 
@@ -194,7 +194,7 @@ const reportCommand = (function () {
         target: 'relative=top',
         url: window.location.href
       })
-      .catch(oops)
+        .catch(oops)
     }
 
     switch (obj.cmd) {
@@ -216,11 +216,11 @@ const reportCommand = (function () {
       case 'select': {
         timer = setTimeout(() => {
           superCsIpc.ask('CS_RECORD_ADD_COMMAND', obj)
-          .catch(oops)
+            .catch(oops)
         }, LEAVE_INTERVAL)
 
-        last      = obj
-        lastTime  = new Date()
+        last = obj
+        lastTime = new Date()
 
         return
       }
@@ -229,11 +229,11 @@ const reportCommand = (function () {
         break
     }
 
-    last      = obj
-    lastTime  = new Date()
+    last = obj
+    lastTime = new Date()
 
     superCsIpc.ask('CS_RECORD_ADD_COMMAND', obj)
-    .catch(oops)
+      .catch(oops)
   }
 })()
 
@@ -262,58 +262,58 @@ const isValidSelect = (el) => {
 }
 
 const isValidType = (el) => {
-  const tag   = el.tagName.toLowerCase()
-  const type  = el.getAttribute('type')
+  const tag = el.tagName.toLowerCase()
+  const type = el.getAttribute('type')
 
   if (tag === 'textarea') return true
-  if (tag === 'input' && ['radio, checkbox'].indexOf(type) === -1)  return true
+  if (tag === 'input' && ['radio, checkbox'].indexOf(type) === -1) return true
 
   return false
 }
 
 const downloadSaveItem = ($dom, cmd) => {
-  if(cmd =="saveItem"){
-          var cachedImage = $dom; 
-          var url = cachedImage.src; 
-          var filename = url.substring(url.lastIndexOf('/')+1);
+  if (cmd == "saveItem") {
+    var cachedImage = $dom;
+    var url = cachedImage.src;
+    var filename = url.substring(url.lastIndexOf('/') + 1);
 
-          // Check if the cached image exists
-          if (cachedImage.complete && cachedImage.naturalWidth !== 0) {
-            // If the cached image exists, create a temporary URL for the image
-            const tempUrl = URL.createObjectURL(cachedImage.src);
-            const link = document.createElement("a");
-            link.download = filename;
-            link.href = tempUrl;
-            link.click();
-            // Release the temporary URL
-            URL.revokeObjectURL(tempUrl);
-          } else {
-            // If the cached image doesn't exist, create a new image object
-            const image = new Image();
-            // Set the image source URL
-            image.src = url;
-            // Wait for the image to load
-            image.onload = () => {
-              // Store the image in cache for future use
-              const canvas = document.createElement("canvas");
-              canvas.width = image.naturalWidth;
-              canvas.height = image.naturalHeight;
-              canvas.getContext("2d").drawImage(image, 0, 0);
-              const extension = filename.split(".").pop();
-              const dataURL = canvas.toDataURL(`image/${extension}`);
-              localStorage.setItem("myImage", dataURL);
-              // Create a temporary URL for the image
-              const tempUrl = URL.createObjectURL(image.src);
-              // Create a link element with a download attribute
-              const link = document.createElement("a");
-              link.download = filename;
-              link.href = tempUrl;
-              // Click the link to trigger a download of the image
-              link.click();
-              // Release the temporary URL
-              URL.revokeObjectURL(tempUrl);
-  };
-}
+    // Check if the cached image exists
+    if (cachedImage.complete && cachedImage.naturalWidth !== 0) {
+      // If the cached image exists, create a temporary URL for the image
+      const tempUrl = URL.createObjectURL(cachedImage.src);
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = tempUrl;
+      link.click();
+      // Release the temporary URL
+      URL.revokeObjectURL(tempUrl);
+    } else {
+      // If the cached image doesn't exist, create a new image object
+      const image = new Image();
+      // Set the image source URL
+      image.src = url;
+      // Wait for the image to load
+      image.onload = () => {
+        // Store the image in cache for future use
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        const extension = filename.split(".").pop();
+        const dataURL = canvas.toDataURL(`image/${extension}`);
+        localStorage.setItem("myImage", dataURL);
+        // Create a temporary URL for the image
+        const tempUrl = URL.createObjectURL(image.src);
+        // Create a link element with a download attribute
+        const link = document.createElement("a");
+        link.download = filename;
+        link.href = tempUrl;
+        // Click the link to trigger a download of the image
+        link.click();
+        // Release the temporary URL
+        URL.revokeObjectURL(tempUrl);
+      };
+    }
 
 
   }
@@ -349,14 +349,14 @@ const createHighlightX = function (opts = {}) {
     pointerEvents: 'none'
   })
 
-  
+
   return (rect, timeout) => {
     clearTimeout(timer)
 
     inspector.setStyle($mask, {
-      display:  'block',
-      top:      `${rect.top - 8}px`,
-      left:     `${rect.left - 8}px`,
+      display: 'block',
+      top: `${rect.top - 8}px`,
+      left: `${rect.left - 8}px`,
     })
 
     if (!$mask.parentNode) {
@@ -418,11 +418,11 @@ const createHighlightRect = function (opts = {}) {
     $text.innerText = rect.text ? rect.text : (parseFloat(rect.score).toFixed(2) + ` #${rect.index + 1}`)
 
     inspector.setStyle($mask, {
-      display:  'block',
-      top:      `${rect.top}px`,
-      left:     `${rect.left}px`,
-      width:    `${rect.width}px`,
-      height:   `${rect.height}px`,
+      display: 'block',
+      top: `${rect.top}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
       ...(opts.rectStyle || {})
     })
 
@@ -468,7 +468,7 @@ const highlightRects = (function () {
   let destroy
 
   const fn = (rects, timeout) => {
-    if (destroy)  destroy()
+    if (destroy) destroy()
 
     const destroyFns = rects.map((rect, i) => {
       rect.index = i
@@ -506,17 +506,17 @@ const onContextMenu = (e) => {
 }
 
 const onClick = (e) => {
-  if (!isValidClick(e.target))  return
-  (async()=>{
-    const allState= await getState();
-    if(allState['curent_cmd'] == "XClickTextRelative" && allState.status!="NORMAL"){
+  if (!isValidClick(e.target)) return
+  (async () => {
+    const allState = await getState();
+    if (allState['curent_cmd'] == "XClickTextRelative" && allState.status != "NORMAL") {
       const rect = e.target.getBoundingClientRect();
       getOrcMatchesHighlighter().highlightRelative(rect);
       updateState(setIn(['curent_cmd'], ''));
       //e.target.style.border='2px solid #fe1492';
-    }  
-    
-})()
+    }
+
+  })()
   const targetInfo = inspector.getLocator(e.target, true)
 
   log('onClick, switch  case', state.config.recordClickType)
@@ -543,8 +543,8 @@ const onClick = (e) => {
       })
       break
     case 'saveItem':
-      console.log('saveItem==> ',targetInfo)
-    break
+      console.log('saveItem==> ', targetInfo)
+      break
   }
 
   if (e.target.nodeName.toLowerCase() === 'option') {
@@ -575,8 +575,8 @@ const onChange = (e) => {
       Array.from(e.target.options).forEach($option => {
         if ($option.lastSelected !== $option.selected) {
           reportCommand({
-            cmd:    $option.selected ? 'addSelection' : 'removeSelection',
-            value:  'label=' + inspector.domText($option).trim(),
+            cmd: $option.selected ? 'addSelection' : 'removeSelection',
+            value: 'label=' + inspector.domText($option).trim(),
             ...inspector.getLocator(e.target, true)
           })
         }
@@ -588,20 +588,20 @@ const onChange = (e) => {
     const value = (e.target.value || '').replace(/\n/g, '\\n')
 
     encryptIfNeeded(value, e.target)
-    .then(realValue => {
-      reportCommand({
-        cmd: 'type',
-        value: realValue,
-        ...inspector.getLocator(e.target, true)
+      .then(realValue => {
+        reportCommand({
+          cmd: 'type',
+          value: realValue,
+          ...inspector.getLocator(e.target, true)
+        })
       })
-    })
   }
 }
 
 const onContentEditableChange = (e) => {
   reportCommand({
-    cmd:    'editContent',
-    value:  e.target.innerHTML,
+    cmd: 'editContent',
+    value: e.target.innerHTML,
     ...inspector.getLocator(e.target, true)
   })
 }
@@ -617,8 +617,8 @@ const onDragDrop = (function () {
       }
       case 'drop': {
         if (!dragStart) return
-        const tmp   = inspector.getLocator(e.target, true)
-        const drop  = {
+        const tmp = inspector.getLocator(e.target, true)
+        const drop = {
           value: tmp.target,
           valueOptions: tmp.targetOptions
         }
@@ -713,7 +713,7 @@ const updateStatus = (args) => {
   })
 
   if (args.status === C.CONTENT_SCRIPT_STATUS.NORMAL ||
-      args.status === C.CONTENT_SCRIPT_STATUS.RECORDING) {
+    args.status === C.CONTENT_SCRIPT_STATUS.RECORDING) {
     bindEventsToRecord()
   } else {
     unbindEventsToRecord()
@@ -739,13 +739,13 @@ const updateStatus = (args) => {
 const bindIPCListener = () => {
   // Note: need to check csIpc in case it's a none-src iframe into which we
   // inject content_script.js. It has no access to chrome api, thus no csIpc available
-  if (!csIpc) return 
+  if (!csIpc) return
 
   // Note: csIpc instead of superIpc, because only top window is able
   // to listen to ipc events from bg
   csIpc.onAsk((cmd, args) => {
     log(cmd, args)
-    
+
     switch (cmd) {
       case 'HEART_BEAT':
         return {
@@ -768,23 +768,23 @@ const bindIPCListener = () => {
 
       case 'RUN_COMMAND':
         return runCommand(args.command)
-        .catch(e => {
-          // Mark that there is already at least one command run
-          window.noCommandsYet = false
+          .catch(e => {
+            // Mark that there is already at least one command run
+            window.noCommandsYet = false
 
-          log.error(e.stack)
-          throw e
-        })
-        .then(data => {
-          // Mark that there is already at least one command run
-          window.noCommandsYet = false
+            log.error(e.stack)
+            throw e
+          })
+          .then(data => {
+            // Mark that there is already at least one command run
+            window.noCommandsYet = false
 
-          if (state.playingFrame !== window) {
-            return { data, isIFrame: true }
-          }
+            if (state.playingFrame !== window) {
+              return { data, isIFrame: true }
+            }
 
-          return { data }
-        })
+            return { data }
+          })
 
       case 'FIND_DOM': {
         try {
@@ -801,7 +801,7 @@ const bindIPCListener = () => {
         if ($el) {
           $el.scrollIntoView({ block: 'center' })
           highlightDom($el)
-          downloadSaveItem($el,args.cmd)
+          downloadSaveItem($el, args.cmd)
         }
 
         return true
@@ -813,9 +813,9 @@ const bindIPCListener = () => {
       }
 
       case 'HIGHLIGHT_X': {
-        const rect  = {
-          top:    args.offset.y ,
-          left:   args.offset.x ,          
+        const rect = {
+          top: args.offset.y,
+          left: args.offset.x,
           // width: 40, 
           // height: 60
         }
@@ -862,10 +862,10 @@ const bindIPCListener = () => {
 
       case 'HACK_ALERT': {
         return hackAlertConfirmPrompt()
-        .then(
-          () => true,
-          () => true
-        )
+          .then(
+            () => true,
+            () => true
+          )
       }
 
       case 'MARK_NO_COMMANDS_YET': {
@@ -896,7 +896,7 @@ const bindIPCListener = () => {
 
       case 'SELECT_SCREEN_AREA': {
         return selectAreaPromise({
-          done:     (rect, boundingRect) => {
+          done: (rect, boundingRect) => {
             log('SELECT_SCREEN_AREA  - selectArea', rect, boundingRect)
             return csIpc.ask('CS_SCREEN_AREA_SELECTED', {
               rect: {
@@ -912,8 +912,8 @@ const bindIPCListener = () => {
       }
 
       case 'TOGGLE_HIGHLIGHT_VIEWPORT': {
-        const on  = args.on
-        const id  = '__kantu_viewport_highlight__'
+        const on = args.on
+        const id = '__kantu_viewport_highlight__'
         const $el = document.getElementById(id)
 
         if ($el) {
@@ -958,7 +958,7 @@ const bindIPCListener = () => {
 
             reportCommand({
               ...inspector.getLocator(state.elementOnContextMenu, true),
-              cmd:   args.command,
+              cmd: args.command,
               value: domText(state.elementOnContextMenu)
             })
             break
@@ -966,7 +966,7 @@ const bindIPCListener = () => {
           case 'verifyTitle':
           case 'assertTitle':
             reportCommand({
-              cmd:    args.command,
+              cmd: args.command,
               target: document.title
             })
             break
@@ -1000,10 +1000,11 @@ const bindEventsToInspect = () => {
         e.preventDefault()
         e.stopPropagation()
 
+        const $best = inspector.getBestElement(e.target)
         const mask = getMask()
 
         inspector.setStyle(mask.maskHover, { display: 'none' })
-        inspector.showMaskOver(mask.maskClick, e.target)
+        inspector.showMaskOver(mask.maskClick, $best)
 
         setTimeout(() => {
           inspector.setStyle(mask.maskClick, { display: 'none' })
@@ -1014,9 +1015,9 @@ const bindEventsToInspect = () => {
         })
 
         return superCsIpc.ask('CS_DONE_INSPECTING', {
-          locatorInfo: inspector.getLocator(e.target, true)
+          locatorInfo: inspector.getLocator($best, true)
         })
-        .catch(oops)
+          .catch(oops)
       }
 
       default:
@@ -1028,16 +1029,17 @@ const bindEventsToInspect = () => {
   document.addEventListener('mouseover', (e) => {
     if (state.status === C.CONTENT_SCRIPT_STATUS.NORMAL) {
       return superCsIpc.ask('CS_ACTIVATE_ME', {})
-      .catch(oops)
+        .catch(oops)
     }
   })
 
   // bind mouse move event to show hover mask in inspecting
   document.addEventListener('mousemove', (e) => {
-    if (state.status !== C.CONTENT_SCRIPT_STATUS.INSPECTING)  return
+    if (state.status !== C.CONTENT_SCRIPT_STATUS.INSPECTING) return
 
+    const $best = inspector.getBestElement(e.target)
     const mask = getMask()
-    inspector.showMaskOver(mask.maskHover, e.target)
+    inspector.showMaskOver(mask.maskHover, $best)
   })
 }
 
@@ -1085,7 +1087,7 @@ const bindOnMessage = () => {
           if (window.top === window) {
             calcSelectFrameCmds(data.ipcData.frameStack).forEach(cmd => {
               csIpc.ask('CS_RECORD_ADD_COMMAND', cmd)
-              .catch(oops)
+                .catch(oops)
             })
 
             state.recordingFrameStack = data.ipcData.frameStack
@@ -1094,7 +1096,7 @@ const bindOnMessage = () => {
 
         if (window.top === window) {
           return csIpc.ask(data.ipcAction, data.ipcData)
-          .catch(oops)
+            .catch(oops)
         } else {
           return postMessage(window.parent, window, { action, data })
         }
@@ -1110,7 +1112,7 @@ const bindOnMessage = () => {
               data: 'TOP'
             })
           })
-          .then(() => true)
+            .then(() => true)
         }
 
         return Promise.resolve(true)
@@ -1122,9 +1124,9 @@ const bindOnMessage = () => {
           ...Array.from(document.getElementsByTagName('frame'))
         ]
         const $frameElement = $frames.find($frame => $frame.contentWindow === source)
-        const offset        = inspector.offset($frameElement, true)
-        const x             = offset.left
-        const y             = offset.top
+        const offset = inspector.offset($frameElement, true)
+        const x = offset.left
+        const y = offset.top
         log('SOURCE_PAGE_OFFSET, iframeDOM', $frameElement)
 
         if (window.top === window) {
@@ -1135,12 +1137,12 @@ const bindOnMessage = () => {
           action: 'SOURCE_PAGE_OFFSET',
           data: {}
         })
-        .then(parentOffset => {
-          return {
-            x: x + parentOffset.x,
-            y: y + parentOffset.y
-          }
-        })
+          .then(parentOffset => {
+            return {
+              x: x + parentOffset.x,
+              y: y + parentOffset.y
+            }
+          })
       }
 
       case 'SOURCE_VIEWPORT_OFFSET': {
@@ -1162,12 +1164,12 @@ const bindOnMessage = () => {
           action: 'SOURCE_VIEWPORT_OFFSET',
           data: {}
         })
-        .then(parentOffset => {
-          return {
-            x: rect.x + parentOffset.x,
-            y: rect.y + parentOffset.y
-          }
-        })
+          .then(parentOffset => {
+            return {
+              x: rect.x + parentOffset.x,
+              y: rect.y + parentOffset.y
+            }
+          })
       }
 
       case 'DOM_READY':
@@ -1198,9 +1200,9 @@ const bindInvokeEvent = () => {
     }
   }
   const runCsInvokeFromQueries = (queries = {}) => {
-    const userStorageMode    = queries.storageMode ? queries.storageMode.toLowerCase() : ''
+    const userStorageMode = queries.storageMode ? queries.storageMode.toLowerCase() : ''
     const isValidStorageMode = ['browser', 'xfile'].indexOf(userStorageMode) !== -1
-    const storageMode        = isValidStorageMode ? userStorageMode : 'browser'
+    const storageMode = isValidStorageMode ? userStorageMode : 'browser'
 
     if (queries['macro']) {
       return csIpc.ask('CS_INVOKE', {
@@ -1211,7 +1213,7 @@ const bindInvokeEvent = () => {
         },
         options: decorateOptions(queries)
       })
-      .catch(e => alert('[Ui.Vision] ' + e.message))
+        .catch(e => alert('[Ui.Vision] ' + e.message))
     }
 
     if (queries['folder']) {
@@ -1234,10 +1236,10 @@ const bindInvokeEvent = () => {
         },
         options: decorateOptions(queries)
       })
-      .catch(e => alert('[Ui.Vision] ' + e.message))
+        .catch(e => alert('[Ui.Vision] ' + e.message))
     }
   }
-  const isFile  = window.location.protocol === 'file:'
+  const isFile = window.location.protocol === 'file:'
 
   // Macros
   bind(window, 'kantuRunMacro', (e) => {
@@ -1248,12 +1250,12 @@ const bindInvokeEvent = () => {
 
     csIpc.ask('CS_INVOKE', {
       testCase: e.detail,
-      options:  decorateOptions({
+      options: decorateOptions({
         continueInLastUsedTab: '0',
         ...queries
       }, e.detail)
     })
-    .catch(e => alert('[Ui.Vision] ' + e.message))
+      .catch(e => alert('[Ui.Vision] ' + e.message))
   });
 
   (isFile ? bindOnce : subjectiveBindOnce)(window, 'kantuSaveAndRunMacro', (e) => {
@@ -1265,11 +1267,11 @@ const bindInvokeEvent = () => {
         return alert('[Ui.Vision] invalid data format')
       }
 
-      const queries     = parseQuery(window.location.search)
-      const direct      = !!queries['direct'] || (e.detail.json && e.detail.direct)
+      const queries = parseQuery(window.location.search)
+      const direct = !!queries['direct'] || (e.detail.json && e.detail.direct)
       const storageMode = queries['storage'] || e.detail.storageMode || 'browser'
 
-      const msgDirectParam      = 'Ui.Vision: Do you want to import and run this macro?\n\nNote: To remove this dialog, add \'?direct=1\' switch to the URL. Example: file:///xx/xx/macro.html?direct=1  For embedded macros, add "direct: true" to the call.'
+      const msgDirectParam = 'Ui.Vision: Do you want to import and run this macro?\n\nNote: To remove this dialog, add \'?direct=1\' switch to the URL. Example: file:///xx/xx/macro.html?direct=1  For embedded macros, add "direct: true" to the call.'
       const msgWebsiteWhiteList = 'Ui.Vision: Do you want to import and run this macro?\n\nNote: To remove this dialog, add this site to whitelist in the Ui.Vision settings'
 
       if (isFile && !direct) {
@@ -1304,39 +1306,39 @@ const bindInvokeEvent = () => {
 
       return csIpc.ask('CS_IMPORT_AND_INVOKE', {
         ...e.detail,
-        from:     'html',
-        options:  decorateOptions({ ...queries, ...extraOptions }, e.detail)
+        from: 'html',
+        options: decorateOptions({ ...queries, ...extraOptions }, e.detail)
       })
-      .catch(e => alert('[Ui.Vision] ' + e.message))
+        .catch(e => alert('[Ui.Vision] ' + e.message))
     }
 
     loadConfig()
-    .catch(e => {})
-    .then(run)
+      .catch(e => { })
+      .then(run)
   })
 
-// we don't need this
-// Test Suites
-//   bind(window, 'kantuRunTestSuite', (e) => {
-//     log('invoke event', e)
-//     window.dispatchEvent(new CustomEvent('kantuInvokeSuccess'))
+  // we don't need this
+  // Test Suites
+  //   bind(window, 'kantuRunTestSuite', (e) => {
+  //     log('invoke event', e)
+  //     window.dispatchEvent(new CustomEvent('kantuInvokeSuccess'))
 
-//     const queries = parseQuery(window.location.search)
-//     const storageMode = queries['storage'] || e.detail.storageMode || 'browser'
+  //     const queries = parseQuery(window.location.search)
+  //     const storageMode = queries['storage'] || e.detail.storageMode || 'browser'
 
-//     if (doesQueriesContainMacroOrTestSuite(queries)) {
-//       return runCsInvokeFromQueries({
-//         ...queries,
-//         storageMode
-//       })
-//     }
+  //     if (doesQueriesContainMacroOrTestSuite(queries)) {
+  //       return runCsInvokeFromQueries({
+  //         ...queries,
+  //         storageMode
+  //       })
+  //     }
 
-//     return csIpc.ask('CS_INVOKE', {
-//       testSuite: e.detail,
-//       options: decorateOptions(queries, e.detail)
-//     })
-//     .catch(e => alert('[Ui.Vision] ' + e.message))
-//   })
+  //     return csIpc.ask('CS_INVOKE', {
+  //       testSuite: e.detail,
+  //       options: decorateOptions(queries, e.detail)
+  //     })
+  //     .catch(e => alert('[Ui.Vision] ' + e.message))
+  //   })
 }
 
 const hackAlertConfirmPrompt = (doc = document) => {
@@ -1385,7 +1387,7 @@ const init = () => {
   toggleBodyMark(true)
 
   loadConfig()
-  .then(config => removeBodyMarkIfNecessary(config))
+    .then(config => removeBodyMarkIfNecessary(config))
 
   // Note: only bind ipc events if it's the top window
   if (window.top === window) {
@@ -1536,9 +1538,9 @@ const runCommand = (command) => {
 // while content script is not reloaded in the mean time, it causes that iframe not able to be recorded
 // So we have to listen to url change in iframes for this case.
 const onUrlChange = (function () {
-  let callback  = () => {}
-  let lastUrl   = window.location.href
-  const check   = () => {
+  let callback = () => { }
+  let lastUrl = window.location.href
+  const check = () => {
     if (window.location.href !== lastUrl) {
       log('url changed', lastUrl, window.location.href)
       lastUrl = window.location.href
@@ -1547,7 +1549,7 @@ const onUrlChange = (function () {
   }
 
   if (window.top === window) {
-    return () => {}
+    return () => { }
   }
 
   setInterval(check, 2000)
@@ -1559,14 +1561,194 @@ const onUrlChange = (function () {
 
 const loadConfig = () => {
   return storage.get('config')
-  .then(config => {
-    state.config = config
+    .then(config => {
+      state.config = config
 
-    // IMPORTANT: broadcast status change to all frames inside
-    broadcastToAllFrames('UPDATE_CONFIG', config)
+      // IMPORTANT: broadcast status change to all frames inside
+      broadcastToAllFrames('UPDATE_CONFIG', config)
 
-    return config
+      // Floating buttons: sadece top window'da çalıştır
+      if (window.top === window && config.floatingButtons && config.floatingButtons.length > 0) {
+        initFloatingButtons(config.floatingButtons)
+      }
+
+      return config
+    })
+}
+
+// Floating Buttons - Sayfalarda makro çalıştırma butonları
+// Her konum için buton sayacı (sıralama için)
+const floatingButtonCounters = {
+  'bottom-right': 0,
+  'bottom-left': 0,
+  'top-right': 0,
+  'top-left': 0
+}
+
+const initFloatingButtons = (buttons) => {
+  const currentUrl = window.location.href
+
+  // Sayaçları sıfırla
+  Object.keys(floatingButtonCounters).forEach(key => {
+    floatingButtonCounters[key] = 0
   })
+
+  // Mevcut butonları temizle (Yeniden sıralama için)
+  const existingButtons = document.querySelectorAll('[id^="uivision-floating-btn-"]')
+  existingButtons.forEach(btn => btn.remove())
+
+  // Butonları filtrele
+  const relevantButtons = buttons.filter(btn => matchUrlPattern(btn.urlPattern, currentUrl))
+
+  // Pozisyonlara göre grupla
+  const groupedButtons = {
+    'bottom-right': [],
+    'bottom-left': [],
+    'top-right': [],
+    'top-left': []
+  }
+
+  relevantButtons.forEach(btn => {
+    const pos = btn.position || 'bottom-right'
+    if (groupedButtons[pos]) {
+      groupedButtons[pos].push(btn)
+    }
+  })
+
+  // Butonları oluştur
+  // Top pozisyonlar: Normal sıralama (Liste başı -> En üst/Offset küçük)
+  groupedButtons['top-right'].forEach(btn => createFloatingButton(btn))
+  groupedButtons['top-left'].forEach(btn => createFloatingButton(btn))
+
+  // Bottom pozisyonlar: Ters sıralama (Liste başı -> En alt/Offset küçük)
+  // Liste: [A, B] -> A üstte olsun istiyoruz.
+  // Mevcut logic ile: Index 0 -> Offset 20 (En alt). Index 1 -> Offset 64 (Daha yukarı).
+  // Eğer A'nın üstte olmasını istiyorsak, A'ya daha büyük offset vermeliyiz.
+  // Yani A son işlenmeli.
+  // [A, B] -> Reverse -> [B, A].
+  // B -> Index 0 -> Offset 20 (En alt)
+  // A -> Index 1 -> Offset 64 (B'nin üstünde)
+  // Sonuç Görünüm:
+  // A
+  // B
+  // Bu, listedeki sıralama ile (A, B) eşleşir.
+  groupedButtons['bottom-right'].reverse().forEach(btn => createFloatingButton(btn))
+  groupedButtons['bottom-left'].reverse().forEach(btn => createFloatingButton(btn))
+}
+
+// URL pattern eşleştirme (* wildcard desteği)
+const matchUrlPattern = (pattern, url) => {
+  if (!pattern) return false
+  // Pattern'i regex'e çevir
+  const regexPattern = pattern
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')  // Özel karakterleri escape et
+    .replace(/\*/g, '.*')                     // * -> .*
+
+  const regex = new RegExp(`^${regexPattern}$`, 'i')
+  return regex.test(url) || url.includes(pattern.replace(/\*/g, ''))
+}
+
+// Floating button oluşturma
+const createFloatingButton = (btnConfig) => {
+  const btn = document.createElement('button')
+  btn.id = `uivision-floating-btn-${btnConfig.id}`
+  btn.innerText = btnConfig.label || '▶ Çalıştır'
+  btn.title = `Makro: ${btnConfig.macroName}`
+
+  const position = btnConfig.position || 'bottom-right'
+  const buttonHeight = 44 // Buton yüksekliği + margin
+  const baseOffset = 20 // Kenardan uzaklık
+  const index = floatingButtonCounters[position] || 0
+  floatingButtonCounters[position] = index + 1
+
+  // Pozisyon stilleri - dinamik offset ile
+  const getPositionStyle = () => {
+    const offset = baseOffset + (index * buttonHeight)
+
+    switch (position) {
+      case 'bottom-right':
+        return { bottom: `${offset}px`, right: '20px' }
+      case 'bottom-left':
+        return { bottom: `${offset}px`, left: '20px' }
+      case 'top-right':
+        return { top: `${offset}px`, right: '20px' }
+      case 'top-left':
+        return { top: `${offset}px`, left: '20px' }
+      default:
+        return { bottom: `${offset}px`, right: '20px' }
+    }
+  }
+
+  const posStyle = getPositionStyle()
+
+  // Buton stilleri
+  Object.assign(btn.style, {
+    position: 'fixed',
+    zIndex: '2147483647', // Max z-index
+    padding: '10px 16px',
+    backgroundColor: btnConfig.color || '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontSize: '14px',
+    fontWeight: '500',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+    transition: 'all 0.2s ease',
+    outline: 'none',
+    ...posStyle
+  })
+
+  // Hover efekti
+  btn.addEventListener('mouseenter', () => {
+    btn.style.transform = 'translateY(-2px)'
+    btn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)'
+  })
+
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = 'translateY(0)'
+    btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'
+  })
+
+  // Tıklama: makroyu çalıştır
+  btn.addEventListener('click', (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const originalText = btn.innerText
+    // Loading durumu
+    btn.innerText = '⏳'
+    btn.style.opacity = '0.8'
+    btn.disabled = true
+
+    // Background'a mesaj gönder
+    superCsIpc.ask('RUN_MACRO_BY_NAME', {
+      macroName: btnConfig.macroName,
+      fromFloatingButton: true
+    })
+      .then(() => {
+        btn.innerText = '✓'
+        setTimeout(() => {
+          btn.innerText = originalText
+          btn.style.opacity = '1'
+          btn.disabled = false
+        }, 1500)
+      })
+      .catch(err => {
+        console.error('Makro çalıştırma hatası:', err)
+        btn.innerText = '✗'
+        setTimeout(() => {
+          btn.innerText = originalText
+          btn.style.opacity = '1'
+          btn.disabled = false
+        }, 1500)
+      })
+  })
+
+  // DOM'a ekle
+  document.documentElement.appendChild(btn)
 }
 
 init()
+

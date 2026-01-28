@@ -42,7 +42,7 @@ const keyConstants = [
   ...numericKeyConstants,
   ...letterKeyConstants
 ]
-.map(key => key.toUpperCase())
+  .map(key => key.toUpperCase())
 
 const isValidKeyConstant = (pattern) => {
   const str = pattern && pattern.toUpperCase()
@@ -72,10 +72,10 @@ const validateVariableName = (name) => {
   return true
 }
 
-const regDollarV2   = /\$\{((!?\w+)((\.\w+|\[(\d+|\$\{!?\w+\})\])*))\}/gi
+const regDollarV2 = /\$\{((!?\w+)((\.\w+|\[(\d+|\$\{!?\w+\})\])*))\}/gi
 const regStoredVars = /storedVars\[('|")((!?\w+)((\.\w+|\[(\d+|\$\{!?\w+\})\])*))\1\]/gi
 
-function substrToList (substr) {
+function substrToList(substr) {
   const regSubstr = /\.(\w+)|\[(\d+|\$\{!?\w+\})\]/gi
   const normalizedStr = substr && substr.trim()
 
@@ -104,118 +104,118 @@ function substrToList (substr) {
   return result
 }
 
-function listToSubstr (list) {
+function listToSubstr(list) {
   return list.map(str => {
     return /^\d+$/.test(str) ? `[${str}]` : `.${str}`
   })
-  .join('')
+    .join('')
 }
 
-export default function varsFactory (name = DEFAULT_KEY, options = {}, initial = {}) {
+export default function varsFactory(name = DEFAULT_KEY, options = {}, initial = {}) {
   const isBoolean = (val) => ['TRUE', 'FALSE'].indexOf((val + '').toUpperCase()) !== -1
   const opts = {
     isInvalidInternalVar: (key) => {
       return key.indexOf('!') === 0 &&
-              key !== '!TIMEOUT_PAGELOAD' &&
-              key !== '!TIMEOUT_WAIT' &&
-              key !== '!TIMEOUT_MACRO' &&
-              key !== '!TIMEOUT_DOWNLOAD' &&
-              key !== '!TIMEOUT_DOWNLOAD_START' &&
-              key !== '!REPLAYSPEED' &&
-              key !== '!LOOP' &&
-              key !== '!TESTSUITE_LOOP' &&
-              key !== '!URL' &&
-              key !== '!CURRENT_TAB_NUMBER' &&
-              key !== '!CURRENT_TAB_NUMBER_RELATIVE' &&
-              key !== '!CURRENT_TAB_NUMBER_RELATIVE_INDEX' &&
-              key !== '!CURRENT_TAB_NUMBER_RELATIVE_ID' &&
-              key !== '!MACRONAME' &&
-              key !== '!RUNTIME' &&
-              key !== '!CSVLINE' &&
-              key !== '!CSVLINE' &&
-              key !== '!LASTCOMMANDOK' &&
-              key !== '!ERRORIGNORE' &&
-              key !== '!CSVREADLINENUMBER' &&
-              key !== '!CSVREADSTATUS' &&
-              key !== '!CSVREADMAXROW' &&
-              key !== '!CLIPBOARD' &&
-              key !== '!STATUSOK' &&
-              key !== '!WAITFORVISIBLE' &&
-              key !== '!IMAGEX' &&
-              key !== '!IMAGEY' &&
-              key !== '!IMAGEWIDTH' &&
-              key !== '!IMAGEHEIGHT' &&
-              key !== '!VISUALSEARCHAREA' &&
-              key !== '!STOREDIMAGERECT' &&
-              key !== '!STRINGESCAPE' &&
-              key !== '!CMD_VAR1' &&
-              key !== '!CMD_VAR2' &&
-              key !== '!CMD_VAR3' &&
-              key !== '!OCRLANGUAGE' &&
-              key !== '!OCRENGINE' &&
-              key !== '!OCRSCALE' &&
-              key !== '!OCRTABLEEXTRACTION' &&
-              key !== '!OCRX' &&
-              key !== '!OCRY' &&
-              key !== '!OCRHEIGHT' &&
-              key !== '!OCRWIDTH' &&
-              key !== '!OCR_LEFT_X' &&
-              key !== '!OCR_RIGHT_X' &&
-              key !== '!AI1' &&
-              key !== '!AI2' &&
-              key !== '!AI3' &&
-              key !== '!AI4' &&
-              key !== '!BROWSER' &&
-              key !== '!OS' &&
-              key !== '!TIMES' &&
-              key !== '!FOREACH' &&
-              key !== '!CVSCOPE' &&
-              key !== '!XRUN_EXITCODE' &&
-              key !== '!PROXY_EXEC_COUNT' &&
-              key !== '!GLOBAL_TESTSUITE_STOP_ON_ERROR' &&
-              key !== '!LAST_DOWNLOADED_FILE_NAME' &&
-              !/^!COL\d+$/i.test(key)
+        key !== '!TIMEOUT_PAGELOAD' &&
+        key !== '!TIMEOUT_WAIT' &&
+        key !== '!TIMEOUT_MACRO' &&
+        key !== '!TIMEOUT_DOWNLOAD' &&
+        key !== '!TIMEOUT_DOWNLOAD_START' &&
+        key !== '!REPLAYSPEED' &&
+        key !== '!LOOP' &&
+        key !== '!TESTSUITE_LOOP' &&
+        key !== '!URL' &&
+        key !== '!CURRENT_TAB_NUMBER' &&
+        key !== '!CURRENT_TAB_NUMBER_RELATIVE' &&
+        key !== '!CURRENT_TAB_NUMBER_RELATIVE_INDEX' &&
+        key !== '!CURRENT_TAB_NUMBER_RELATIVE_ID' &&
+        key !== '!MACRONAME' &&
+        key !== '!RUNTIME' &&
+        key !== '!CSVLINE' &&
+        key !== '!CSVLINE' &&
+        key !== '!LASTCOMMANDOK' &&
+        key !== '!ERRORIGNORE' &&
+        key !== '!CSVREADLINENUMBER' &&
+        key !== '!CSVREADSTATUS' &&
+        key !== '!CSVREADMAXROW' &&
+        key !== '!CLIPBOARD' &&
+        key !== '!STATUSOK' &&
+        key !== '!WAITFORVISIBLE' &&
+        key !== '!IMAGEX' &&
+        key !== '!IMAGEY' &&
+        key !== '!IMAGEWIDTH' &&
+        key !== '!IMAGEHEIGHT' &&
+        key !== '!VISUALSEARCHAREA' &&
+        key !== '!STOREDIMAGERECT' &&
+        key !== '!STRINGESCAPE' &&
+        key !== '!CMD_VAR1' &&
+        key !== '!CMD_VAR2' &&
+        key !== '!CMD_VAR3' &&
+        key !== '!OCRLANGUAGE' &&
+        key !== '!OCRENGINE' &&
+        key !== '!OCRSCALE' &&
+        key !== '!OCRTABLEEXTRACTION' &&
+        key !== '!OCRX' &&
+        key !== '!OCRY' &&
+        key !== '!OCRHEIGHT' &&
+        key !== '!OCRWIDTH' &&
+        key !== '!OCR_LEFT_X' &&
+        key !== '!OCR_RIGHT_X' &&
+        key !== '!AI1' &&
+        key !== '!AI2' &&
+        key !== '!AI3' &&
+        key !== '!AI4' &&
+        key !== '!BROWSER' &&
+        key !== '!OS' &&
+        key !== '!TIMES' &&
+        key !== '!FOREACH' &&
+        key !== '!CVSCOPE' &&
+        key !== '!XRUN_EXITCODE' &&
+        key !== '!PROXY_EXEC_COUNT' &&
+        key !== '!GLOBAL_TESTSUITE_STOP_ON_ERROR' &&
+        key !== '!LAST_DOWNLOADED_FILE_NAME' &&
+        !/^!COL\d+$/i.test(key)
     },
     readonly: [
-      '!LOOP', 'TESTSUITE_LOOP', '!URL','!CURRENT_TAB_NUMBER','!CURRENT_TAB_NUMBER_RELATIVE','!CURRENT_TAB_NUMBER_RELATIVE_ID','!CURRENT_TAB_NUMBER_RELATIVE_INDEX','!MACRONAME', '!RUNTIME', '!LASTCOMMANDOK',
+      '!LOOP', 'TESTSUITE_LOOP', '!URL', '!CURRENT_TAB_NUMBER', '!CURRENT_TAB_NUMBER_RELATIVE', '!CURRENT_TAB_NUMBER_RELATIVE_ID', '!CURRENT_TAB_NUMBER_RELATIVE_INDEX', '!MACRONAME', '!RUNTIME', '!LASTCOMMANDOK',
       '!CSVREADSTATUS', '!CSVREADMAXROW', '!VISUALSEARCHAREA',
       '!BROWSER', '!OS', '!CVSCOPE', '!XRUN_EXITCODE', '!PROXY_EXEC_COUNT',
       '!TIMES', '!FOREACH', '!LAST_DOWNLOADED_FILE_NAME',
       ...keyConstants
     ],
     typeCheck: {
-      '!REPLAYSPEED':       (val) => ['SLOWV1', 'SLOW', 'MEDIUMV1', 'MEDIUM', 'FASTV1', 'FAST', 'NODISPLAYV1', 'NODISPLAY'].indexOf((val || '').toUpperCase()) !== -1,
-      '!TIMEOUT_PAGELOAD':  (val) => parseInt(val, 10) >= 0,
-      '!TIMEOUT_WAIT':      (val) => parseInt(val, 10) >= 0,
-      '!TIMEOUT_MACRO':     (val) => parseInt(val, 10) >= 0,
-      '!TIMEOUT_DOWNLOAD':  (val) => parseInt(val, 10) >= 0,
+      '!REPLAYSPEED': (val) => ['SLOWV1', 'SLOW', 'MEDIUMV1', 'MEDIUM', 'FASTV1', 'FAST', 'NODISPLAYV1', 'NODISPLAY'].indexOf((val || '').toUpperCase()) !== -1,
+      '!TIMEOUT_PAGELOAD': (val) => parseInt(val, 10) >= 0,
+      '!TIMEOUT_WAIT': (val) => parseInt(val, 10) >= 0,
+      '!TIMEOUT_MACRO': (val) => parseInt(val, 10) >= 0,
+      '!TIMEOUT_DOWNLOAD': (val) => parseInt(val, 10) >= 0,
       '!TIMEOUT_DOWNLOAD_START': (val) => parseInt(val, 10) >= 0,
       '!CSVREADLINENUMBER': (val) => parseInt(val, 10) >= 0,
-      '!OCRLANGUAGE':       (val,store) => isValidOCRLanguage(val,window['store']),
-      '!OCRENGINE':         (val) => [1, 2, 98, 99].indexOf(parseInt(val, 10)) !== -1,
-      '!OCRSCALE':          isBoolean,
-      '!OCRX':              (val) => parseInt(val, 10) >= 0,
-      '!OCRY':              (val) => parseInt(val, 10) >= 0,
-      '!OCRHEIGHT':              (val) => parseInt(val, 10) >= 0,
-      '!OCRWIDTH':              (val) => parseInt(val, 10) >= 0,
-      '!OCR_LEFT_X':        (val) => parseInt(val, 10) >= 0,
-      '!OCR_RIGHT_X':        (val) => parseInt(val, 10) >= 0,
-      '!AI1':               (val) => parseInt(val, 10) >= 0,
-      '!AI2':               (val) => parseInt(val, 10) >= 0,
-      '!AI3':               (val) => parseInt(val, 10) >= 0,
-      '!AI4':               (val) => parseInt(val, 10) >= 0,
-      '!ERRORIGNORE':       isBoolean,
-      '!STATUSOK':          isBoolean,
-      '!WAITFORVISIBLE':    isBoolean,
-      '!STRINGESCAPE':      isBoolean,
+      '!OCRLANGUAGE': (val, store) => isValidOCRLanguage(val, window['store']),
+      '!OCRENGINE': (val) => [1, 2, 98, 99].indexOf(parseInt(val, 10)) !== -1,
+      '!OCRSCALE': isBoolean,
+      '!OCRX': (val) => parseInt(val, 10) >= 0,
+      '!OCRY': (val) => parseInt(val, 10) >= 0,
+      '!OCRHEIGHT': (val) => parseInt(val, 10) >= 0,
+      '!OCRWIDTH': (val) => parseInt(val, 10) >= 0,
+      '!OCR_LEFT_X': (val) => parseInt(val, 10) >= 0,
+      '!OCR_RIGHT_X': (val) => parseInt(val, 10) >= 0,
+      '!AI1': (val) => parseInt(val, 10) >= 0,
+      '!AI2': (val) => parseInt(val, 10) >= 0,
+      '!AI3': (val) => parseInt(val, 10) >= 0,
+      '!AI4': (val) => parseInt(val, 10) >= 0,
+      '!ERRORIGNORE': isBoolean,
+      '!STATUSOK': isBoolean,
+      '!WAITFORVISIBLE': isBoolean,
+      '!STRINGESCAPE': isBoolean,
       '!GLOBAL_TESTSUITE_STOP_ON_ERROR': isBoolean,
-      '!CVSCOPE':           (val) => [ComputerVisionType.Browser, ComputerVisionType.Desktop, ComputerVisionType.DesktopScreenCapture].indexOf(val) !== -1
+      '!CVSCOPE': (val) => [ComputerVisionType.Browser, ComputerVisionType.Desktop, ComputerVisionType.DesktopScreenCapture].indexOf(val) !== -1
     },
     normalize: (key, val) => {
       const upperKey = key.toUpperCase()
       const acceptStringTrueFalse = (val) => {
-        if (val === 'true')   return true
-        if (val === 'false')  return false
+        if (val === 'true') return true
+        if (val === 'false') return false
         return val
       }
       const num = (s) => parseFloat(s)
@@ -246,8 +246,8 @@ export default function varsFactory (name = DEFAULT_KEY, options = {}, initial =
   }
   let vars = initial
 
-  const listeners     = new Registry({ process: (fn, data, eventName) => fn(data) })
-  const fireOnChange  = () => listeners.fire('change', { vars: Object.assign({}, vars) })
+  const listeners = new Registry({ process: (fn, data, eventName) => fn(data) })
+  const fireOnChange = () => listeners.fire('change', { vars: Object.assign({}, vars) })
   const self = {
     reset: (options = {}) => {
       if (options.keepGlobal) {
@@ -266,12 +266,27 @@ export default function varsFactory (name = DEFAULT_KEY, options = {}, initial =
       fireOnChange()
     },
     render: (str, options) => {
-      const [reg, mainIndex, subIndex] = options && options.withHashNotation
-                                                    ? [regStoredVars, 3, 4]
-                                                    : [regDollarV2, 2, 3]
+      if (typeof str !== 'string') return str
+
       const decorate = options && options.shouldStringify
-                          ? (x) => JSON.stringify(x)
-                          : id
+        ? (x) => JSON.stringify(x)
+        : id
+
+      // 1. Support Asterisk Shorthand (*var)
+      // Only replace if the variable actually exists in vars to avoid breaking wildcards
+      const asteriskReg = /\*(\w+)/g
+      str = str.replace(asteriskReg, (match, varName) => {
+        const upper = varName.toUpperCase()
+        if (upper in vars) {
+          return decorate(vars[upper])
+        }
+        return match
+      })
+
+      // 2. Standard Notation (${var} or storedVars['var'])
+      const [reg, mainIndex, subIndex] = options && options.withHashNotation
+        ? [regStoredVars, 3, 4]
+        : [regDollarV2, 2, 3]
 
       return self.replaceAllVars({
         str,
@@ -321,7 +336,7 @@ export default function varsFactory (name = DEFAULT_KEY, options = {}, initial =
       if (upperKey in vars) {
         return vars[upperKey]
       } else {
-        if (/^!cmd_var(1|2|3)$/i.test(upperKey))  return 'NOT_SET'
+        if (/^!cmd_var(1|2|3)$/i.test(upperKey)) return 'NOT_SET'
 
         if (/^!/.test(upperKey)) {
           throw new Error(`Internal variable "${upperKey}" not supported`)
@@ -336,7 +351,7 @@ export default function varsFactory (name = DEFAULT_KEY, options = {}, initial =
     set: (obj, isAdmin) => {
       Object.keys(obj).forEach(key => {
         const trimmedKey = key.trim()
-        if (trimmedKey.length === 0)  return
+        if (trimmedKey.length === 0) return
 
         validateVariableName(trimmedKey)
 
@@ -391,7 +406,7 @@ export default function varsFactory (name = DEFAULT_KEY, options = {}, initial =
       const str = (variable && variable.toUpperCase) ? variable.toUpperCase() : ''
       return opts.readonly.indexOf(str) !== -1
     },
-    dump: () => ({...vars}),
+    dump: () => ({ ...vars }),
     onChange: (fn) => {
       listeners.add('change', fn)
       return () => listeners.remove('change', fn)
@@ -407,7 +422,7 @@ export const getVarsInstance = (name = DEFAULT_KEY) => {
 }
 
 export const createVarsFilter = ({ withUserDefined = true, withCommonInternal, withAdvancedInternal }) => {
-  const checkUserDefined    = (name) => !/^!/.test(name)
+  const checkUserDefined = (name) => !/^!/.test(name)
   const checkCommonInternal = (name) => {
     const list = ['!url', '!clipboard', '!runtime', '!statusok', '!errorignore'].map(x => x.toUpperCase())
     return list.indexOf(name.toUpperCase()) !== -1
@@ -416,7 +431,7 @@ export const createVarsFilter = ({ withUserDefined = true, withCommonInternal, w
   const orCheck = (fns) => {
     return (...args) => {
       for (let i = 0, len = fns.length; i < len; i++) {
-        if (fns[i](...args))  return true
+        if (fns[i](...args)) return true
       }
       return false
     }
@@ -426,7 +441,7 @@ export const createVarsFilter = ({ withUserDefined = true, withCommonInternal, w
     withCommonInternal ? checkCommonInternal : null,
     withAdvancedInternal ? checkAdvancedInternal : null
   ]
-  .filter(x => !!x)
+    .filter(x => !!x)
 
   return orCheck(list)
 }

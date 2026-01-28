@@ -15,7 +15,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Column, Table as RcvTable } from "react-virtualized";
-import "react-virtualized/styles.css"; 
+import "react-virtualized/styles.css";
 
 import * as actions from '@/actions'
 import { Actions as simpleActions } from '@/actions/simple_actions'
@@ -109,7 +109,7 @@ class MacroTable extends React.Component {
 
     const code = keycode(e.keyCode)
     const isValidCtrlKeyPressed = isMac() ? e.metaKey : e.ctrlKey
-    const noModifierKeyPressed  = !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
+    const noModifierKeyPressed = !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
 
     if (isValidCtrlKeyPressed) {
       switch (code) {
@@ -182,7 +182,7 @@ class MacroTable extends React.Component {
 
       lastScreenX = e.screenX
       lastScreenY = e.screenY
-      lastTime    = now
+      lastTime = now
     }
   })()
 
@@ -227,37 +227,37 @@ class MacroTable extends React.Component {
     clearTimeout(this.state.visionFindPreview.timer)
 
     const visionStorage = getStorageManager().getVisionStorage()
-    const rect    = e.target.getBoundingClientRect()
-    const file    = command.target.trim().split('@')[0]
-    const common  = {
-      visible:  true,
-      left:     rect.left,
-      top:      rect.top + rect.height
+    const rect = e.target.getBoundingClientRect()
+    const file = command.target.trim().split('@')[0]
+    const common = {
+      visible: true,
+      left: rect.left,
+      top: rect.top + rect.height
     }
 
     visionStorage.exists(file)
-    .then(existed => {
-      if (!existed) {
-        return this.setState({
-          visionFindPreview: {
-            ...common,
-            url: './img/not_found.png',
-            timer: this.scheduleHideVisionFindPreview()
-          }
-        })
-      }
+      .then(existed => {
+        if (!existed) {
+          return this.setState({
+            visionFindPreview: {
+              ...common,
+              url: './img/not_found.png',
+              timer: this.scheduleHideVisionFindPreview()
+            }
+          })
+        }
 
-      return visionStorage.getLink(file)
-      .then(link => {
-        return this.setState({
-          visionFindPreview: {
-            ...common,
-            url: link,
-            timer: this.scheduleHideVisionFindPreview()
-          }
-        })
+        return visionStorage.getLink(file)
+          .then(link => {
+            return this.setState({
+              visionFindPreview: {
+                ...common,
+                url: link,
+                timer: this.scheduleHideVisionFindPreview()
+              }
+            })
+          })
       })
-    })
   }
 
   onMouseLeaveTarget = (e, command) => {
@@ -272,13 +272,13 @@ class MacroTable extends React.Component {
         visible: false
       }
     })
-  }  
+  }
 
   commandClassName = (record, index) => {
     const { editing, player, breakpointIndices, doneCommandIndices, errorCommandIndices, warningCommandIndices } = this.props
     const { nextCommandIndex } = player
-    const { commands }  = editing
-    const classNames    = []
+    const { commands } = editing
+    const classNames = []
 
     if (breakpointIndices.indexOf(index) !== -1) {
       classNames.push('breakpoint-command')
@@ -318,23 +318,23 @@ class MacroTable extends React.Component {
   }
 
   virtualCommmandList = ({ virtual, itemHeight }) => {
-    let { commands }  = this.props.editing
+    let { commands } = this.props.editing
     commands = (commands || []).filter(res => res.cmd && res.cmd.length > 0);
-    const editable      = this.isPlayerStopped() && getLicenseService().canPerform(Feature.Edit)
-    const renderItem    = (item, i) => {
+    const editable = this.isPlayerStopped() && getLicenseService().canPerform(Feature.Edit)
+    const renderItem = (item, i) => {
       if (item.header) {
         return (
           <div className="command-row header-row" key="header">
             <div className="row-col index-col">
             </div>
             <div className="row-col command-col">
-              Command
+              Komut
             </div>
             <div className="row-col target-col">
-              Target
+              Hedef
             </div>
             <div className="row-col value-col">
-              Value
+              Değer
             </div>
           </div>
         )
@@ -392,45 +392,45 @@ class MacroTable extends React.Component {
     }
   }
 
-  
+
   onWindowResize = () => {
     // TODO: find a better way to calculate table width/height
-    this.setState({ tableWidth: document.querySelector('.ant-tabs-content').clientWidth})
-    this.setState({ tableHeight: document.querySelector('.ant-tabs-content').clientHeight  })
+    this.setState({ tableWidth: document.querySelector('.ant-tabs-content').clientWidth })
+    this.setState({ tableHeight: document.querySelector('.ant-tabs-content').clientHeight })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     document.addEventListener('click', this.onHideMenu)
     document.addEventListener('click', this.onDoubleClick)
     document.addEventListener('keydown', this.onKeyDown)
     window.addEventListener('resize', this.onWindowResize)
     storage.addListener(this.handleStorageChange.bind(this))
     this.forceUpdate()
-    
-    waitForRenderComplete('.ant-tabs-content').then(() => {      
+
+    waitForRenderComplete('.ant-tabs-content').then(() => {
       this.setState({ tableWidth: document.querySelector('.ant-tabs-content').clientWidth })
-      this.setState({ tableHeight: document.querySelector('.ant-tabs-content').clientHeight  })      
-    })   
+      this.setState({ tableHeight: document.querySelector('.ant-tabs-content').clientHeight })
+    })
 
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     document.removeEventListener('click', this.onHideMenu)
     document.removeEventListener('click', this.onDoubleClick)
     document.removeEventListener('keydown', this.onKeyDown)
     window.removeEventListener('resize', this.onWindowResize)
   }
 
-  getMacroName () {
+  getMacroName() {
     const { src } = this.props.editing.meta
     return src && src.name && src.name.length ? src.name : ''
   }
 
-  getMacroTableContainer () {
+  getMacroTableContainer() {
     return this._macroTableContainer || (this._macroTableContainer = document.querySelector('.table-wrapper .ReactVirtualized__Table__Grid'))
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     // Note: update sourceText whenever editing changed
     // if (nextProps.editing.meta.src !== this.props.editing.meta.src ||
     //     nextProps.editing.commands !== this.props.editing.commands) {
@@ -458,18 +458,18 @@ class MacroTable extends React.Component {
     }
   }
 
-  isPlayerStopped () {
+  isPlayerStopped() {
     return this.props.player.status === C.PLAYER_STATUS.STOPPED
   }
 
-  waitBeforeScreenCapture () {
+  waitBeforeScreenCapture() {
     if (!isCVTypeForDesktop(this.props.config.cvScope)) {
       return Promise.resolve()
     }
 
     if (this.props.config.waitBeforeDesktopScreenCapture && this.props.config.secondsBeforeDesktopScreenCapture > 0) {
       message.info(`About to take desktop screenshot in ${this.props.config.secondsBeforeDesktopScreenCapture} seconds`)
-      return delay(() => {}, this.props.config.secondsBeforeDesktopScreenCapture * 1000)
+      return delay(() => { }, this.props.config.secondsBeforeDesktopScreenCapture * 1000)
     }
 
     return Promise.resolve()
@@ -514,8 +514,8 @@ class MacroTable extends React.Component {
   }
 
   playLine = (commandIndex, extraOptions = {}) => {
-    const { commands }  = this.props.editing
-    const { src }       = this.props.editing.meta
+    const { commands } = this.props.editing
+    const { src } = this.props.editing.meta
 
     this.setState({ lastOperation: 'play' })
 
@@ -534,22 +534,22 @@ class MacroTable extends React.Component {
     })
   }
 
-  isSelectedCommandVisualSearch (command) {
-    const { editing, config }   = this.props
-    const { commands, meta }    = editing
-    const { selectedIndex }     = meta
+  isSelectedCommandVisualSearch(command) {
+    const { editing, config } = this.props
+    const { commands, meta } = editing
+    const { selectedIndex } = meta
 
-    const dataSource    = commands && commands.length ? commands : defaultDataSource
-    const selectedCmd   = command || dataSource[selectedIndex]
+    const dataSource = commands && commands.length ? commands : defaultDataSource
+    const selectedCmd = command || dataSource[selectedIndex]
 
     const selectedCmdIsVisualSearch = (() => {
       if (!selectedCmd) return false
-      if (isCVTypeForDesktop(config.cvScope) && selectedCmd.cmd === 'visionLimitSearchArea')  return true
+      if (isCVTypeForDesktop(config.cvScope) && selectedCmd.cmd === 'visionLimitSearchArea') return true
 
       return [
         'visionFind', 'visualSearch',
         'visualAssert', 'visualVerify',
-        'XClick', 'XClickText', 'XClickTextRelative', 'XMoveText','XMoveTextRelative', 'XMove', 'XClickRelative', 'XMoveRelative',
+        'XClick', 'XClickText', 'XClickTextRelative', 'XMoveText', 'XMoveTextRelative', 'XMove', 'XClickRelative', 'XMoveRelative',
         'OCRExtract', 'OCRExtractRelative', 'visionLimitSearchAreaRelative', 'visionLimitSearchAreabyTextRelative'
       ].indexOf(selectedCmd.cmd) !== -1
     })()
@@ -557,19 +557,19 @@ class MacroTable extends React.Component {
     return selectedCmdIsVisualSearch
   }
 
-  commandHasVisionImage (command) {
+  commandHasVisionImage(command) {
     if (!this.isSelectedCommandVisualSearch(command)) return false
 
     const commandsCouldHaveVisionImage = [
-      'XClick', 'XClickText', 'XClickTextRelative', 'XClickRelative', 'XMoveText','XMoveTextRelative', 'XMove', 'XMoveRelative', 'OCRExtract', 'OCRExtractRelative',
+      'XClick', 'XClickText', 'XClickTextRelative', 'XClickRelative', 'XMoveText', 'XMoveTextRelative', 'XMove', 'XMoveRelative', 'OCRExtract', 'OCRExtractRelative',
       'visionLimitSearchArea', 'visionLimitSearchAreaRelative', 'visionLimitSearchAreabyTextRelative'
     ]
 
-    if (commandsCouldHaveVisionImage.indexOf(command.cmd) !== -1 && !/\.png/i.test(command.target))  return false
+    if (commandsCouldHaveVisionImage.indexOf(command.cmd) !== -1 && !/\.png/i.test(command.target)) return false
     return true
   }
 
-  selectCommandAndScroll (commandIndex) {
+  selectCommandAndScroll(commandIndex) {
     this.props.selectCommand(commandIndex, true)
     this.props.scrollToCommandAtIndex(commandIndex)
   }
@@ -577,11 +577,11 @@ class MacroTable extends React.Component {
   onClickEditInIDE = async (macroId, commandIndex) => {
     const tabId = await getActiveTabId()
     if (tabId) {
-        showPanelWindow({ selectCommandIndex: commandIndex })
+      showPanelWindow({ selectCommandIndex: commandIndex })
     }
   }
 
-  renderVisionFindPreview () {
+  renderVisionFindPreview() {
     const { visible, url, left, top } = this.state.visionFindPreview
     if (!visible) return null
 
@@ -603,13 +603,13 @@ class MacroTable extends React.Component {
     )
   }
 
-  renderContextMenu () {
+  renderContextMenu() {
     const { clipboard, status } = this.props
     const { contextMenu } = this.state
     const isNormal = status === C.APP_STATUS.NORMAL
-    const dw  = document.documentElement.clientWidth
-    const dh  = document.documentElement.clientHeight
-    const mw  = 222
+    const dw = document.documentElement.clientWidth
+    const dh = document.documentElement.clientHeight
+    const mw = 222
     const otherItemsHeight = 62
 
     const container = document.querySelector('.ant-tabs-content')
@@ -618,8 +618,8 @@ class MacroTable extends React.Component {
       return null
     }
 
-    let x     = contextMenu.x + container.scrollLeft
-    let y     = contextMenu.y + (container.scrollTop || 0) - otherItemsHeight;
+    let x = contextMenu.x + container.scrollLeft
+    let y = contextMenu.y + (container.scrollTop || 0) - otherItemsHeight;
 
     if (!isNormal) {
       return null
@@ -647,37 +647,37 @@ class MacroTable extends React.Component {
           return this.playLine(commandIndex)
         }
         case 'play_from_here_keep_variables': {
-          const { commands }  = this.props.editing
+          const { commands } = this.props.editing
 
           this.setState({ lastOperation: 'play' })
 
           return this.props.playerPlay({
-            macroId:    this.props.macroId,
-            title:      this.getTestCaseName(),
-            extra:      { id: this.props.macroId },
-            mode:       Player.C.MODE.STRAIGHT,
+            macroId: this.props.macroId,
+            title: this.getTestCaseName(),
+            extra: { id: this.props.macroId },
+            mode: Player.C.MODE.STRAIGHT,
             startIndex: commandIndex,
-            keepVariables:'yes',
-            startUrl:   null,
-            resources:  commands,
-            postDelay:  this.props.config.playCommandInterval * 1000
+            keepVariables: 'yes',
+            startUrl: null,
+            resources: commands,
+            postDelay: this.props.config.playCommandInterval * 1000
           })
         }
         case 'play_to_here': {
-          const { commands }  = this.props.editing
+          const { commands } = this.props.editing
 
           this.setState({ lastOperation: 'play' })
 
           return this.props.playerPlay({
-            macroId:    this.props.macroId,
-            title:      this.getTestCaseName(),
-            extra:      { id: this.props.macroId },
-            mode:       Player.C.MODE.STRAIGHT,
-            keepVariables:'reset',
+            macroId: this.props.macroId,
+            title: this.getTestCaseName(),
+            extra: { id: this.props.macroId },
+            mode: Player.C.MODE.STRAIGHT,
+            keepVariables: 'reset',
             startIndex: 0,
-            startUrl:   null,
-            resources:  commands,
-            postDelay:  this.props.config.playCommandInterval * 1000,
+            startUrl: null,
+            resources: commands,
+            postDelay: this.props.config.playCommandInterval * 1000,
             breakpoints: [commandIndex]
           })
         }
@@ -691,75 +691,75 @@ class MacroTable extends React.Component {
 
     return (
       <div style={style} id="context_menu">
-        <Menu 
-          onClick={handleClick} 
-          style={menuStyle} 
-          mode="vertical" 
+        <Menu
+          onClick={handleClick}
+          style={menuStyle}
+          mode="vertical"
           selectable={false}
           items={[
-            { key: 'run_line', label: 'Execute this command' },
-            { key: 'play_from_here_keep_variables', label: 'Play from here and keep variables' },
-            { key: 'play_to_here', label: 'Play to this point' },
+            { key: 'run_line', label: 'Bu komutu çalıştır' },
+            { key: 'play_from_here_keep_variables', label: 'Buradan başlat (Değişkenleri koru)' },
+            { key: 'play_to_here', label: 'Buraya kadar çalıştır' },
             { type: 'divider' },
-            { key: 'edit_in_ide', label: 'Edit (in IDE)' }
+            { key: 'edit_in_ide', label: 'Düzenle (IDE)' }
           ]}
         />
       </div>
     )
   }
 
-  renderTable () {
+  renderTable() {
     const { editing, player } = this.props
-    const { commands }  = editing
+    const { commands } = editing
     const { dataSource } = (commands && commands.length ? commands : defaultDataSource)
-                            .reduce(({ dataSource, indent }, command, i) => {
-                              const { selfIndent, nextIndent } = indentCreatedByCommand(command.cmd)
+      .reduce(({ dataSource, indent }, command, i) => {
+        const { selfIndent, nextIndent } = indentCreatedByCommand(command.cmd)
 
-                              dataSource.push({
-                                ...command,
-                                key: Math.random(),
-                                indent: indent + selfIndent,
-                                realIndex: i,
-                                serial: i + 1
-                              })
+        dataSource.push({
+          ...command,
+          key: Math.random(),
+          indent: indent + selfIndent,
+          realIndex: i,
+          serial: i + 1
+        })
 
-                              return {
-                                dataSource,
-                                indent: Math.max(0, indent + selfIndent + nextIndent)
-                              }
-                            }, { dataSource: [], indent: 0 })
+        return {
+          dataSource,
+          indent: Math.max(0, indent + selfIndent + nextIndent)
+        }
+      }, { dataSource: [], indent: 0 })
 
     return this.needVirtualList() ? this.renderVirtualTable(dataSource) : this.renderNormalTable(dataSource)
   }
 
-  renderVirtualTable (dataSource) {
-    let { commands }  = this.props.editing
+  renderVirtualTable(dataSource) {
+    let { commands } = this.props.editing
     commands = (commands || []).filter(res => res.cmd && res.cmd.length > 0);
-    const editable      = this.isPlayerStopped() && getLicenseService().canPerform(Feature.Edit)
+    const editable = this.isPlayerStopped() && getLicenseService().canPerform(Feature.Edit)
 
-    const  { columnWidths, tableWidth, headerWidthPatchFactor, tableHeight } = this.state;
+    const { columnWidths, tableWidth, headerWidthPatchFactor, tableHeight } = this.state;
     let itemHeight = ITEM_HEIGHT;
     return (
       <div className="t-body">
         {!this.listContainer ? null : (
           <RcvTable
             width={tableWidth}
-            height= {tableHeight}
+            height={tableHeight}
             // style={{ height: 'calc(100% - 40px)' }}
             className='command-table'
             headerHeight={ITEM_HEIGHT}
             rowHeight={ITEM_HEIGHT}
             rowCount={dataSource.length}
             rowGetter={({ index }) => dataSource[index] || { key: index }}
-            rowClassName ={({index}) => (index === -1 || index >= dataSource.length  ) ? '' : `command-row real-command ` + this.commandClassName(dataSource[index], index)}
+            rowClassName={({ index }) => (index === -1 || index >= dataSource.length) ? '' : `command-row real-command ` + this.commandClassName(dataSource[index], index)}
             rowRenderer={({ key, index, style }) => {
-              const item = dataSource[index]              
+              const item = dataSource[index]
               return (
                 <CommandItem
                   key={key}
                   index={item.realIndex + 1}
                   command={item}
-                  style={{ ...style, height: itemHeight + 'px',  }}
+                  style={{ ...style, height: itemHeight + 'px', }}
                   columnWidths={columnWidths}
                   tableWidth={tableWidth}
                   className={`command-row real-command ` + this.commandClassName(item, item.realIndex)}
@@ -782,23 +782,23 @@ class MacroTable extends React.Component {
               dataKey="serial"
               label=""
               width={columnWidths.serialFixed}
-            />  
+            />
             <Column
               // headerRenderer={this.headerRenderer}
               dataKey="cmd"
-              label="Command"
-              width={columnWidths.cmd * (tableWidth + 50)  * headerWidthPatchFactor}
-              maxWidth={ 170 } 
-            />  
+              label="Komut"
+              width={columnWidths.cmd * (tableWidth + 50) * headerWidthPatchFactor}
+              maxWidth={170}
+            />
             <Column
               // headerRenderer={this.headerRenderer}
               dataKey="target"
-              label="Target"
+              label="Hedef"
               width={columnWidths.target * (tableWidth + 50) * headerWidthPatchFactor}
-            />  
+            />
             <Column
               dataKey="value"
-              label="Value"
+              label="Değer"
               width={columnWidths.value * (tableWidth + 50) * headerWidthPatchFactor}
             />
           </RcvTable>
@@ -806,12 +806,12 @@ class MacroTable extends React.Component {
       </div>
     )
   }
- 
-  renderNormalTable (dataSource) {
+
+  renderNormalTable(dataSource) {
     const columns = [
-      { title: 'Command',  dataIndex: 'cmd',      key: 'cmd',     width: 130 },
-      { title: 'Target',   dataIndex: 'target',   key: 'target',  width: 190 },
-      { title: 'Value',    dataIndex: 'value',    key: 'value' }
+      { title: 'Komut', dataIndex: 'cmd', key: 'cmd', width: 130 },
+      { title: 'Hedef', dataIndex: 'target', key: 'target', width: 190 },
+      { title: 'Değer', dataIndex: 'value', key: 'value' }
     ]
 
     const tableConfig = {
@@ -827,13 +827,13 @@ class MacroTable extends React.Component {
     return <Table {...tableConfig} />
   }
 
-  render () {
+  render() {
     return (
       <div className="editor-wrapper">
         <div className="tabs-wrapper">
-            <div className="form-group table-wrapper" style={{ marginBottom: 0 }} ref={ref => { this.listContainer = ref }}>
-              {this.renderTable()}
-            </div>
+          <div className="form-group table-wrapper" style={{ marginBottom: 0 }} ref={ref => { this.listContainer = ref }}>
+            {this.renderTable()}
+          </div>
         </div>
         {this.renderContextMenu()}
         {this.renderVisionFindPreview()}
@@ -865,5 +865,5 @@ export default connect(
     macroId: getCurrentMacroId(state),
     canUseKeyboardShortcuts: isFocusOnCommandTable(state)
   }),
-  dispatch => bindActionCreators({...actions, ...simpleActions}, dispatch)
+  dispatch => bindActionCreators({ ...actions, ...simpleActions }, dispatch)
 )(MacroTable)

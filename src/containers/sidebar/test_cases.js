@@ -36,13 +36,13 @@ class SidebarTestCases extends React.Component {
     folderToImport: '/'
   }
 
-  unbindKeydown = () => {}
+  unbindKeydown = () => { }
 
   // Rename relative
   onClickRename = () => {
     this.props.renameTestCase(this.state.rename, this.state.renameTcId)
       .then(() => {
-        message.success('successfully renamed!', 1.5)
+        message.success('Başarıyla yeniden adlandırıldı!', 1.5)
         this.toggleRenameModal(false)
       })
       .catch((e) => {
@@ -80,7 +80,7 @@ class SidebarTestCases extends React.Component {
 
   changeTestCase = (id) => {
     return new Promise((resolve) => {
-      if (this.props.status !== C.APP_STATUS.NORMAL)  return resolve(false)
+      if (this.props.status !== C.APP_STATUS.NORMAL) return resolve(false)
       if (this.props.editing.meta.src && this.props.editing.meta.src.id === id) return resolve(true)
 
       const go = () => {
@@ -98,35 +98,35 @@ class SidebarTestCases extends React.Component {
   }
 
   playTestCase = (id) => {
-    if (this.props.status !== C.APP_STATUS.NORMAL)  return
+    if (this.props.status !== C.APP_STATUS.NORMAL) return
 
     this.changeTestCase(id)
-    .then(shouldPlay => {
-      if (!shouldPlay)  return
+      .then(shouldPlay => {
+        if (!shouldPlay) return
 
-      setTimeout(() => {
-        const { commands } = this.props.editing
-        const openTc  = commands.find(item => item.cmd.toLowerCase() === 'open')
-        const { src } = this.props.editing.meta
-        const getMacroName = () => {
-          return src && src.name && src.name.length ? src.name : 'Untitled'
-        }
-        const getMacroId = () => {
-          return src ? src.id : C.UNTITLED_ID
-        }
+        setTimeout(() => {
+          const { commands } = this.props.editing
+          const openTc = commands.find(item => item.cmd.toLowerCase() === 'open')
+          const { src } = this.props.editing.meta
+          const getMacroName = () => {
+            return src && src.name && src.name.length ? src.name : 'Untitled'
+          }
+          const getMacroId = () => {
+            return src ? src.id : C.UNTITLED_ID
+          }
 
-        this.props.playerPlay({
-          macroId:    getMacroId(),
-          title:      getMacroName(),
-          extra:      { id: getMacroId() },
-          mode:       getPlayer().C.MODE.STRAIGHT,
-          startIndex: 0,
-          startUrl:   openTc ? openTc.target : null,
-          resources:  commands,
-          postDelay:  this.props.player.playInterval * 1000
-        })
-      }, 500)
-    })
+          this.props.playerPlay({
+            macroId: getMacroId(),
+            title: getMacroName(),
+            extra: { id: getMacroId() },
+            mode: getPlayer().C.MODE.STRAIGHT,
+            startIndex: 0,
+            startUrl: openTc ? openTc.target : null,
+            resources: commands,
+            postDelay: this.props.player.playInterval * 1000
+          })
+        }, 500)
+      })
   }
 
   onJsonOrZipFileChange = (e) => {
@@ -140,7 +140,7 @@ class SidebarTestCases extends React.Component {
   addTestCase = () => {
     return getSaveTestCase().saveOrNot().then(() => {
       this.props.macroCreateFile({
-        dir:  '/'
+        dir: '/'
       })
     })
   }
@@ -157,19 +157,19 @@ class SidebarTestCases extends React.Component {
 
   onMoveNode = (sourceId, targetId, isDirectory) => {
     let isUnsaved = document.querySelector('.select-case button').disabled;
-    if(!isUnsaved){
+    if (!isUnsaved) {
       return store.dispatch(saveEditingAsExisted())
-      .then(() => {
-        this.props.macroMoveEntry({
-          entryId:  sourceId,
-          dirId:    targetId,
-          isSourceDirectory: isDirectory
-        })
-      });
-    }else{
+        .then(() => {
+          this.props.macroMoveEntry({
+            entryId: sourceId,
+            dirId: targetId,
+            isSourceDirectory: isDirectory
+          })
+        });
+    } else {
       this.props.macroMoveEntry({
-        entryId:  sourceId,
-        dirId:    targetId,
+        entryId: sourceId,
+        dirId: targetId,
         isSourceDirectory: isDirectory
       })
     }
@@ -181,11 +181,11 @@ class SidebarTestCases extends React.Component {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.bindKeydown()
   }
 
-  bindKeydown () {
+  bindKeydown() {
     const fn = (e) => {
       if (!this.props.canUseKeyboardShortcuts) {
         return
@@ -210,11 +210,11 @@ class SidebarTestCases extends React.Component {
     this.unbindKeydown = () => document.removeEventListener('keydown', fn, true)
   }
 
-  selectFirstMacro () {
+  selectFirstMacro() {
     // if no macro is selected, select the first one
-    if(this.props.editing.commands.length === 0 && !this.props.editing.meta.src){
+    if (this.props.editing.commands.length === 0 && !this.props.editing.meta.src) {
       const { filteredMacroFileNodeData } = this.props
-      if (filteredMacroFileNodeData && filteredMacroFileNodeData.length ) {      
+      if (filteredMacroFileNodeData && filteredMacroFileNodeData.length) {
         const getFileMacroRecursiveLyByIncrementalLevel = (node, level) => {
           if (node.type === FileNodeType.File) {
             return node
@@ -224,24 +224,24 @@ class SidebarTestCases extends React.Component {
           }
           return null
         }
-        
+
         const firstFileMacro = getFileMacroRecursiveLyByIncrementalLevel(filteredMacroFileNodeData[0], 0)
-        firstFileMacro && this.changeTestCase(firstFileMacro.id)  
+        firstFileMacro && this.changeTestCase(firstFileMacro.id)
       }
     }
   }
 
-  renderMacros () {
+  renderMacros() {
     const { filteredMacroFileNodeData } = this.props
 
     if (this.props.isLoadingMacros && this.props.isMacroFolderNodeListEmpty) {
-      return <div className="no-data">Loading macros...</div>
+      return <div className="no-data">Makrolar yükleniyor...</div>
     }
 
     return (
       <div className="sidebar-macros">
         {filteredMacroFileNodeData.length === 0 ? (
-          <div className="no-data">No macro found</div>
+          <div className="no-data">Makro bulunamadı</div>
         ) : null}
         <FileTree
           nodes={filteredMacroFileNodeData}
@@ -250,13 +250,13 @@ class SidebarTestCases extends React.Component {
           onContextMenu={this.onContextMenuNode}
           onToggle={this.onToggleNode}
           onMove={this.onMoveNode}
-          onDoubleClick={this.onDoubleClickNode}          
+          onDoubleClick={this.onDoubleClickNode}
         />
       </div>
     )
   }
 
-  showContextMenuForEntry (entry, e) {
+  showContextMenuForEntry(entry, e) {
     switch (entry.type) {
       case FileNodeType.File:
         return this.showContextMenuForMacro(entry, e)
@@ -266,7 +266,7 @@ class SidebarTestCases extends React.Component {
     }
   }
 
-  showContextMenuForFolder (folderEntry, e) {
+  showContextMenuForFolder(folderEntry, e) {
     e.stopPropagation()
     e.preventDefault()
     hideContextMenu()
@@ -274,17 +274,17 @@ class SidebarTestCases extends React.Component {
     return showContextMenu({
       x: e.clientX,
       y: e.clientY,
-      onHide: () => {},
+      onHide: () => { },
       menuItems: [
         {
           type: MenuItemType.Button,
           disabled: !getLicenseService().canPerform(Feature.Edit),
           data: {
-            content: 'New macro',
+            content: 'Yeni makro',
             onClick: () => {
               return getSaveTestCase().saveOrNot().then(() => {
                 this.props.macroCreateFile({
-                  dir:  folderEntry.entryPath
+                  dir: folderEntry.entryPath
                 })
               });
             }
@@ -293,11 +293,11 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'New folder',
+            content: 'Yeni klasör',
             onClick: () => {
               this.props.macroCreateFolder({
                 name: 'untitled',
-                dir:  folderEntry.entryPath
+                dir: folderEntry.entryPath
               })
             }
           }
@@ -305,10 +305,10 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Rename',
+            content: 'Yeniden Adlandır',
             onClick: () => {
               this.props.macroRenameFolder({
-                dir:  folderEntry.entryPath
+                dir: folderEntry.entryPath
               })
             }
           }
@@ -316,10 +316,10 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Delete',
+            content: 'Sil',
             onClick: () => {
               this.props.macroDeleteFolder({
-                dir:  folderEntry.entryPath
+                dir: folderEntry.entryPath
               })
             }
           }
@@ -331,7 +331,7 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Testsuite: Play all in folder',
+            content: 'Test Paketi: Klasördeki tümünü oynat',
             onClick: () => {
               const folderName = folderEntry.name
               const macros = folderEntry.children.filter(item => {
@@ -339,15 +339,15 @@ class SidebarTestCases extends React.Component {
               })
 
               getPlayer({ name: 'testSuite' }).play({
-                title:      folderName,
-                mode:       getPlayer().C.MODE.STRAIGHT,
+                title: folderName,
+                mode: getPlayer().C.MODE.STRAIGHT,
                 startIndex: 0,
-                resources:  macros.map(item => ({
-                  id:       item.id,
-                  loops:    1
+                resources: macros.map(item => ({
+                  id: item.id,
+                  loops: 1
                 })),
                 extra: {
-                  id:   folderEntry.id,
+                  id: folderEntry.id,
                   name: folderName
                 }
               })
@@ -357,7 +357,7 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Testsuite: Play in loop',
+            content: 'Test Paketi: Döngüde oynat',
             onClick: () => {
               const playInLoops = (loopsStr) => {
                 const loops = parseInt(loopsStr)
@@ -372,17 +372,17 @@ class SidebarTestCases extends React.Component {
                 })
 
                 getPlayer({ name: 'testSuite' }).play({
-                  title:      folderName,
-                  mode:       loops === 1 ? getPlayer().C.MODE.STRAIGHT : getPlayer().C.MODE.LOOP,
+                  title: folderName,
+                  mode: loops === 1 ? getPlayer().C.MODE.STRAIGHT : getPlayer().C.MODE.LOOP,
                   loopsStart: 1,
-                  loopsEnd:   loops,
+                  loopsEnd: loops,
                   startIndex: 0,
-                  resources:  macros.map(item => ({
-                    id:       item.id,
-                    loops:    1
+                  resources: macros.map(item => ({
+                    id: item.id,
+                    loops: 1
                   })),
                   extra: {
-                    id:   folderEntry.id,
+                    id: folderEntry.id,
                     name: folderName
                   }
                 })
@@ -391,22 +391,22 @@ class SidebarTestCases extends React.Component {
               const run = () => {
                 return prompt({
                   width: 400,
-                  title: 'How many loops?',
+                  title: 'Kaç döngü?',
                   message: '',
                   value: '2',
-                  placeholder: 'Loops',
+                  placeholder: 'Döngü',
                   inputType: 'number',
                   selectionStart: 0,
                   selectionEnd: 1,
-                  okText: 'Play',
-                  cancelText: 'Cancel',
+                  okText: 'Oynat',
+                  cancelText: 'İptal',
                   onCancel: () => Promise.resolve(true),
                   onOk: playInLoops
                 })
-                .catch(e => {
-                  message.error(e.message)
-                  setTimeout(run, 0)
-                })
+                  .catch(e => {
+                    message.error(e.message)
+                    setTimeout(run, 0)
+                  })
               }
 
               return run()
@@ -420,7 +420,7 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Import JSON or ZIP',
+            content: 'JSON veya ZIP İçe Aktar',
             onClick: () => {
               const $selectFile = document.getElementById('select_json_files_for_macros')
 
@@ -435,7 +435,7 @@ class SidebarTestCases extends React.Component {
     })
   }
 
-  showContextMenuForMacro (macroEntry, event) {
+  showContextMenuForMacro(macroEntry, event) {
     const { macros } = this.props
     const macroNode = macros.find(item => item.fullPath === macroEntry.id)
 
@@ -450,19 +450,19 @@ class SidebarTestCases extends React.Component {
     const e = {
       clientX: event.clientX,
       clientY: event.clientY,
-      stopPropagation: () => {},
-      preventDefault: () => {}
+      stopPropagation: () => { },
+      preventDefault: () => { }
     }
 
     return showContextMenu({
       x: e.clientX,
       y: e.clientY,
-      onHide: () => {},
+      onHide: () => { },
       menuItems: [
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Play',
+            content: 'Oynat',
             onClick: () => {
               this.playTestCase(macroNode.fullPath)
             }
@@ -471,44 +471,44 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Testsuite: Play from here',
+            content: 'Test Paketi: Buradan itibaren oynat',
             onClick: () => {
               const macroStorage = getStorageManager().getMacroStorage()
-              const path      = macroStorage.getPathLib()
-              const dirPath   = path.dirname(macroEntry.entryPath)
+              const path = macroStorage.getPathLib()
+              const dirPath = path.dirname(macroEntry.entryPath)
 
               return macroStorage.list(dirPath)
-              .then(entries => {
-                const macros = entries.filter(entry => entry.isFile)
-                const index  = macros.findIndex(macro => macro.fullPath === macroEntry.entryPath)
+                .then(entries => {
+                  const macros = entries.filter(entry => entry.isFile)
+                  const index = macros.findIndex(macro => macro.fullPath === macroEntry.entryPath)
 
-                if (index === -1) {
-                  return
-                }
-
-                const folderName = path.basename(dirPath)
-
-                getPlayer({ name: 'testSuite' }).play({
-                  title:      folderName,
-                  mode:       getPlayer().C.MODE.STRAIGHT,
-                  startIndex: index,
-                  resources:  macros.map(item => ({
-                    id:       item.fullPath,
-                    loops:    1
-                  })),
-                  extra: {
-                    id:   dirPath,
-                    name: folderName
+                  if (index === -1) {
+                    return
                   }
+
+                  const folderName = path.basename(dirPath)
+
+                  getPlayer({ name: 'testSuite' }).play({
+                    title: folderName,
+                    mode: getPlayer().C.MODE.STRAIGHT,
+                    startIndex: index,
+                    resources: macros.map(item => ({
+                      id: item.fullPath,
+                      loops: 1
+                    })),
+                    extra: {
+                      id: dirPath,
+                      name: folderName
+                    }
+                  })
                 })
-              })
             }
           }
         },
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Rename..',
+            content: 'Yeniden Adlandır..',
             onClick: () => {
               return getSaveTestCase().saveOrNot().then(() => {
                 this.setState({
@@ -523,7 +523,7 @@ class SidebarTestCases extends React.Component {
           type: MenuItemType.Button,
           disabled: !getLicenseService().canPerform(Feature.Edit),
           data: {
-            content: 'Duplicate..',
+            content: 'Çoğalt..',
             onClick: () => {
               return getSaveTestCase().saveOrNot().then(() => {
                 this.props.duplicateTestCase(macroNode)
@@ -534,7 +534,7 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Export as JSON',
+            content: 'JSON olarak dışa aktar',
             onClick: () => {
               this.props.downloadMacroAsJson(macroNode.fullPath)
             }
@@ -543,27 +543,44 @@ class SidebarTestCases extends React.Component {
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Export as ZIP (json, img & csv)',
+            content: 'ZIP olarak dışa aktar (json, img & csv)',
             onClick: () => {
               this.props.downloadMacroAsZip(macroNode.fullPath)
             }
           }
         },
-        
+
         {
           type: MenuItemType.Button,
           data: {
-            content: 'Add shortcut to bookmarks bar',
+            content: 'Yer imleri çubuğuna kısayol ekle',
             onClick: () => {
-              const bookmarkTitle = window.prompt('Title for this bookmark', `#${macroNode.name}.rpa`)
+              const bookmarkTitle = window.prompt('Bu yer imi için başlık', `#${macroNode.name}.rpa`)
               if (bookmarkTitle === null) return
 
               createBookmarkOnBar(toBookmarkData({
                 bookmarkTitle,
                 path: macroNode.relativePath
               }))
-              .then(() => {
-                message.success('successfully created bookmark!', 1.5)
+                .then(() => {
+                  message.success('Yer imi başarıyla oluşturuldu!', 1.5)
+                })
+            }
+          }
+        },
+        {
+          type: MenuItemType.Button,
+          data: {
+            content: 'Çalıştırma Linkini Kopyala',
+            onClick: () => {
+              const url = `ui.vision.html?macro=${encodeURIComponent(macroNode.name)}&direct=1&close=0`
+              const fullUrl = chrome.runtime.getURL(url)
+
+              navigator.clipboard.writeText(fullUrl).then(() => {
+                message.success('Link kopyalandı! Yeni bir yer imi oluşturup URL kısmına yapıştırın.', 4)
+              }).catch(err => {
+                console.error('Kopyalama hatası:', err)
+                message.error('Link kopyalanamadı', 2)
               })
             }
           }
@@ -571,51 +588,51 @@ class SidebarTestCases extends React.Component {
         getStorageManager().isXFileMode() ? {
           type: MenuItemType.Button,
           data: {
-            content: 'Copy to Local Storage',
+            content: 'Yerel Depolamaya Kopyala',
             onClick: () => {
               getStorageManager().isStrategyTypeAvailable(StorageStrategyType.Browser)
-              .then(() => {
-                const macroStorage = getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.Browser)
+                .then(() => {
+                  const macroStorage = getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.Browser)
 
-                return getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.XFile)
-                .read(macroNode.fullPath, 'Text')
-                .then(macro => {
-                  const tcCopy = { ...macro, id: uid() }
-                  delete tcCopy.status
+                  return getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.XFile)
+                    .read(macroNode.fullPath, 'Text')
+                    .then(macro => {
+                      const tcCopy = { ...macro, id: uid() }
+                      delete tcCopy.status
 
-                  return macroStorage.write(tcCopy.name, tcCopy)
-                  .then(() => message.success('copied'))
+                      return macroStorage.write(tcCopy.name, tcCopy)
+                        .then(() => message.success('kopyalandı'))
+                    })
                 })
-              })
-              .catch(e => {
-                message.warn(e.message)
-              })
+                .catch(e => {
+                  message.warn(e.message)
+                })
             }
           }
         } : null,
         getStorageManager().isBrowserMode() ? {
           type: MenuItemType.Button,
           data: {
-            content: 'Copy to Macro Folder',
+            content: 'Makro Klasörüne Kopyala',
             onClick: () => {
               getStorageManager().isStrategyTypeAvailable(StorageStrategyType.XFile)
-              .then(() => {
-                const macroStorage = getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.XFile)
+                .then(() => {
+                  const macroStorage = getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.XFile)
 
-                return getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.Browser)
-                .read(macroNode.fullPath, 'Text')
-                .then(macro => {
-                  const tcCopy = { ...macro, id: uid() }
-                  delete tcCopy.status
+                  return getStorageManager().getStorageForTarget(StorageTarget.Macro, StorageStrategyType.Browser)
+                    .read(macroNode.fullPath, 'Text')
+                    .then(macro => {
+                      const tcCopy = { ...macro, id: uid() }
+                      delete tcCopy.status
 
-                  return macroStorage.write(tcCopy.name, tcCopy)
-                  .then(() => message.success('copied'))
+                      return macroStorage.write(tcCopy.name, tcCopy)
+                        .then(() => message.success('kopyalandı'))
+                    })
                 })
-              })
-              .catch(e => {
-                log.error(e)
-                this.props.updateUI({ showXFileNotInstalledDialog: 1 })
-              })
+                .catch(e => {
+                  log.error(e)
+                  this.props.updateUI({ showXFileNotInstalledDialog: 1 })
+                })
             }
           }
         } : null,
@@ -627,43 +644,43 @@ class SidebarTestCases extends React.Component {
           type: MenuItemType.Button,
           disabled: !getLicenseService().canPerform(Feature.Edit),
           data: {
-            content: 'Delete',
+            content: 'Sil',
             onClick: () => {
               const go = () => {
                 return this.props.removeTestCase(macroNode.fullPath)
                   .then(() => {
-                    message.success('successfully deleted!', 1.5)
+                    message.success('Başarıyla silindi!', 1.5)
                   })
                   .catch(e => {
                     Modal.warning({
-                      title: 'Failed to delete',
+                      title: 'Silinemedi',
                       content: e.message
                     })
                   })
               }
 
               Modal.confirm({
-                title: 'Sure to delete?',
-                content: `Do you really want to delete "${macroNode.name}"?`,
-                okText: 'Delete',
-                cancelText: 'Cancel',
+                title: 'Silmek istediğinizden emin misiniz?',
+                content: `"${macroNode.name}" makrosunu gerçekten silmek istiyor musunuz?`,
+                okText: 'Sil',
+                cancelText: 'İptal',
                 onOk: go,
-                onCancel: () => {}
+                onCancel: () => { }
               })
             }
           }
         }
       ]
-      .filter(x => x)
+        .filter(x => x)
     })
   }
 
-  renderRenameModal () {
+  renderRenameModal() {
     return (
       <Modal
-        title="Rename the macro as.."
-        okText="Save"
-        cancelText="Cancel"
+        title="Makroyu yeniden adlandır.."
+        okText="Kaydet"
+        cancelText="İptal"
         open={this.state.showRename}
         onOk={this.onClickRename}
         onCancel={this.onCancelRename}
@@ -674,17 +691,17 @@ class SidebarTestCases extends React.Component {
           value={this.state.rename}
           onKeyDown={e => { e.keyCode === 13 && this.onClickRename() }}
           onChange={this.onChangeRename}
-          placeholder="macro name"
+          placeholder="makro adı"
           ref={el => { this.inputRenameTestCase = el }}
         />
       </Modal>
     )
   }
 
-  renderShowListAction () {
+  renderShowListAction() {
     return (
       <ResourceNotLoaded
-        name="Macro list"
+        name="Makro listesi"
         from={this.props.from}
         showList={() => {
           this.props.setFrom(RunBy.Manual)
@@ -692,21 +709,21 @@ class SidebarTestCases extends React.Component {
       />
     )
   }
- 
+
   testCaseMenu = () => [
     {
       key: 'new_macro_folder',
-      label: 'New Folder',
+      label: 'Yeni Klasör',
       onClick: () => {
         this.props.macroCreateFolder({
           name: 'untitled',
-          dir:  '/'
+          dir: '/'
         })
       }
     },
     {
       key: 'import_json',
-      label: 'Import JSON or ZIP',
+      label: 'JSON veya ZIP İçe Aktar',
       onClick: () => {
         const $selectFile = document.getElementById('select_json_files_for_macros')
 
@@ -718,13 +735,13 @@ class SidebarTestCases extends React.Component {
     }
   ]
 
-  render () {
+  render() {
     if (!this.props.shouldLoadResources) {
       return this.renderShowListAction()
     }
 
     if (this.props.isPlaying && this.props.macros.length > config.performanceLimit.fileCount) {
-      return <div className="hidden-during-replay">{ M.contentHidden }</div>
+      return <div className="hidden-during-replay">{M.contentHidden}</div>
     }
 
     return (
@@ -736,7 +753,7 @@ class SidebarTestCases extends React.Component {
           id="select_json_files_for_macros"
           onChange={this.onJsonOrZipFileChange}
           ref={ref => { this.jsonFileInput = ref }}
-          style={{display: 'none'}}
+          style={{ display: 'none' }}
         />
 
         <div className="test-case-actions">
@@ -753,19 +770,19 @@ class SidebarTestCases extends React.Component {
           >
             <Button shape="circle"
               icon={<FolderAddOutlined />}
-            >  
+            >
             </Button>
           </Dropdown>
-          <Search  placeholder="search macro"          
+          <Search placeholder="makro ara"
             value={this.props.searchText}
-            onChange={( e) => this.props.setMacroQuery(e.target.value)}
+            onChange={(e) => this.props.setMacroQuery(e.target.value)}
             allowClear
           />
         </div>
 
         {this.renderMacros()}
         {this.renderRenameModal()}
-        {this.selectFirstMacro ()}
+        {this.selectFirstMacro()}
       </div>
     )
   }
@@ -790,5 +807,5 @@ export default connect(
     filteredMacroFileNodeData: getFilteredMacroFileNodeData(state),
     canUseKeyboardShortcuts: isFocusOnSidebar(state) && state.ui.sidebarTab !== 'test_suites'
   }),
-  dispatch => bindActionCreators({...actions, ...simpleActions}, dispatch)
+  dispatch => bindActionCreators({ ...actions, ...simpleActions }, dispatch)
 )(SidebarTestCases)

@@ -91,7 +91,7 @@ class Sidepanel extends React.Component {
     if (prevProps.logs_ !== this.props.logs_ || prevProps.player !== this.props.player || prevProps.status !== this.props.status) {
       // Perform actions when the 'message' prop changes
 
-    console.log('prevProps for statusText:>> ', prevProps)
+      console.log('prevProps for statusText:>> ', prevProps)
       let fullStatusText = ''
 
       if (['Files', 'Macro', 'Logs'].includes(this.props?.ui?.sidebarTab)) {
@@ -102,7 +102,7 @@ class Sidepanel extends React.Component {
         const renderInner = () => {
           switch (status) {
             case C.APP_STATUS.RECORDER:
-              return 'Recording'
+              return 'Kaydediliyor'
             case C.APP_STATUS.PLAYER: {
               this._lastMacroLog = null
               switch (player.status) {
@@ -123,7 +123,7 @@ class Sidepanel extends React.Component {
                 }
 
                 case C.PLAYER_STATUS.PAUSED:
-                  return 'Player paused'
+                  return 'Oynatıcı duraklatıldı'
 
                 default:
                   return ''
@@ -207,12 +207,12 @@ class Sidepanel extends React.Component {
   renderStatus(statusText) {
     console.log('renderStatus:>> statusText:  ', statusText)
     if (statusText) {
-    let fullStatusText = statusText
+      let fullStatusText = statusText
       // ... and if it is too long, then show it in a tooltip
       const shortStatus = fullStatusText.length > 40 ? fullStatusText.substring(0, 40).replace(/(\s+\S+)$/, '...') : fullStatusText
       this.setState({ fullStatusText, shortStatus })
     }
-  } 
+  }
 
   showDesktopIcon() {
     const { ui, config } = this.props
@@ -240,7 +240,7 @@ class Sidepanel extends React.Component {
         }}
         style={{ minWidth: this.getSideBarMinWidth() }}
         onClickCapture={this.onClickSidebar}
-      > 
+      >
         <div
           className="status"
           style={{
@@ -262,17 +262,17 @@ class Sidepanel extends React.Component {
             items={[
               {
                 key: 'Files',
-                label: 'Files',
+                label: 'Testler',
                 children: <Files />
               },
               {
                 key: 'Macro',
-                label: 'Macro',
+                label: 'Makro',
                 children: <Macro />
               },
               {
                 key: 'Logs',
-                label: 'Logs',
+                label: 'Günlük',
                 children: <Logs />
               },
               {

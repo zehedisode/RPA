@@ -271,7 +271,7 @@ const runXMouseKeyboardCommand = (command: any) => {
             return hideDownloadBar()
           }
         })
-        .then(() => delay(() => {}, 300))
+        .then(() => delay(() => { }, 300))
         .then(() => decryptIfNeeded(target))
         .then((text) => {
           return getNativeXYAPI()
@@ -328,7 +328,7 @@ const runXMouseKeyboardCommand = (command: any) => {
           throw new Error(`Error E310: Relative coordinates missing. Format should be: word#R(X),(Y)`)
         }
 
-        // const isDesktopMode = isCVTypeForDesktop(vars.get('!CVSCOPE'))
+        const isDesktopMode = isCVTypeForDesktop(vars.get('!CVSCOPE'))
         console.log('#220: parseTarget isDesktopMode:>> ', isDesktopMode)
 
         updateState(setIn(['curent_cmd'], cmd))
@@ -619,8 +619,8 @@ const runXMouseKeyboardCommand = (command: any) => {
               case 'ocrTextR': {
                 return csIpc
                   .ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE')
-                  .catch(() => {})
-                  .then(() => delay(() => {}, 1000))
+                  .catch(() => { })
+                  .then(() => delay(() => { }, 1000))
                   .then(() => {
                     return Promise.all([
                       runCsFreeCommands({
@@ -723,8 +723,8 @@ const runXMouseKeyboardCommand = (command: any) => {
                 let isRelative = /relative/i.test(cmd) && !/XMoveText/i.test(cmd)
                 return csIpc
                   .ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE')
-                  .catch(() => {})
-                  .then(() => delay(() => {}, 1000))
+                  .catch(() => { })
+                  .then(() => delay(() => { }, 1000))
                   .then(() => {
                     return Promise.all([
                       runCsFreeCommands({
@@ -821,7 +821,7 @@ const runXMouseKeyboardCommand = (command: any) => {
                     // return csIpc.ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE')
                     // .catch(() => {})
                     // .then(() => delay(() => {}, 1000))
-                    return delay(() => {}, 10).then(() => {
+                    return delay(() => { }, 10).then(() => {
                       const coordinates = [rect.x, rect.y]
                       if (isDesktop) {
                         return Promise.resolve({
@@ -848,8 +848,8 @@ const runXMouseKeyboardCommand = (command: any) => {
                 let isRelative = /relative/i.test(cmd) && !/XMoveText/i.test(cmd)
                 return csIpc
                   .ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE')
-                  .catch(() => {})
-                  .then(() => delay(() => {}, 1000))
+                  .catch(() => { })
+                  .then(() => delay(() => { }, 1000))
                   .then(() => {
                     return Promise.all([
                       runCsFreeCommands({
@@ -891,7 +891,7 @@ const runXMouseKeyboardCommand = (command: any) => {
                     //   .catch(() => {})
                     //   .then(() => delay(() => {}, 1000))
 
-                    return delay(() => {}, 10).then(() => {
+                    return delay(() => { }, 10).then(() => {
                       const coordinates = [rect.x, rect.y]
                       if (isDesktop) {
                         return Promise.resolve({
@@ -953,12 +953,12 @@ const runXMouseKeyboardCommand = (command: any) => {
                   return (
                     !useLatestScreenShot
                       ? captureImage({
-                          isDesktop: true,
-                          storedImageRect: null,
-                          // searchArea: /\.png/i.test(searchArea) ? 'rect' : searchArea,
-                          scaleDpi: true,
-                          devicePixelRatio: window.devicePixelRatio
-                        }).then(() => delay(() => {}, 500))
+                        isDesktop: true,
+                        storedImageRect: null,
+                        // searchArea: /\.png/i.test(searchArea) ? 'rect' : searchArea,
+                        scaleDpi: true,
+                        devicePixelRatio: window.devicePixelRatio
+                      }).then(() => delay(() => { }, 500))
                       : Promise.resolve()
                   ).then(() => {
                     const imageInfo = {
@@ -1038,7 +1038,7 @@ const runXMouseKeyboardCommand = (command: any) => {
               : runCsFreeCommands({ cmd: 'bringBrowserToForeground' })
 
             return prepare
-              .then(() => delay(() => {}, 300))
+              .then(() => delay(() => { }, 300))
               .then(() => {
                 const api = getNativeXYAPI()
                 const [button, eventType] = (() => {
@@ -1155,10 +1155,10 @@ const runXMouseKeyboardCommand = (command: any) => {
                   type === 'desktop'
                     ? api.sendMouseEvent(event)
                     : api.sendViewportMouseEvent(event, {
-                        getViewportRectInScreen: () => {
-                          return csIpc.ask('PANEL_GET_VIEWPORT_RECT_IN_SCREEN')
-                        }
-                      })
+                      getViewportRectInScreen: () => {
+                        return csIpc.ask('PANEL_GET_VIEWPORT_RECT_IN_SCREEN')
+                      }
+                    })
 
                 store.dispatch(Actions.setOcrInDesktopMode(false))
 
@@ -1434,7 +1434,7 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
           macro.name
         )
 
-        return delay(() => {}, 10)
+        return delay(() => { }, 10)
           .then(() =>
             getMacroCallStack().call(macro, {
               playerState,
@@ -1842,17 +1842,17 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
             byPass: true,
             ...(isNotVerifyOrAssert && value && value.length
               ? {
-                  vars: {
-                    [value]: 0
-                  }
+                vars: {
+                  [value]: 0
                 }
+              }
               : {}),
             ...(cmd === 'visualVerify'
               ? {
-                  log: {
-                    error: e.message
-                  }
+                log: {
+                  error: e.message
                 }
+              }
               : {})
           }
         })
@@ -1958,7 +1958,7 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
       return (
         (isDesktop ? Promise.resolve() : csIpc.ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE'))
           // Note: add 1s delay here to make sure old OCR overlayed are cleared before taking new screenshot
-          .then(() => delay(() => {}, 1000))
+          .then(() => delay(() => { }, 1000))
           .then(() => {
             return captureImage({
               isDesktop,
@@ -1968,7 +1968,7 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
               devicePixelRatio: window.devicePixelRatio
             })
           })
-          .then(() => delay(() => {}, 500))
+          .then(() => delay(() => { }, 500))
           .then(() => {
             const screenshotFileName = isDesktop
               ? ensureExtName('.png', C.LAST_DESKTOP_SCREENSHOT_FILE_NAME)
@@ -2026,7 +2026,7 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
                           scaleDpi: true,
                           devicePixelRatio: window.devicePixelRatio
                         })
-                          .then(() => delay(() => {}, 1000))
+                          .then(() => delay(() => { }, 1000))
                           .then(() => {
                             const imageInfo = {
                               source: DesktopScreenshot.ImageSource.Storage,
@@ -2097,13 +2097,13 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
                       //#224
                       ...(isDesktop
                         ? [
-                            newVars['!ai1'] === undefined ? id : safeUpdateIn(['vars', '!ai1'], (n) => ai1ForDesktop),
-                            newVars['!ai2'] === undefined ? id : safeUpdateIn(['vars', '!ai2'], (n) => ai2ForDesktop)
-                          ]
+                          newVars['!ai1'] === undefined ? id : safeUpdateIn(['vars', '!ai1'], (n) => ai1ForDesktop),
+                          newVars['!ai2'] === undefined ? id : safeUpdateIn(['vars', '!ai2'], (n) => ai2ForDesktop)
+                        ]
                         : [
-                            newVars['!ai1'] === undefined ? id : safeUpdateIn(['vars', '!ai1'], (n) => ai1),
-                            newVars['!ai2'] === undefined ? id : safeUpdateIn(['vars', '!ai2'], (n) => ai2)
-                          ])
+                          newVars['!ai1'] === undefined ? id : safeUpdateIn(['vars', '!ai1'], (n) => ai1),
+                          newVars['!ai2'] === undefined ? id : safeUpdateIn(['vars', '!ai2'], (n) => ai2)
+                        ])
                     )({
                       vars: newVars,
                       byPass: true
@@ -2201,8 +2201,8 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
       const ocrExtractFromBrowserPage = () => {
         return csIpc
           .ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE')
-          .catch(() => {})
-          .then(() => delay(() => {}, 1000))
+          .catch(() => { })
+          .then(() => delay(() => { }, 1000))
           .then(() => {
             return Promise.all([
               runCsFreeCommands({
@@ -2344,8 +2344,8 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
 
       return csIpc
         .ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE')
-        .catch(() => {})
-        .then(() => delay(() => {}, 1000))
+        .catch(() => { })
+        .then(() => delay(() => { }, 1000))
         .then(() => {
           return Promise.all([
             runCsFreeCommands({
@@ -2754,17 +2754,17 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
             byPass: true,
             ...(isNotVerifyOrAssert && value && value.length
               ? {
-                  vars: {
-                    [value]: 0
-                  }
+                vars: {
+                  [value]: 0
                 }
+              }
               : {}),
             ...(cmd === 'visualVerify'
               ? {
-                  log: {
-                    error: e.message
-                  }
+                log: {
+                  error: e.message
                 }
+              }
               : {})
           }
         })
@@ -2974,8 +2974,8 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
 
       return csIpc
         .ask('PANEL_CLEAR_OCR_MATCHES_ON_PLAYING_PAGE')
-        .catch(() => {})
-        .then(() => delay(() => {}, 1000))
+        .catch(() => { })
+        .then(() => delay(() => { }, 1000))
         .then(() => {
           return Promise.all([
             runCsFreeCommands({
@@ -3184,7 +3184,7 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
 
             return (
               activateTab(toPlayTabId, true)
-                .then(() => delay(() => {}, C.SCREENSHOT_DELAY))
+                .then(() => delay(() => { }, C.SCREENSHOT_DELAY))
                 // Set scale factor to 1 / devicePixelRatio, so that the screenshot is in css pixel.
                 .then(() => captureScreenshotService.captureScreen(toPlayTabId, devicePixelRatio, isFirefox() ? 1 : 1 / devicePixelRatio))
                 .then((dataUrl) => {
@@ -3391,19 +3391,19 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
       const next =
         filePath && isJustFileName(filePath)
           ? (actualPath) => {
-              return cvApi.readFileAsBlob(actualPath).then((blob) => {
-                return getStorageManager()
-                  .getScreenshotStorage()
-                  .overwrite(path, blob)
-                  .then(() => {
-                    store.dispatch(act.listScreenshots())
-                    store.dispatch(act.addLog('info', `desktop screenshot saved to screenshot storage with file name '${path}'`))
-                  })
-              })
-            }
+            return cvApi.readFileAsBlob(actualPath).then((blob) => {
+              return getStorageManager()
+                .getScreenshotStorage()
+                .overwrite(path, blob)
+                .then(() => {
+                  store.dispatch(act.listScreenshots())
+                  store.dispatch(act.addLog('info', `desktop screenshot saved to screenshot storage with file name '${path}'`))
+                })
+            })
+          }
           : (actualPath) => {
-              store.dispatch(act.addLog('info', `desktop screenshot saved to hard drive at '${actualPath}'`))
-            }
+            store.dispatch(act.addLog('info', `desktop screenshot saved to hard drive at '${actualPath}'`))
+          }
       return cvApi
         .captureDesktop({ path: filePath })
         .then(next)
@@ -3419,7 +3419,7 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
       return getState()
         .then((state) => {
           return activateTab(state.tabIds.toPlay, true)
-            .then(() => delay(() => {}, C.SCREENSHOT_DELAY))
+            .then(() => delay(() => { }, C.SCREENSHOT_DELAY))
             .then(() => {
               return captureScreenshotService.saveScreen(
                 getStorageManager().getScreenshotStorage(),
@@ -3446,7 +3446,7 @@ const runCommand = (command: any, index?: any, parentCommand?: any) => {
       return getState()
         .then((state) => {
           return activateTab(state.tabIds.toPlay, true)
-            .then(() => delay(() => {}, C.SCREENSHOT_DELAY))
+            .then(() => delay(() => { }, C.SCREENSHOT_DELAY))
             .then(getPlayTabIpc)
             .then((ipc) => {
               return captureScreenshotService.saveFullScreen(getStorageManager().getScreenshotStorage(), state.tabIds.toPlay, fileName, {

@@ -8,10 +8,10 @@ import { getElementByXPath, getElementByLocator } from './dom_utils'
 
 var extend = function () {
   var args = Array.from(arguments)
-  var len  = args.length
+  var len = args.length
 
-  if (len <= 0)   return {}
-  if (len === 1)  return args[0]
+  if (len <= 0) return {}
+  if (len === 1) return args[0]
 
   var head = args[0]
   var rest = args.slice(1)
@@ -61,13 +61,13 @@ var and = function (list) {
 }
 
 var zipWith = function (fn) {
-  if (arguments.length < 3)   return null
+  if (arguments.length < 3) return null
 
   var list = Array.from(arguments).slice(1)
-  var len  = list.reduce(function (min, cur) {
+  var len = list.reduce(function (min, cur) {
     return cur.length < min ? cur.length : min
   }, Infinity)
-  var ret  = []
+  var ret = []
 
   for (var i = 0; i < len; i++) {
     ret.push(fn.apply(null, list.map(function (item) { return item[i]; })))
@@ -78,16 +78,16 @@ var zipWith = function (fn) {
 
 var intersect = function () {
   var list = Array.from(arguments)
-  var len  = Math.max.apply(null, list.map(function (item) { return item.length; }))
+  var len = Math.max.apply(null, list.map(function (item) { return item.length; }))
   var result = []
 
   for (var i = 0; i < len; i++) {
     var val = list[0][i]
-    var no  = list.filter(function (item) {
+    var no = list.filter(function (item) {
       return item[i] !== val
     })
 
-    if (no && no.length)  break
+    if (no && no.length) break
 
     result.push(val)
   }
@@ -113,17 +113,17 @@ var deepEqual = function (a, b) {
  */
 
 var pixel = function (num) {
-  if ((num + '').indexOf('px') !== -1)  return num
+  if ((num + '').indexOf('px') !== -1) return num
   return (num || 0) + 'px'
 }
 
 var getStyle = function (dom, styleName) {
-  if (!dom)   throw new Error('getStyle: dom does not exist')
+  if (!dom) throw new Error('getStyle: dom does not exist')
   return getComputedStyle(dom)[styleName]
 }
 
 var setStyle = function (dom, style) {
-  if (!dom)   throw new Error('setStyle: dom does not exist')
+  if (!dom) throw new Error('setStyle: dom does not exist')
 
   for (var i = 0, keys = Object.keys(style), len = keys.length; i < len; i++) {
     dom.style[keys[i]] = style[keys[i]]
@@ -137,8 +137,8 @@ var cssSum = function (dom, list) {
 
   return list.reduce(function (prev, cur) {
     var val = (isInline && ['width', 'height'].indexOf(cur) !== -1)
-          ? dom.getClientRects()[0][cur]
-          : getStyle(dom, cur)
+      ? dom.getClientRects()[0][cur]
+      : getStyle(dom, cur)
 
     return prev + parseInt(val || '0', 10)
   }, 0)
@@ -148,7 +148,7 @@ var offset = function (dom, noPx) {
   if (!dom) return { left: 0, top: 0 }
 
   var rect = dom.getBoundingClientRect()
-  var fn   = noPx ? id : pixel
+  var fn = noPx ? id : pixel
 
   return {
     left: fn(rect.left + window.scrollX),
@@ -157,13 +157,13 @@ var offset = function (dom, noPx) {
 }
 
 var rect = function (dom, noPx) {
-  var pos       = offset(dom, noPx)
-  var isInline  = getStyle(dom, 'display') === 'inline'
-  var w         = isInline ? dom.getClientRects()[0]['width']  : getStyle(dom, 'width')
-  var h         = isInline ? dom.getClientRects()[0]['height'] : getStyle(dom, 'height')
-  var fn        = noPx ? id : pixel
+  var pos = offset(dom, noPx)
+  var isInline = getStyle(dom, 'display') === 'inline'
+  var w = isInline ? dom.getClientRects()[0]['width'] : getStyle(dom, 'width')
+  var h = isInline ? dom.getClientRects()[0]['height'] : getStyle(dom, 'height')
+  var fn = noPx ? id : pixel
 
-  return extend({width: fn(w), height: fn(h)}, pos)
+  return extend({ width: fn(w), height: fn(h) }, pos)
 }
 
 // Reference: http://ryanve.com/lab/dimensions/
@@ -188,7 +188,7 @@ var removeChildren = function (dom, predicate) {
 
 var inDom = function ($outer, $el) {
   if (!$el) return false
-  if ($outer === $el)  return true
+  if ($outer === $el) return true
   return inDom($outer, $el.parentNode)
 }
 
@@ -234,10 +234,10 @@ var selector = function (dom) {
   if (dom.id) return '#' + dom.id
 
   var classes = (dom.getAttribute('class') || '')
-                              .split(/\s+/g)
-                              .filter(function (item) {
-                                return item && item.length
-                              })
+    .split(/\s+/g)
+    .filter(function (item) {
+      return item && item.length
+    })
 
   var children = Array.from(dom.parentNode.childNodes).filter(function ($el) {
     return $el.nodeType === 1
@@ -262,6 +262,19 @@ var selector = function (dom) {
   } else if (classes.length && sameClass.length === 1) {
     extra = '.' + classes.join('.')
   } else {
+    // Try to find a unique attribute
+    const attrNames = ['aria-label', 'placeholder', 'title', 'alt', 'jsname', 'role']
+    for (const attr of attrNames) {
+      const val = dom.getAttribute(attr)
+      if (val) {
+        const sel = dom.tagName.toLowerCase() + `[${attr}="${val}"]`
+        try {
+          if (document.querySelectorAll(sel).length === 1) {
+            return sel
+          }
+        } catch (e) { }
+      }
+    }
     extra = ':nth-child(' + (1 + children.findIndex(function (item) { return item === dom; })) + ')'
   }
 
@@ -278,27 +291,27 @@ var getTagIndex = function (dom) {
   return Array.from(dom.parentNode.childNodes).filter(function (item) {
     return item.nodeType === dom.nodeType && item.tagName === dom.tagName
   }).reduce(function (prev, node, i) {
-    if (prev !== null)  return prev
+    if (prev !== null) return prev
     return node === dom ? (i + 1) : prev
   }, null)
 }
 
 var relativeXPath = function (dom) {
-  if (!dom)                 return null
-  if (dom.nodeType === 3)   return '@text'
+  if (!dom) return null
+  if (dom.nodeType === 3) return '@text'
 
   var index = getTagIndex(dom)
   var count = Array.from(dom.parentNode.childNodes).filter(function (item) {
     return item.nodeType === dom.nodeType && item.tagName === dom.tagName
   }).length
-  var tag   = dom.tagName.toLowerCase()
+  var tag = dom.tagName.toLowerCase()
 
   return index > 1 ? (tag + '[' + index + ']') : tag
 }
 
 var xpath = function (dom, cur, list) {
   var helper = function (dom, cur, list) {
-    if (!dom)   return null
+    if (!dom) return null
 
     if (!cur) {
       if (dom.nodeType === 3) {
@@ -323,9 +336,9 @@ var xpath = function (dom, cur, list) {
     return helper(dom, cur.parentNode, [relativeXPath(cur)].concat(list))
   }
 
-  var parts   = helper(dom, cur, list)
-  var prefix  = parts[0] === 'html' ? '/' : '//'
-  var ret     = prefix + parts.join('/')
+  var parts = helper(dom, cur, list)
+  var prefix = parts[0] === 'html' ? '/' : '//'
+  var ret = prefix + parts.join('/')
 
   return ret
 }
@@ -355,7 +368,7 @@ var xpathPosition = function (dom) {
 
       current = current.parentNode
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return null
 }
@@ -397,7 +410,7 @@ var attributeValue = function (value) {
 }
 
 var xpathAttr = function (dom) {
-  function attributesXPath (name, attNames, attributes) {
+  function attributesXPath(name, attNames, attributes) {
     let locator = '//' + name + '['
     for (let i = 0; i < attNames.length; i++) {
       if (i > 0) {
@@ -414,9 +427,14 @@ var xpathAttr = function (dom) {
     const PREFERRED_ATTRIBUTES = [
       'id',
       'name',
+      'aria-label',
+      'placeholder',
+      'title',
+      'alt',
       'value',
       'type',
-      'action',
+      'role',
+      'jsname',
       'onclick'
     ]
     let i = 0
@@ -448,23 +466,23 @@ var xpathAttr = function (dom) {
         }
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return null
 }
 
 var atXPath = function (xpath, document) {
   var lower = function (str) { return str && str.toLowerCase(); }
-  var reg   = /^([a-zA-Z0-9]+)(\[(\d+)\])?$/
+  var reg = /^([a-zA-Z0-9]+)(\[(\d+)\])?$/
 
   return xpath.reduce(function (prev, cur) {
-    if (!prev)  return prev
-    if (!prev.childNodes || !prev.childNodes.length)  return null
+    if (!prev) return prev
+    if (!prev.childNodes || !prev.childNodes.length) return null
 
     var match = cur.match(reg)
-    var tag   = match[1]
+    var tag = match[1]
     var index = match[3] ? parseInt(match[3], 10) : 1
-    var list  = Array.from(prev.childNodes).filter(function (item) {
+    var list = Array.from(prev.childNodes).filter(function (item) {
       return item.nodeType === 1 && lower(item.tagName) === lower(tag)
     })
 
@@ -473,8 +491,8 @@ var atXPath = function (xpath, document) {
 }
 
 var domText = ($dom) => {
-  const it  = $dom.innerText && $dom.innerText.trim()
-  const tc  = $dom.textContent
+  const it = $dom.innerText && $dom.innerText.trim()
+  const tc = $dom.textContent
   const pos = tc.toUpperCase().indexOf(it.toUpperCase())
 
   return tc.substr(pos, it.length)
@@ -500,10 +518,10 @@ var getFirstWorkingLocator = (locators, $el) => {
 
 // Note: get the locator of a DOM
 var getLocator = ($dom, withAllOptions) => {
-  const id      = $dom.getAttribute('id')
-  const name    = $dom.getAttribute('name')
-  const isLink  = $dom.tagName.toLowerCase() === 'a'
-  const text    = (() => {
+  const id = $dom.getAttribute('id')
+  const name = $dom.getAttribute('name')
+  const isLink = $dom.tagName.toLowerCase() === 'a'
+  const text = (() => {
     try {
       return domText($dom)
     } catch (e) {
@@ -513,18 +531,7 @@ var getLocator = ($dom, withAllOptions) => {
   const classes = Array.from($dom.classList)
   const candidates = []
 
-  // link
-  if (isLink && text && text.length) {
-    const links   = [].slice.call(document.getElementsByTagName('a'))
-    const matches = links.filter($el => domText($el) === text)
-    const index   = matches.findIndex($el => $el === $dom)
-
-    if (index !== -1) {
-      candidates.push(
-        index === 0 ? `linkText=${text}` : `linkText=${text}@POS=${index + 1}`
-      )
-    }
-  }
+  // --- START Robust Candidates (High Priority) ---
 
   // id
   if (id && id.length) {
@@ -536,20 +543,59 @@ var getLocator = ($dom, withAllOptions) => {
     candidates.push(`name=${name}`)
   }
 
-  // xpath
-  candidates.push('xpath=' + xpath($dom))
+  // link
+  if (isLink && text && text.length) {
+    const links = [].slice.call(document.getElementsByTagName('a'))
+    const matches = links.filter($el => domText($el) === text)
+    const index = matches.findIndex($el => $el === $dom)
 
+    if (index !== -1) {
+      candidates.push(
+        index === 0 ? `linkText=${text}` : `linkText=${text}@POS=${index + 1}`
+      )
+    }
+  }
+
+  // Unique Attribute Based XPath (The logic inside xpathAttr handles the preferred list)
   const attrXPath = xpathAttr($dom)
-
   if (attrXPath) {
     candidates.push('xpath=' + attrXPath)
   }
 
-  const positionXPath = xpathPosition($dom)
-
-  if (positionXPath) {
-    candidates.push('xpath=' + positionXPath)
+  // Text Based XPath (If short and unique)
+  if (text && text.length > 0 && text.length < 50) {
+    const escapedText = text.replace(/"/g, '&quot;')
+    const textXPath = `xpath=//*[text()="${escapedText}"]`
+    try {
+      const $match = getElementByLocator(textXPath)
+      if ($dom === $match) {
+        candidates.push(textXPath)
+      }
+    } catch (e) { }
   }
+
+  // Robust CSS (The logic inside selector() now includes unique attributes)
+  candidates.push(`css=${selector($dom)}`)
+
+  // --- END Robust Candidates ---
+
+  // --- START Positional/Brittle Fallbacks (Low Priority) ---
+
+  // Brittle XPath (Absolute/Relative path from parent)
+  const genericXPath = 'xpath=' + xpath($dom)
+  if (!candidates.includes(genericXPath)) {
+    candidates.push(genericXPath)
+  }
+
+  const positionXPath = xpathPosition($dom)
+  if (positionXPath) {
+    const pXPath = 'xpath=' + positionXPath
+    if (!candidates.includes(pXPath)) {
+      candidates.push(pXPath)
+    }
+  }
+
+  // --- END Fallbacks ---
 
   // css
   // Try with simple css selector first. If not unqiue, use full css selector
@@ -601,7 +647,7 @@ var checkIframe = (iframeWin) => {
 var getFrameLocator = (frameWin, win) => {
   if (checkIframe(frameWin)) {
     const frameDom = frameWin.frameElement
-    const locator  = getLocator(frameDom)
+    const locator = getLocator(frameDom)
 
     if (/^id=/.test(locator) || /^name=/.test(locator)) {
       return locator
@@ -622,10 +668,10 @@ var getFrameLocator = (frameWin, win) => {
  */
 
 var maskFactory = function () {
-  var cache       = []
-  var prefix      = '__mask__' + (new Date() * 1) + Math.round(Math.random() * 1000) + '__'
-  var uid         = 1
-  var defaultStyle  = {
+  var cache = []
+  var prefix = '__mask__' + (new Date() * 1) + Math.round(Math.random() * 1000) + '__'
+  var uid = 1
+  var defaultStyle = {
     position: 'absolute',
     zIndex: '999',
     display: 'none',
@@ -663,14 +709,14 @@ var maskFactory = function () {
 
   return {
     gen: genMask,
-    clear:  clear
+    clear: clear
   }
 }
 
 var showMaskOver = function (mask, el) {
   var pos = offset(el)
-  var w   = cssSum(el, ['width',  'paddingLeft', 'paddingRight',  'borderLeftWidth', 'borderRightWidth'])
-  var h   = cssSum(el, ['height', 'paddingTop',  'paddingBottom', 'borderTopWidth', ' borderBottomWidth'])
+  var w = cssSum(el, ['width', 'paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'])
+  var h = cssSum(el, ['height', 'paddingTop', 'paddingBottom', 'borderTopWidth', ' borderBottomWidth'])
 
   setStyle(mask, extend(pos, {
     width: pixel(w),
@@ -681,12 +727,57 @@ var showMaskOver = function (mask, el) {
 
 var isVisible = function (el) {
   if (el === window.document) return true
-  if (!el)  return true
+  if (!el) return true
 
   const style = window.getComputedStyle(el)
-  if (style.display === 'none' || style.opacity === '0' || style.visibility === 'hidden')  return false
+  if (style.display === 'none' || style.opacity === '0' || style.visibility === 'hidden') return false
 
   return isVisible(el.parentNode)
+}
+
+var getBestElement = function ($el) {
+  if (!$el || $el === document.body || $el === document.documentElement) return $el
+
+  const interactiveTags = ['A', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT']
+  const containerTags = ['DIV', 'SPAN', 'SECTION', 'MAIN', 'ARTICLE', 'C-WIZ', 'BODY']
+
+  const isInteractive = (node) => {
+    if (!node || node.nodeType !== 1) return false
+    if (interactiveTags.includes(node.tagName)) return true
+    if (node.hasAttribute('role')) return true
+    if (node.hasAttribute('onclick')) return true
+    if (node.tabIndex >= 0) return true
+    // Also consider elements with specific labels or placeholders as interactive
+    if (node.hasAttribute('aria-label') || node.hasAttribute('placeholder')) return true
+    return false
+  }
+
+  // Bubble up to find a semantic parent (like a button containing a span)
+  let $parent = $el
+  while ($parent && $parent !== document.body) {
+    if (['A', 'BUTTON'].includes($parent.tagName)) return $parent
+    if ($parent.getAttribute && $parent.getAttribute('role') === 'button') return $parent
+    $parent = $parent.parentNode
+  }
+
+  // Sink down if it's a container that might be "masking" an interactive element
+  if (containerTags.includes($el.tagName) && !isInteractive($el)) {
+    // Look for ANY interactive child
+    const allInteractive = $el.querySelectorAll('input, textarea, button, a, [role="button"], [aria-label], [placeholder]')
+
+    // If exactly one, it's a high-confidence match
+    if (allInteractive.length === 1) {
+      return allInteractive[0]
+    }
+
+    // If multiple, try to find the one that occupies the most space or is most "central"
+    // For now, if it's a common "web app" container like C-WIZ, prefer the first interactive child
+    if ($el.tagName === 'C-WIZ' && allInteractive.length > 0) {
+      return allInteractive[0]
+    }
+  }
+
+  return $el
 }
 
 export default {
@@ -702,6 +793,7 @@ export default {
   showMaskOver,
   inDom,
   isVisible,
+  getBestElement,
   parentWithTag,
   parentWithClass
 }

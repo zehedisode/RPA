@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators }  from 'redux'
+import { bindActionCreators } from 'redux'
 import { Button, Modal, message } from 'antd'
 
 import * as actions from './actions'
@@ -60,15 +60,15 @@ class App extends Component {
     if (changes.key === 'config') {
       if (changes.newValue.showSettingsOnStart) {
         this.props.updateUI({ showSettings: true })
-      } 
+      }
     }
   }
 
-  componentDidMount () {
-    this.props.updateConfig({ ["oneTimeShowSidePanel"]: null }) 
+  componentDidMount() {
+    this.props.updateConfig({ ["oneTimeShowSidePanel"]: null })
 
     if (this.props.showSettingsOnStart) {
-      this.props.updateUI({ showSettings: true })     
+      this.props.updateUI({ showSettings: true })
       this.props.updateConfig({
         showSettingsOnStart: false
       })
@@ -81,11 +81,11 @@ class App extends Component {
         waitForRenderComplete(null, 500).then(() => {
           // scrollIntoView won't work because it's a virtual list
           delayMs(500).then(() => {
-              let itemHeight =  config.ui.commandItemHeight
-              let tableElement = document.querySelector('.ant-tabs-content .form-group.table-wrapper')
-              tableElement.scrollTop = this.props.selectCommandIndex * itemHeight
-              // this.props.updateUI({ focusArea: FocusArea.CommandTable })
-              this.props.selectCommand(this.props.selectCommandIndex, true)
+            let itemHeight = config.ui.commandItemHeight
+            let tableElement = document.querySelector('.ant-tabs-content .form-group.table-wrapper')
+            tableElement.scrollTop = this.props.selectCommandIndex * itemHeight
+            // this.props.updateUI({ focusArea: FocusArea.CommandTable })
+            this.props.selectCommand(this.props.selectCommandIndex, true)
           })
         })
       })
@@ -93,10 +93,10 @@ class App extends Component {
 
     const run = () => {
       csIpc.ask('PANEL_TIME_FOR_BACKUP', {})
-      .then(isTime => {
-        if (!isTime)  return
-        this.$app.classList.add('with-alert')
-      })
+        .then(isTime => {
+          if (!isTime) return
+          this.$app.classList.add('with-alert')
+        })
     }
 
     // Note: check whether it's time for backup every 5 minutes
@@ -104,37 +104,37 @@ class App extends Component {
     run()
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     clearInterval(this.timer)
   }
 
-  renderPreinstallModal () {
-    if (!this.props.ui.newPreinstallVersion)  return null
+  renderPreinstallModal() {
+    if (!this.props.ui.newPreinstallVersion) return null
 
     return (
       <Modal
         className="preinstall-modal"
         open={true}
-        title="New demo macros available"
-        okText="Yes, overwrite"
-        cancelText="Skip"
+        title="Yeni demo makrolar mevcut"
+        okText="Evet, üzerine yaz"
+        cancelText="Atla"
         onOk={() => {
           this.props.updateUI({ newPreinstallVersion: false })
 
           return this.props.preinstall(true)
-          .then(() => {
-            message.success('demo macros updated')
-          })
-          .catch(e => {
-            message.error(e.message)
-          })
+            .then(() => {
+              message.success('demo makrolar güncellendi')
+            })
+            .catch(e => {
+              message.error(e.message)
+            })
         }}
         onCancel={() => {
           this.props.updateUI({ newPreinstallVersion: false })
           this.props.preinstall(false)
         }}
       >
-        <p style={{ fontSize: '14px' }}>Do you want to overwrite the demo macros with their latest versions?</p>
+        <p style={{ fontSize: '14px' }}>Demo makroları en son sürümleriyle değiştirmek istiyor musunuz?</p>
       </Modal>
     )
   }
@@ -144,27 +144,27 @@ class App extends Component {
     // set fast mode
     store.dispatch(Actions.setReplaySpeedOverrideToFastMode(true))
   }
-  
+
   showGUIForOCR = () => {
     store.dispatch(Actions.setOcrInDesktopMode(false))
   }
 
-  render () {
+  render() {
     if (this.props.noDisplay) {
       return (
         <div className="app no-display">
           <div className="content">
-            <div className="status">UI.Vision is in "No Display" mode now</div>
+            <div className="status">UI.Vision şu an "Görüntüsüz" modunda</div>
             <Button.Group className="simple-actions">
               <Button size="large" onClick={() => this.getPlayer().stop()}>
-                <span>Stop</span>
+                <span>Durdur</span>
               </Button>
-                <Button
-                  size="large"
-                  onClick={this.showGUI}
-                >
-                  <span>Show GUI</span>
-                </Button>
+              <Button
+                size="large"
+                onClick={this.showGUI}
+              >
+                <span>Arayüzü Göster</span>
+              </Button>
             </Button.Group>
           </div>
         </div>
@@ -174,10 +174,10 @@ class App extends Component {
     return (
       <div className="app with-sidebar" ref={el => { this.$app = el }}>
         <div className="backup-alert">
-          <span>Do you want to run the automated backup?</span>
+          <span>Otomatik yedeklemeyi başlatmak istiyor musunuz?</span>
           <span className="backup-actions">
-            <Button type="primary" onClick={this.onClickBackup}>Yes</Button>
-            <Button onClick={this.onClickNoBackup}>No</Button>
+            <Button type="primary" onClick={this.onClickBackup}>Evet</Button>
+            <Button onClick={this.onClickNoBackup}>Hayır</Button>
           </span>
         </div>
         <div className="app-inner">
@@ -187,25 +187,25 @@ class App extends Component {
             onClickCapture={this.onClickMainArea}
           >
             <Header />
-            <DashboardPage />  
+            <DashboardPage />
           </section>
         </div>
 
         {this.renderPreinstallModal()}
-        
+
         {this.props.ocrInDesktopMode ? (
           <div className="app no-display ocr-overlay">
             <div className="content">
-              <div className="status">Desktop OCR in progress</div>
+              <div className="status">Masaüstü OCR devam ediyor</div>
               <Button.Group className="simple-actions">
                 <Button size="large" onClick={() => this.getPlayer().stop()}>
-                  <span>Stop</span>
+                  <span>Durdur</span>
                 </Button>
                 <Button
                   size="large"
                   onClick={() => this.showGUIForOCR()}
                 >
-                  <span>Show GUI</span>
+                  <span>Arayüzü Göster</span>
                 </Button>
               </Button.Group>
             </div>
@@ -226,5 +226,5 @@ export default connect(
     showSettingsOnStart: state.config.showSettingsOnStart,
     selectCommandIndex: state.config.selectCommandIndex
   }),
-  dispatch => bindActionCreators({...actions, ...simpleActions}, dispatch)
+  dispatch => bindActionCreators({ ...actions, ...simpleActions }, dispatch)
 )(App)

@@ -77,22 +77,22 @@ function withRouter(Component) {
 }
 
 const applyPresetLicense = (registerKey) => {
-  if(getLicenseService().isProLicense() || getLicenseService().isPersonalLicense() ){
+  if (getLicenseService().isProLicense() || getLicenseService().isPersonalLicense()) {
     console.log("license already active.")
     return
   }
   getLicenseService().checkLicense(registerKey).then((license) => {
     if (license.status === "key_not_found") {
-      console.error("License key not found");
+      console.error("Lisans anahtarı bulunamadı");
     }
     console.log(`license status: ${license.status}`);
   })
-  .catch((e) => {
-    const text = isNetworkError(e)
-      ? "Internet connection required for activation. If you want use the software on a machine without Internet connection, please contact tech support"
-      : e.message;
-     console.error(text);
-  })
+    .catch((e) => {
+      const text = isNetworkError(e)
+        ? "Aktivasyon için internet bağlantısı gerekli. Yazılımı internet bağlantısı olmayan bir makinede kullanmak istiyorsanız, lütfen teknik destekle iletişime geçin"
+        : e.message;
+      console.error(text);
+    })
 }
 
 class Header extends React.Component {
@@ -120,7 +120,7 @@ class Header extends React.Component {
     connectedAPIEndpointType: null // null | "free" | "pro"
   };
 
-   getConnectedAPIEndpointType = (ocrSpaceApiKey) => {
+  getConnectedAPIEndpointType = (ocrSpaceApiKey) => {
     const apiEndpointType = ocrSpaceApiKey ? (isOcrSpaceFreeKey(ocrSpaceApiKey) ? "free" : "pro") : null
     return Promise.resolve(apiEndpointType);
   }
@@ -151,7 +151,7 @@ class Header extends React.Component {
   onToggleRecord = async () => {
     if (isCVTypeForDesktop(this.props.config.cvScope)) {
       const msg =
-        "Recording is only available for browser automation. Desktop automation macros are created by adding XClick and other visual commands step by step.";
+        "Kayıt sadece tarayıcı otomasyonu için kullanılabilir. Masaüstü otomasyon makroları XClick ve diğer görsel komutlar adım adım eklenerek oluşturulur.";
 
       this.props.addLog("warning", msg);
       return message.warn(msg, 2.5);
@@ -160,7 +160,7 @@ class Header extends React.Component {
     const tabInfo = await this.getCurrentRecordedtab();
     if (!/^(https?:|file:)/.test(tabInfo.url)) {
       return message.error(
-        "Web recording works only on normal browser pages. For other pages, please use desktop automation."
+        "Web kaydı sadece normal tarayıcı sayfalarında çalışır. Diğer sayfalar için lütfen masaüstü otomasyonunu kullanın."
       );
     }
 
@@ -172,7 +172,7 @@ class Header extends React.Component {
       console.log('startRecording:>> askPermission')
       const permissionResult = await this.askPermission()
       console.log('startRecording:>> askPermission complete: permissionResult:>>', permissionResult)
-      if(!permissionResult) {
+      if (!permissionResult) {
         return
       }
       this.props.startRecording();
@@ -193,12 +193,12 @@ class Header extends React.Component {
           const { loopsStart, loopsEnd } = this.state;
 
           if (loopsStart < 0) {
-            return message.error("Start value must be no less than zero", 1.5);
+            return message.error("Başlangıç değeri sıfırdan küçük olamaz", 1.5);
           }
 
           if (loopsEnd < loopsStart) {
             return message.error(
-              "Max value must be greater than start value",
+              "Bitiş (maks) değeri başlangıç değerinden büyük olmalıdır",
               1.5
             );
           }
@@ -237,12 +237,12 @@ class Header extends React.Component {
         const { loopsStart, loopsEnd } = this.state;
 
         if (loopsStart < 0) {
-          return message.error("Start value must be no less than zero", 1.5);
+          return message.error("Başlangıç değeri sıfırdan küçük olamaz", 1.5);
         }
 
         if (loopsEnd < loopsStart) {
           return message.error(
-            "Max value must be greater than start value",
+            "Bitiş (maks) değeri başlangıç değerinden büyük olmalıdır",
             1.5
           );
         }
@@ -347,18 +347,18 @@ class Header extends React.Component {
 
     return new Promise((resolve, reject) => {
       if (Ext.isFirefox()) {
-        Ext.permissions.contains({ origins: ["<all_urls>"]}).then(
+        Ext.permissions.contains({ origins: ["<all_urls>"] }).then(
           (permissionGranted) => {
-            if (!permissionGranted) { 
+            if (!permissionGranted) {
               Modal.confirm({
                 title: "Grant Permission To Replay Macros",
                 content: `Ui.Vision is an open-source tool for automating tasks. To replay macros, it requires permission from Firefox to 'access data in all tabs'. If you click 'OK', Ui.Vision will open the Firefox permission dialog, allowing you to provide this permission. Continue?`,
                 okText: "Continue",
-                cancelText: "Cancel",
-                onOk: () => { 
-                  Ext.permissions.request({origins: ['<all_urls>']}).then((result) => {
-                    console.log('permission result:>>', result)  
-                    if(result) {                    
+                cancelText: "İptal",
+                onOk: () => {
+                  Ext.permissions.request({ origins: ['<all_urls>'] }).then((result) => {
+                    console.log('permission result:>>', result)
+                    if (result) {
                       resolve(true)
                     } else {
                       // visit https://goto.ui.vision/x/idehelp?help=firefox_access_data_permission in new tab 
@@ -368,22 +368,22 @@ class Header extends React.Component {
                       })
                       resolve(false)
                     }
-                  })                  
+                  })
                 },
-                onCancel: () => { 
+                onCancel: () => {
                   // visit https://goto.ui.vision/x/idehelp?help=firefox_access_data_permission in new tab 
                   Ext.tabs.create({
                     url: 'https://goto.ui.vision/x/idehelp?help=firefox_access_data_permission',
                     active: true
                   })
-                  
-                  resolve(false) 
+
+                  resolve(false)
                 },
               })
             } else {
               resolve(true);
             }
-          }  
+          }
         )
       } else {
         resolve(true);
@@ -393,7 +393,7 @@ class Header extends React.Component {
 
   playCurrentMacro = async (isStep) => {
     const permissionResult = await this.askPermission();
-    if(!permissionResult) {
+    if (!permissionResult) {
       return
     }
 
@@ -503,7 +503,7 @@ class Header extends React.Component {
       return;
     }
 
-    const notifyLicenseError = () => message.error("Invalid license key");
+    const notifyLicenseError = () => message.error("Geçersiz lisans anahtarı");
 
     if (!checkBasicPattern(registerKey)) {
       return notifyLicenseError();
@@ -521,11 +521,11 @@ class Header extends React.Component {
         this.resetRegisterKey();
         this.forceUpdate();
         getStorageManager().emit(StorageManagerEvent.RootDirChanged);
-        message.success("License key verified");
+        message.success("Lisans anahtarı doğrulandı");
       })
       .catch((e) => {
         const text = isNetworkError(e)
-          ? "Internet connection required for activation. If you want use the software on a machine without Internet connection, please contact tech support"
+          ? "Aktivasyon için internet bağlantısı gerekli. Yazılımı internet bağlantısı olmayan bir makinede kullanmak istiyorsanız, lütfen teknik destekle iletişime geçin"
           : e.message;
 
         message.error(text, 4);
@@ -540,7 +540,7 @@ class Header extends React.Component {
     if (hasUnsaved) {
       // Note: Chrome is showing the default message anyway
       const promptMessage =
-        "You have unsaved Changes. Do you want to save before leaving application?";
+        "Kaydedilmemiş değişiklikleriniz var. Uygulamadan çıkmadan önce kaydetmek ister misiniz?";
       event.returnValue = promptMessage;
       return promptMessage;
     }
@@ -597,7 +597,7 @@ class Header extends React.Component {
       .then((data) => {
         const { installed, version } = data;
         const p = !installed ? Promise.resolve() : getXLocal().initConfig();
-        p.catch((e) => {}).then(() => {
+        p.catch((e) => { }).then(() => {
           this.setState(
             updateIn(
               ["xModuleDataLocal", getXLocal().getName()],
@@ -627,7 +627,7 @@ class Header extends React.Component {
         // Note: call init config for each xmodule and discard any error
         return mod
           .initConfig()
-          .catch((e) => {})
+          .catch((e) => { })
           .then(() => mod.getVersion())
           .then((versionInfo) => {
             if (versionInfo.installed) {
@@ -709,10 +709,10 @@ class Header extends React.Component {
   renderPublicWebsiteWhiteList() {
     return (
       <Modal
-        title="Embedded Macros Website Whitelist"
+        title="Gömülü Makro Web Sitesi Beyaz Listesi"
         className="whitelist-modal"
         width={450}
-        okText="Save"
+        okText="Kaydet"
         open={this.props.ui.showWebsiteWhiteList}
         onCancel={() => this.props.updateUI({ showWebsiteWhiteList: false })}
         onOk={(close) => {
@@ -730,11 +730,10 @@ class Header extends React.Component {
         }}
       >
         <p style={{ marginBottom: "10px" }}>
-          Allow embedded macros to run <em>without warning dialog</em>, if
-          started from the following sites:
+          Aşağıdaki sitelerden başlatılırsa gömülü makroların <em>uyarı penceresi olmadan</em> çalışmasına izin ver:
         </p>
         <Input.TextArea
-          placeholder="One url per line, e. g. https://ui.vision/rpa"
+          placeholder="Her satıra bir url, örn. https://ui.vision/rpa"
           autosize={{ minRows: 6, maxRows: 12 }}
           value={this.state.websiteWhiteListText}
           style={{ resize: "vertical" }}
@@ -748,9 +747,9 @@ class Header extends React.Component {
             href="https://goto.ui.vision/x/idehelp?help=website_whitelist"
             target="_blank"
           >
-            More info
+            Daha fazla bilgi
           </a>
-          Only run embedded macros from websites you trust
+          Gömülü makroları sadece güvendiğiniz web sitelerinden çalıştırın
         </p>
       </Modal>
     );
@@ -759,9 +758,9 @@ class Header extends React.Component {
   renderPlayLoopModal() {
     return (
       <Modal
-        title="How many loops to play?"
-        okText="Play"
-        cancelText="Cancel"
+        title="Kaç döngü oynatılsın?"
+        okText="Oynat"
+        cancelText="İptal"
         className="play-loop-modal"
         open={this.state.showPlayLoops}
         onOk={this.onClickPlayLoops}
@@ -769,7 +768,7 @@ class Header extends React.Component {
       >
         <Row>
           <Col span={10}>
-            <Form.Item label="Start value">
+            <Form.Item label="Başlangıç değeri">
               <Input
                 type="number"
                 min="0"
@@ -784,7 +783,7 @@ class Header extends React.Component {
             </Form.Item>
           </Col>
           <Col span={10} offset={2}>
-            <Form.Item label="Max">
+            <Form.Item label="Bitiş">
               <Input
                 type="number"
                 min="0"
@@ -879,10 +878,10 @@ class Header extends React.Component {
       switch (value) {
         case "off":
           return ipc.ask("PANEL_SET_PROXY", { proxy: null });
-  
+
         case "on": {
           let proxy;
-  
+
           try {
             proxy = parseProxyUrl(
               this.props.config.defaultProxy,
@@ -891,12 +890,12 @@ class Header extends React.Component {
           } catch (e) {
             return message.error(e.message);
           }
-  
+
           return ipc.ask("PANEL_SET_PROXY", { proxy });
         }
       }
     }
-  
+
     const onChangeDefaultOCREngine = (value) => {
       const lastSelectedEngine = this.props.config.ocrEngine;
       onConfigChange("ocrEngine", parseInt(value, 10));
@@ -918,12 +917,12 @@ class Header extends React.Component {
                   this.state.ocrLanguageOptions.map((item) =>
                     options.indexOf(item.value) > -1
                       ? newOcrlangAr.push({
-                          text: item.text,
-                          value: item.value,
-                        })
+                        text: item.text,
+                        value: item.value,
+                      })
                       : []
                   );
-  
+
                   this.setState({
                     ocrLanguageOptions: newOcrlangAr,
                   });
@@ -939,7 +938,7 @@ class Header extends React.Component {
                       newOcrlangAr[0]["value"]
                     );
                   }
-  
+
                 } else {
                   const msg = "Not Installed";
                   message.info(`status updated: ${msg}`);
@@ -961,31 +960,32 @@ class Header extends React.Component {
             );
         }
       } else if (value === "98") {
-         
-          let tesseractLangAr = this.state.tesseractLanguageOptions.map((item) =>  {
-            return {
-              text: item.text,
-              value: item.value,
-            }});              
-          
 
-          this.setState({
-            tesseractLanguageOptions: tesseractLangAr,
-          });
-
-          // onConfigChange("tesseractLanguageOption", tesseractLangAr);
-          let haveEng = tesseractLangAr.filter(
-            (lang) => lang.value == "eng"
-          );
-          if (haveEng.length != 0) {
-            onConfigChange("ocrLanguage", "eng");
-          } else {
-            onConfigChange(
-              "ocrLanguage",
-              tesseractLangAr[0]["value"]
-            );
+        let tesseractLangAr = this.state.tesseractLanguageOptions.map((item) => {
+          return {
+            text: item.text,
+            value: item.value,
           }
-  
+        });
+
+
+        this.setState({
+          tesseractLanguageOptions: tesseractLangAr,
+        });
+
+        // onConfigChange("tesseractLanguageOption", tesseractLangAr);
+        let haveEng = tesseractLangAr.filter(
+          (lang) => lang.value == "eng"
+        );
+        if (haveEng.length != 0) {
+          onConfigChange("ocrLanguage", "eng");
+        } else {
+          onConfigChange(
+            "ocrLanguage",
+            tesseractLangAr[0]["value"]
+          );
+        }
+
       } else {
         this.setState({ ocrLanguageOptions: ocrLanguageOptions });
         onConfigChange("ocrLanguageOption", ocrLanguageOptions);
@@ -998,7 +998,7 @@ class Header extends React.Component {
       wrapperCol: { span: 16 },
     };
 
-    const ocrClassName =  cn( "ocr-pane", {
+    const ocrClassName = cn("ocr-pane", {
       "ocr-disabled": this.props.config.ocrMode === "disabled",
       "ocr-enabled": this.props.config.ocrMode === "enabled",
       "ocr-offline": this.props.config.ocrMode === "offline_enabled",
@@ -1018,7 +1018,7 @@ class Header extends React.Component {
           this.props.updateConfig({
             showSettingsOnStart: false
           })
-          this.setState({ userEnteredOCRAPIKey: '' });  
+          this.setState({ userEnteredOCRAPIKey: '' });
         }}
       >
         <Tabs
@@ -1181,8 +1181,8 @@ class Header extends React.Component {
                     />
                     <span className="tip">Max. allowed time for file</span>
                   </Form.Item>
-                  <Form.Item label="If error happens in loop" {...displayConfig}>
-                    <Radio.Group                      
+                  <Form.Item label="Döngüde hata oluşursa" {...displayConfig}>
+                    <Radio.Group
                       value={this.props.config.onErrorInLoop}
                     >
                       <Radio onClick={(e) =>
@@ -1228,14 +1228,14 @@ class Header extends React.Component {
                       onClick={(e) => {
                         const useDarkTheme = !e.target.checked;
                         onConfigChange("useDarkTheme", !e.target.checked);
-                        if(useDarkTheme) {
+                        if (useDarkTheme) {
                           document.documentElement.setAttribute('data-theme', 'dark')
                         } else {
                           document.documentElement.setAttribute('data-theme', 'light')
                         }
                       }}
                       checked={this.props.config.useDarkTheme}
-                      style={{marginBottom: 0}}
+                      style={{ marginBottom: 0 }}
                     >
                       Use Dark Mode (
                       <a
@@ -1364,26 +1364,26 @@ class Header extends React.Component {
                     </p>
                   </div>
                   <div >
-                    <span className="label-text">Local OCR Options: 
-					{'  ['}
-                        <a
-                          href="https://goto.ui.vision/x/idehelp?help=ocr-local"
-                          target="_blank"
-                        >
-                          more info
-                        </a>
-                        {']'}
-					</span>
-                    <br/>
+                    <span className="label-text">Local OCR Options:
+                      {'  ['}
+                      <a
+                        href="https://goto.ui.vision/x/idehelp?help=ocr-local"
+                        target="_blank"
+                      >
+                        more info
+                      </a>
+                      {']'}
+                    </span>
+                    <br />
                     <Radio.Group
                       className="radio-block"
                       style={{ marginLeft: "5%" }}
                       value={"" + this.props.config.ocrEngine}
                     >
-                      
+
                       <Radio value="98" onClick={() => onChangeDefaultOCREngine("98")}>
-                        Javascript OCR (Works well for many use cases, additional OCR languages available on 			 
-						 	<a
+                        Javascript OCR (Works well for many use cases, additional OCR languages available on
+                        <a
                           href="https://goto.ui.vision/x/idehelp?help=ocr-request"
                           target="_blank"
                         > request</a>)
@@ -1392,28 +1392,28 @@ class Header extends React.Component {
                       <Radio value="99" onClick={() => onChangeDefaultOCREngine("99")}>
                         XModule Local OCR (Faster/better, especially for text on images)
                       </Radio>
-                      
+
                     </Radio.Group>
                   </div>
                   <div className="row">
                     <span className="label-text">Use Ocr.Space Online OCR:
-					{'   ['}
-					<a
-                          href="https://goto.ui.vision/x/idehelp?help=free-ocr-api"
-                          target="_blank"
-                        >Free OCR API account required</a>{']'}
-					</span>
-                    <br/>
+                      {'   ['}
+                      <a
+                        href="https://goto.ui.vision/x/idehelp?help=free-ocr-api"
+                        target="_blank"
+                      >Free OCR API account required</a>{']'}
+                    </span>
+                    <br />
                     <Radio.Group
                       className="radio-block"
                       style={{ marginLeft: "5%" }}
                       value={"" + this.props.config.ocrEngine}
                     >
                       <Radio value="1" onClick={() => onChangeDefaultOCREngine("1")}>
-                        Cloud OCR: OCR.Space, Engine1 
+                        Cloud OCR: OCR.Space, Engine1
                       </Radio>
                       <Radio value="2" onClick={() => onChangeDefaultOCREngine("2")}>
-                        Cloud OCR: OCR.Space, Engine2 
+                        Cloud OCR: OCR.Space, Engine2
                       </Radio>
                     </Radio.Group>
                     <div>
@@ -1422,55 +1422,54 @@ class Header extends React.Component {
                         type="text"
                         style={{ width: "120px" }}
                         value={this.state.userEnteredOCRAPIKey}
-                        disabled={[1,2].includes( this.props.config.ocrEngine) ? false : true }
-                        onChange={(e) =>
-                          {
-                            this.setState({ userEnteredOCRAPIKey: e.target.value });    
-                          }
+                        disabled={[1, 2].includes(this.props.config.ocrEngine) ? false : true}
+                        onChange={(e) => {
+                          this.setState({ userEnteredOCRAPIKey: e.target.value });
+                        }
                         }
                       />
                       <Button
                         type="primary"
                         style={{ marginLeft: "8px" }}
-                        disabled={ [1,2].includes( this.props.config.ocrEngine) ? false : true }
+                        disabled={[1, 2].includes(this.props.config.ocrEngine) ? false : true}
                         onClick={() => {
-                           // connect to endpoint
+                          // connect to endpoint
                           let key = this.state.userEnteredOCRAPIKey?.trim();
                           if (!key) {
-                            message.error("Please enter a valid API key");
+                            message.error("Lütfen geçerli bir API anahtarı girin");
                             return;
                           }
                           const isFreeApiKey = isOcrSpaceFreeKey(key)
                           let url;
- 
+
                           if (!isFreeApiKey) {
                             // it's a pro key  
                             url = this.props.config.ocrEngine == 1 ? CONFIG.ocr.proApi1Endpoint : CONFIG.ocr.proApi2Endpoint
                           } else {
                             url = CONFIG.ocr.freeApiEndpoint
                           }
-                           
+
                           testOcrSpaceAPIKey({ key, url }).then((res) => {
-                            if(res){
+                            if (res) {
                               let endpointType = isFreeApiKey ? 'free' : 'pro';
                               this.setState({ connectedAPIEndpointType: endpointType });
                               onConfigChange("ocrSpaceApiKey", key);
                             } else {
-                              message.error("Invalid API key");
+                              message.error("Geçersiz API anahtarı");
                               this.setState({ connectedAPIEndpointType: null });
                               onConfigChange("ocrSpaceApiKey", '');
                             }
                           }).catch((e) => {
                             message.error(e.message);
                           });
-                           
+
                         }}
                       >
                         Test
                       </Button>
-                       { this.state.connectedAPIEndpointType ? (<span className="api-key-notification">
-                        API key stored. Connected to { this.state.connectedAPIEndpointType.toUpperCase() } endpoint. 
-                      </span>) : null }
+                      {this.state.connectedAPIEndpointType ? (<span className="api-key-notification">
+                        API key stored. Connected to {this.state.connectedAPIEndpointType.toUpperCase()} endpoint.
+                      </span>) : null}
                     </div>
                   </div>
 
@@ -1489,7 +1488,7 @@ class Header extends React.Component {
                         }
                         onChange={(val) => onConfigChange("ocrLanguage", val)}
                       >
-                        { this.props.config.ocrEngine == 98 ? this.state.tesseractLanguageOptions.map((item) => (
+                        {this.props.config.ocrEngine == 98 ? this.state.tesseractLanguageOptions.map((item) => (
                           <Select.Option value={item.value} key={item.value}>
                             {item.text}
                           </Select.Option>
@@ -1497,7 +1496,7 @@ class Header extends React.Component {
                           <Select.Option value={item.value} key={item.value}>
                             {item.text}
                           </Select.Option>
-                        )) }
+                        ))}
                       </Select>
                     </div>
 
@@ -1531,8 +1530,8 @@ class Header extends React.Component {
                         }
                         onClick={() => {
                           this.setState({ testingOcrAPI: true });
-                          
-                          const isDesktopMode = isCVTypeForDesktop(this.props.config.cvScope)                          
+
+                          const isDesktopMode = isCVTypeForDesktop(this.props.config.cvScope)
                           isDesktopMode && store.dispatch(Actions.setOcrInDesktopMode(true))
 
                           ocrViewport({
@@ -1544,7 +1543,7 @@ class Header extends React.Component {
                             })
                             .then(() => {
                               this.setState({ testingOcrAPI: false });
-                              store.dispatch(Actions.setOcrInDesktopMode(false)) 
+                              store.dispatch(Actions.setOcrInDesktopMode(false))
                             });
                         }}
                       >
@@ -1567,7 +1566,7 @@ class Header extends React.Component {
                         min={1}
                         value={
                           this.props.config.ocrCalibration != undefined &&
-                          this.props.config.ocrCalibration != ""
+                            this.props.config.ocrCalibration != ""
                             ? this.props.config.ocrCalibration
                             : 6
                         }
@@ -1610,7 +1609,7 @@ class Header extends React.Component {
                                   "ocrCalibration_internal",
                                   calibrateNumber
                                 );
-                              } catch (e) {}
+                              } catch (e) { }
 
                               this.setState({
                                 testingCalibrate: false,
@@ -1640,7 +1639,7 @@ class Header extends React.Component {
                         min={100}
                         value={
                           this.props.config.ocrScaling != undefined &&
-                          this.props.config.ocrScaling != ""
+                            this.props.config.ocrScaling != ""
                             ? this.props.config.ocrScaling
                             : 100
                         }
@@ -1701,7 +1700,7 @@ class Header extends React.Component {
                                 ? Promise.resolve()
                                 : getXLocal().initConfig();
 
-                              p.catch((e) => {}).then(() => {
+                              p.catch((e) => { }).then(() => {
                                 this.setState(
                                   updateIn(
                                     ["xModuleDataLocal", getXLocal().getName()],
@@ -1724,7 +1723,7 @@ class Header extends React.Component {
                       <label>Status:</label>
 
                       {this.state.xModuleDataLocal[getXLocal().getName()] &&
-                      this.state.xModuleDataLocal[getXLocal().getName()].installed ? (
+                        this.state.xModuleDataLocal[getXLocal().getName()].installed ? (
                         <div className="status-box">
                           <span>
                             Installed (v
@@ -1738,8 +1737,8 @@ class Header extends React.Component {
                             target="_blank"
                             href={getXLocal().checkUpdateLink(
                               this.state.xModuleDataLocal[getXLocal().getName()] &&
-                                this.state.xModuleDataLocal[getXLocal().getName()]
-                                  .version,
+                              this.state.xModuleDataLocal[getXLocal().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -1763,8 +1762,8 @@ class Header extends React.Component {
                       </a>
                     </p>
                   </div>
-                
-                
+
+
                 </>
               )
             },
@@ -1797,8 +1796,8 @@ class Header extends React.Component {
                       >
                         <span>Desktop Automation (Search complete desktop)</span>
                         {this.state.xModuleData[getXDesktop().getName()] &&
-                        this.state.xModuleData[getXDesktop().getName()]
-                          .installed ? null : (
+                          this.state.xModuleData[getXDesktop().getName()]
+                            .installed ? null : (
                           <a
                             target="_blank"
                             href={getXDesktop().downloadLink()}
@@ -1823,7 +1822,7 @@ class Header extends React.Component {
                               this.props.config.cvScope !== "desktop" ||
                               !(
                                 this.state.xModuleData[
-                                  getXScreenCapture().getName()
+                                getXScreenCapture().getName()
                                 ] &&
                                 this.state.xModuleData[getXScreenCapture().getName()]
                                   .installed
@@ -1841,8 +1840,8 @@ class Header extends React.Component {
                               if installed (see XModule below)
                             </span>
                             {this.state.xModuleData[getXScreenCapture().getName()] &&
-                            this.state.xModuleData[getXScreenCapture().getName()]
-                              .installed ? null : (
+                              this.state.xModuleData[getXScreenCapture().getName()]
+                                .installed ? null : (
                               <a
                                 target="_blank"
                                 href={getXScreenCapture().downloadLink()}
@@ -1969,8 +1968,8 @@ class Header extends React.Component {
                       <label>Status:</label>
 
                       {this.state.xModuleData[getXScreenCapture().getName()] &&
-                      this.state.xModuleData[getXScreenCapture().getName()]
-                        .installed ? (
+                        this.state.xModuleData[getXScreenCapture().getName()]
+                          .installed ? (
                         <div className="status-box">
                           <span>
                             Installed (v
@@ -1984,8 +1983,8 @@ class Header extends React.Component {
                             target="_blank"
                             href={getXScreenCapture().checkUpdateLink(
                               this.state.xModuleData[getXScreenCapture().getName()] &&
-                                this.state.xModuleData[getXScreenCapture().getName()]
-                                  .version,
+                              this.state.xModuleData[getXScreenCapture().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -1999,7 +1998,7 @@ class Header extends React.Component {
                             href={getXScreenCapture().downloadLink()}
                             target="_blank"
                           >
-                            Download it
+                            İndirin
                           </a>
                         </div>
                       )}
@@ -2010,9 +2009,9 @@ class Header extends React.Component {
             },
             {
               key: 'ai',
-              label: 'AI(New)',
+              label: 'AI(Yeni)',
               className: 'ai-pane',
-              children: (           
+              children: (
                 <AITab />
               )
             },
@@ -2020,12 +2019,12 @@ class Header extends React.Component {
               key: 'xmodules',
               label: 'XModules',
               className: 'xmodules-pane',
-              children:(
+              children: (
                 <>
                   <div className="xmodule-item">
                     <div className="xmodule-title">
                       <span>
-                        <b>FileAccess XModule</b> - Read and write to your hard drive
+                        <b>FileAccess XModule</b> - Sabit diskinize okuma ve yazma
                       </span>
                       <a href={getXFile().infoLink()} target="_blank">
                         More Info
@@ -2038,15 +2037,15 @@ class Header extends React.Component {
                             .then((data) => {
                               const { installed, version } = data;
                               const msg = installed
-                                ? `Installed (v${version})`
-                                : "Not Installed";
-                              message.info(`status updated: ${msg}`);
+                                ? `Yüklü (v${version})`
+                                : "Yüklü Değil";
+                              message.info(`durum güncellendi: ${msg}`);
 
                               const p = !installed
                                 ? Promise.resolve()
                                 : getXFile().initConfig();
 
-                              p.catch((e) => {}).then(() => {
+                              p.catch((e) => { }).then(() => {
                                 this.setState(
                                   updateIn(
                                     ["xModuleData", getXFile().getName()],
@@ -2067,20 +2066,20 @@ class Header extends React.Component {
                     </div>
 
                     <div className="xmodule-status">
-                      <label>Status:</label>
+                      <label>Durum:</label>
 
                       {this.state.xModuleData[getXFile().getName()] &&
-                      this.state.xModuleData[getXFile().getName()].installed ? (
+                        this.state.xModuleData[getXFile().getName()].installed ? (
                         <div className="status-box">
                           <span>
-                            Installed (v
+                            Yüklü (v
                             {this.state.xModuleData[getXFile().getName()].version})
                           </span>
                           <a
                             target="_blank"
                             href={getXFile().checkUpdateLink(
                               this.state.xModuleData[getXFile().getName()] &&
-                                this.state.xModuleData[getXFile().getName()].version,
+                              this.state.xModuleData[getXFile().getName()].version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -2089,19 +2088,19 @@ class Header extends React.Component {
                         </div>
                       ) : (
                         <div className="status-box">
-                          <span>Not Installed</span>
+                          <span>Yüklü Değil</span>
                           <a href={getXFile().downloadLink()} target="_blank">
-                            Download it
+                            İndirin
                           </a>
                         </div>
                       )}
                     </div>
 
                     <div className="xmodule-settings">
-                      <h3>Settings</h3>
+                      <h3>Ayarlar</h3>
                       <div className="xmodule-settings-item">
                         <div className="settings-detail">
-                          <label>Home Folder</label>
+                          <label>Ana Klasör</label>
                           <div className="settings-detail-content">
                             <Input
                               type="text"
@@ -2181,10 +2180,10 @@ class Header extends React.Component {
                             />
 
                             {this.state.xModuleData[getXFile().getName()] &&
-                            this.state.xModuleData[getXFile().getName()]
-                              .checkResult &&
-                            this.state.xModuleData[getXFile().getName()].checkResult
-                              .error ? (
+                              this.state.xModuleData[getXFile().getName()]
+                                .checkResult &&
+                              this.state.xModuleData[getXFile().getName()].checkResult
+                                .error ? (
                               <div className="check-result">
                                 {
                                   this.state.xModuleData[getXFile().getName()]
@@ -2195,7 +2194,7 @@ class Header extends React.Component {
                           </div>
                         </div>
                         <div className="settings-desc">
-                          In this folder, Ui.Vision creates /macros, /images,
+                          Ui.Vision bu klasörde şunları oluşturur: /macros, /images,
                           /testsuites, /datasources
                         </div>
                       </div>
@@ -2205,8 +2204,7 @@ class Header extends React.Component {
                   <div className="xmodule-item">
                     <div className="xmodule-title">
                       <span>
-                        <b>RealUser XModule</b> - Click / Type / Drag with OS native
-                        events
+                        <b>RealUser XModule</b> - OS yerel olaylarıyla Tıkla / Yaz / Sürükle
                       </span>
                       <a href={getXUserIO().infoLink()} target="_blank">
                         More Info
@@ -2219,9 +2217,9 @@ class Header extends React.Component {
                             .then((data) => {
                               const { installed, version } = data;
                               const msg = installed
-                                ? `Installed (v${version})`
-                                : "Not Installed";
-                              message.info(`status updated: ${msg}`);
+                                ? `Yüklü (v${version})`
+                                : "Yüklü Değil";
+                              message.info(`durum güncellendi: ${msg}`);
 
                               this.setState(
                                 updateIn(
@@ -2242,21 +2240,21 @@ class Header extends React.Component {
                     </div>
 
                     <div className="xmodule-status">
-                      <label>Status:</label>
+                      <label>Durum:</label>
 
                       {this.state.xModuleData[getXUserIO().getName()] &&
-                      this.state.xModuleData[getXUserIO().getName()].installed ? (
+                        this.state.xModuleData[getXUserIO().getName()].installed ? (
                         <div className="status-box">
                           <span>
-                            Installed (v
+                            Yüklü (v
                             {this.state.xModuleData[getXUserIO().getName()].version})
                           </span>
                           <a
                             target="_blank"
                             href={getXUserIO().checkUpdateLink(
                               this.state.xModuleData[getXUserIO().getName()] &&
-                                this.state.xModuleData[getXUserIO().getName()]
-                                  .version,
+                              this.state.xModuleData[getXUserIO().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -2265,9 +2263,9 @@ class Header extends React.Component {
                         </div>
                       ) : (
                         <div className="status-box">
-                          <span>Not Installed</span>
+                          <span>Yüklü Değil</span>
                           <a href={getXUserIO().downloadLink()} target="_blank">
-                            Download it
+                            İndirin
                           </a>
                         </div>
                       )}
@@ -2277,7 +2275,7 @@ class Header extends React.Component {
                   <div className="xmodule-item">
                     <div className="xmodule-title">
                       <span>
-                        <b>DesktopAutomation XModule</b> - Visual Desktop Automation
+                        <b>DesktopAutomation XModule</b> - Görsel Masaüstü Otomasyonu
                       </span>
                       <a href={getXDesktop().infoLink()} target="_blank">
                         More Info
@@ -2290,9 +2288,9 @@ class Header extends React.Component {
                             .then((data) => {
                               const { installed, version } = data;
                               const msg = installed
-                                ? `Installed (v${version})`
-                                : "Not Installed";
-                              message.info(`status updated: ${msg}`);
+                                ? `Yüklü (v${version})`
+                                : "Yüklü Değil";
+                              message.info(`durum güncellendi: ${msg}`);
 
                               this.setState(
                                 updateIn(
@@ -2313,21 +2311,21 @@ class Header extends React.Component {
                     </div>
 
                     <div className="xmodule-status">
-                      <label>Status:</label>
+                      <label>Durum:</label>
 
                       {this.state.xModuleData[getXDesktop().getName()] &&
-                      this.state.xModuleData[getXDesktop().getName()].installed ? (
+                        this.state.xModuleData[getXDesktop().getName()].installed ? (
                         <div className="status-box">
                           <span>
-                            Installed (v
+                            Yüklü (v
                             {this.state.xModuleData[getXDesktop().getName()].version})
                           </span>
                           <a
                             target="_blank"
                             href={getXDesktop().checkUpdateLink(
                               this.state.xModuleData[getXDesktop().getName()] &&
-                                this.state.xModuleData[getXDesktop().getName()]
-                                  .version,
+                              this.state.xModuleData[getXDesktop().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -2336,33 +2334,33 @@ class Header extends React.Component {
                         </div>
                       ) : (
                         <div className="status-box">
-                          <span>Not Installed</span>
+                          <span>Yüklü Değil</span>
                           <a href={getXDesktop().downloadLink()} target="_blank">
-                            Download it
+                            İndirin
                           </a>
                         </div>
                       )}
                     </div>
-                  </div>                
+                  </div>
                 </>
               )
             },
-         {
+            {
               key: "backup",
-              label: "Backup",
+              label: "Yedekleme",
               className: "backup-pane",
               children: (
                 <>
-                  <h4>Automatic Backup</h4>
+                  <h4>Otomatik Yedekleme</h4>
                   <p>
-                    The automatic backup reminder helps to you to regularly export
-                    macros and other data as ZIP archive. As browser extension
-                    Ui.Vision must store its data{" "}
-                    <em>inside the browser extension</em>. This means that when you
-                    uninstall the extension, the data is removed, too. Therefore it is
-                    good to have backups! Note that if the hard drive storage mode of
-                    the File Access XModule is active, then the backup archive
-                    contains these files.
+                    Otomatik yedekleme hatırlatıcısı, makroları ve diğer verileri
+                    düzenli olarak ZIP arşivi olarak dışa aktarmanıza yardımcı olur.
+                    Bir tarayıcı uzantısı olarak Ui.Vision verilerini{" "}
+                    <em>tarayıcı uzantısının içinde</em> saklamak zorundadır. Bu,
+                    uzantıyı kaldırdığınızda verilerin de silineceği anlamına gelir.
+                    Bu nedenle yedeklerin olması iyidir! File Access XModule'ün sabit
+                    disk depolama modu etkinse, yedekleme arşivinin bu dosyaları
+                    içerdiğini unutmayın.
                   </p>
                   <div className="row">
                     <Checkbox
@@ -2371,7 +2369,7 @@ class Header extends React.Component {
                       }
                       checked={this.props.config.enableAutoBackup}
                     />
-                    <span>Show backup reminder every</span>
+                    <span>Yedekleme hatırlatıcısını göster: her</span>
                     <Input
                       type="number"
                       min={1}
@@ -2382,16 +2380,16 @@ class Header extends React.Component {
                       }
                       style={{ width: "60px" }}
                     />
-                    <span> days</span>
+                    <span> günde bir</span>
                   </div>
                   <div className="row">
-                    <p>Backup includes <span style={{fontWeight: "bold"}}>macros, images, and CSV files</span>.</p>                  
+                    <p>Yedekleme <span style={{ fontWeight: "bold" }}>makrolar, görseller ve CSV dosyalarını</span> içerir.</p>
                   </div>
                   <div className="row">
                     <Button type="primary" onClick={() => this.props.runBackup()}>
-                      Run Backup Now
+                      Yedeği Şimdi Çalıştır
                     </Button>
-                    <span> Create a backup ZIP file now.</span>
+                    <span> Şimdi bir yedekleme ZIP dosyası oluşturun.</span>
                   </div>
                   <div style={{ paddingTop: "30px" }} className="row">
                     <Button
@@ -2404,16 +2402,16 @@ class Header extends React.Component {
                         }
                       }}
                     >
-                      Restore Data from Backup
+                      Verileri Yedekten Geri Yükle
                     </Button>
                     <span>
                       {" "}
-                      Select a backup ZIP file to import it (
+                      Içe aktarmak için bir yedek ZIP dosyası seçin (
                       <a
                         href="https://goto.ui.vision/x/idehelp?help=bkup_import"
                         target="_blank"
                       >
-                        more info
+                        daha fazla bilgi
                       </a>
                       ).{" "}
                     </span>
@@ -2439,63 +2437,62 @@ class Header extends React.Component {
                         }).then(
                           (result) => {
                             getStorageManager().emit(StorageManagerEvent.ForceReload);
-                            message.success("Backup restored");
+                            message.success("Yedek geri yüklendi");
 
                             this.props.addLog(
                               "info",
                               [
-                                "Backup restored:",
-                                `${result.count.macro} macros`,
-                                `${result.count.testSuite} test suites`,
-                                `${result.count.csv} csvs`,
-                                `${result.count.screenshot} screenshots`,
-                                `${result.count.vision} vision images`,
+                                "Yedek geri yüklendi:",
+                                `${result.count.macro} makro`,
+                                `${result.count.testSuite} test paketi`,
+                                `${result.count.csv} csv`,
+                                `${result.count.screenshot} ekran görüntüsü`,
+                                `${result.count.vision} görsel`,
                               ].join("\n")
                             );
                           },
                           (e) => {
-                            message.error("Failed to restore: " + e.message);
+                            message.error("Geri yükleme başarısız: " + e.message);
                             console.error(e);
                           }
                         );
                       }}
                     />
                   </div>
-                </>                
+                </>
               )
             },
             {
               key: 'security',
-              label: 'Security',
+              label: 'Güvenlik',
               className: 'security-pane',
-              children:(
+              children: (
                 <>
-                  <h4>Master password for Password Encryption</h4>
+                  <h4>Şifre Şifreleme için Ana Şifre</h4>
                   <p>
-                    A master password is used to encrypt and decrypt all stored
-                    website passwords. The websites passwords are encrypted using
-                    strong encryption.&nbsp;&nbsp;
+                    Ana şifre, saklanan tüm web sitesi şifrelerini şifrelemek ve şifresini çözmek
+                    için kullanılır. Web sitesi şifreleri güçlü şifreleme kullanılarak şifrelenir.&nbsp;&nbsp;
                     <a
                       target="_blank"
                       href="https://goto.ui.vision/x/idehelp?help=encryption"
                     >
-                      More info &gt;&gt;
+                      Daha fazla bilgi &gt;&gt;
                     </a>
                   </p>
                   <div>
                     <Radio.Group
                       value={this.props.config.shouldEncryptPassword}
                     >
-                      <Radio value="no" onClick={() => onConfigChange("shouldEncryptPassword", "no")}>Do not encrypt passwords</Radio>
+                      <Radio value="no" onClick={() => onConfigChange("shouldEncryptPassword", "no")}>Şifreleri şifreleme</Radio>
                       <Radio value="master_password" onClick={() => onConfigChange("shouldEncryptPassword", "master_password")}>
-                        Enter master password here to store it
+                        Ana şifreyi buraya girerek sakla
                       </Radio>
                     </Radio.Group>
 
                     {this.props.config.shouldEncryptPassword === "master_password" ? (
                       <div>
                         <div>
-                          <label>Master password:</label>
+                          <label>Ana şifre:</label>
                           <Input
                             type="password"
                             style={{ width: "200px" }}
@@ -2507,13 +2504,13 @@ class Header extends React.Component {
                         </div>
                         <div>
                           <hr style={{ margin: "20px 0" }} />
-                          <h4>Create encrypted text string</h4>
+                          <h4>Şifrelenmiş metin dizisi oluştur</h4>
                           <p>
-                            The feature uses the master password to encrypt text. The
-                            encrypted string can be used with TYPE, SENDKEY and XTYPE.
+                            Bu özellik metni şifrelemek için ana şifreyi kullanır.
+                            Şifrelenmiş metin TYPE, SENDKEY ve XTYPE ile kullanılabilir.
                           </p>
                           <div className="input-line">
-                            <span className="input-label">Text to encrypt:</span>
+                            <span className="input-label">Şifrelenecek metin:</span>
                             <Input
                               type={this.state.showText ? "text" : "password"}
                               style={{ width: "200px" }}
@@ -2531,11 +2528,11 @@ class Header extends React.Component {
                               }}
                               checked={this.state.showText}
                             >
-                              Show text
+                              Metni göster
                             </Checkbox>
                           </div>
                           <div className="input-line">
-                            <span className="input-label">Encrypted string:</span>
+                            <span className="input-label">Şifrelenmiş metin:</span>
                             <Input
                               readOnly={true}
                               type="text"
@@ -2555,18 +2552,18 @@ class Header extends React.Component {
                                     format: "text/plain",
                                   });
 
-                                  message.success("Copied to clipboard");
+                                  message.success("Panoya kopyalandı");
                                 });
                               }}
                             >
-                              Encrypt &amp; Copy
+                              Şifrele &amp; Kopyala
                             </Button>
 
                             <a
                               href="https://goto.ui.vision/x/idehelp?help=encrypt"
                               target="_blank"
                             >
-                              (More info)
+                              (Daha fazla bilgi)
                             </a>
                           </div>
                         </div>
@@ -2575,22 +2572,22 @@ class Header extends React.Component {
                   </div>
                 </>
               )
-            },{
+            }, {
               key: "selenium",
               label: "Selenium",
               className: "selenium-pane",
               children: (
                 <>
-                  <h4>Import Selenium IDE Projects</h4>
+                  <h4>Selenium IDE Projelerini İçe Aktar</h4>
                   <p>
-                    Import web tests created in the classic Selenium IDE. Unknown
-                    commands (if any) are imported as comments. If you want us to add
-                    a certain not yet supported command, or find any other import
-                    issues, please let us know in the{" "}
+                    Klasik Selenium IDE'de oluşturulan web testlerini içe aktarın. Bilinmeyen
+                    komutlar (varsa) yorum olarak içe aktarılır. Henüz desteklenmeyen belirli
+                    bir komutu eklememizi isterseniz veya başka bir içe aktarma
+                    sorunu bulursanız, lütfen{" "}
                     <a href="https://goto.ui.vision/x/idehelp?help=forum" target="_blank">
-                      user forum
+                      kullanıcı forumunda
                     </a>
-                    .
+                    bize bildirin.
                   </p>
                   <div className="import-row">
                     <input
@@ -2614,22 +2611,20 @@ class Header extends React.Component {
                           importSideProject(sideProject)
                             .then((result) => {
                               const lines = [
-                                `Project "${result.projectName}" import into folder: "${result.folderName}"`,
-                                `- ${result.macros.successCount} ${
-                                  result.macros.successCount === 1
-                                    ? "macro"
-                                    : "macros"
-                                } (imported)`,
-                                `- ${result.suites.ignoreCount} ${
-                                  result.suites.ignoreCount === 1
-                                    ? "test suite"
-                                    : "test suites"
-                                } (test suites are not imported yet)`,
+                                `"${result.projectName}" projesi şu klasöre içe aktarıldı: "${result.folderName}"`,
+                                `- ${result.macros.successCount} ${result.macros.successCount === 1
+                                  ? "macro"
+                                  : "macros"
+                                } (içe aktarıldı)`,
+                                `- ${result.suites.ignoreCount} ${result.suites.ignoreCount === 1
+                                  ? "test suite"
+                                  : "test suites"
+                                } (test paketleri henüz içe aktarılmıyor)`,
                               ];
 
                               this.props.addLog("info", lines.join("\n"));
                               message.success(
-                                `Project "${result.projectName}" import into folder: "${result.folderName}"`
+                                `"${result.projectName}" projesi şu klasöre içe aktarıldı: "${result.folderName}"`
                               );
                             })
                             .catch((e) => {
@@ -2649,18 +2644,18 @@ class Header extends React.Component {
                         }
                       }}
                     >
-                      Import .SIDE projects
+                      .SIDE projelerini içe aktar
                     </Button>
 
                     <span>
-                      Imports projects from Selenium IDE V3.x (
+                      Selenium IDE V3.x (
                       <a
                         href="https://goto.ui.vision/x/idehelp?help=import_side"
                         target="_blank"
                       >
-                        more info
+                        daha fazla bilgi
                       </a>
-                      )
+                      ) projelerini içe aktarır
                     </span>
                   </div>
                   <div className="import-row">
@@ -2702,40 +2697,40 @@ class Header extends React.Component {
                         }
                       }}
                     >
-                      Import .HTML projects
+                      .HTML projelerini içe aktar
                     </Button>
 
                     <span>
-                      Import projects from Selenium IDE V2.x (
+                      Selenium IDE V2.x projelerini içe aktar (
                       <a
                         href="https://goto.ui.vision/x/idehelp?help=import_html"
                         target="_blank"
                       >
-                        more info
+                        daha fazla bilgi
                       </a>
                       )
                     </span>
                   </div>
 
-                  <h4>Web Recording Options</h4>
+                  <h4>Web Kayıt Seçenekleri</h4>
 
                   <Form>
-                    <Form.Item label="Notification" {...displayConfig}>
+                    <Form.Item label="Bildirim" {...displayConfig}>
                       <Checkbox
                         onClick={(e) =>
                           onConfigChange("recordNotification", !e.target.checked)
                         }
                         checked={this.props.config.recordNotification}
                       >
-                        Show notifications when recording
+                        Kayıt sırasında bildirimleri göster
                       </Checkbox>
                     </Form.Item>
                   </Form>
 
-                  <h4>Proxy Options</h4>
+                  <h4>Proxy Seçenekleri</h4>
 
                   <Form>
-                    <Form.Item label="Default Proxy (IP:Port)" {...displayConfig}>
+                    <Form.Item label="Varsayılan Proxy (IP:Port)" {...displayConfig}>
                       <Input
                         type="text"
                         style={{ width: "300px" }}
@@ -2743,10 +2738,10 @@ class Header extends React.Component {
                         onChange={(e) =>
                           onConfigChange("defaultProxy", e.target.value)
                         }
-                        placeholder="eg. http://0.0.0.0:1234"
+                        placeholder="örn. http://0.0.0.0:1234"
                       />
                     </Form.Item>
-                    <Form.Item label="User name, Password" {...displayConfig}>
+                    <Form.Item label="Kullanıcı adı, Şifre" {...displayConfig}>
                       <Input
                         type="text"
                         style={{ width: "300px" }}
@@ -2754,15 +2749,15 @@ class Header extends React.Component {
                         onChange={(e) =>
                           onConfigChange("defaultProxyAuth", e.target.value)
                         }
-                        placeholder="eg. admin, mypassword"
+                        placeholder="örn. admin, benimşifrem"
                       />
                     </Form.Item>
-                    <Form.Item label="Status" {...displayConfig}>
+                    <Form.Item label="Durum" {...displayConfig}>
                       <Radio.Group
                         value={this.props.proxy ? "on" : "off"}
                       >
-                        <Radio value="on" onClick={()=> onChangeProxyStatus('on')}>Proxy ON</Radio>
-                        <Radio value="off" onClick={()=> onChangeProxyStatus('off')}>Proxy OFF</Radio>
+                        <Radio value="on" onClick={() => onChangeProxyStatus('on')}>Proxy AÇIK</Radio>
+                        <Radio value="off" onClick={() => onChangeProxyStatus('off')}>Proxy KAPALI</Radio>
                       </Radio.Group>
 
                       <Checkbox
@@ -2772,23 +2767,23 @@ class Header extends React.Component {
                         checked={this.props.config.turnOffProxyAfterReplay}
                         style={{ marginTop: "10px" }}
                       >
-                        Turn off at end of replay (Proxy controlled by{" "}
+                        Tekrar oynatma sonunda kapat (Proxy şu komut ile kontrol edilir:{" "}
                         <a
                           href="https://goto.ui.vision/x/idehelp?cmd=setproxy"
                           target="_blank"
                         >
-                          setProxy command
+                          setProxy komutu
                         </a>
                         )
-                      </Checkbox>               
+                      </Checkbox>
                     </Form.Item>
-                  </Form>                
-                </>                
+                  </Form>
+                </>
               )
             },
             {
               key: 'register',
-              label: 'Pro|Enterprise',
+              label: 'Pro|Kurumsal',
               className: 'register-pane',
               children: (
                 <>
@@ -2797,21 +2792,17 @@ class Header extends React.Component {
                       inactive: !getLicenseService().hasNoLicense(),
                     })}
                   >
-                    <p>Open-Source Ui.Vision PRO and Enterprise Editions are available 
-					  for users requiring Enterprise capabilities,
-					  including direct file storage, update management, and priority support services. 
-					  Should you have already acquired a license key for either the PRO or Enterprise Edition,
-					  please proceed to enter it below:
+                    <p>Kurumsal yetenekler, doğrudan dosya depolama, güncelleme yönetimi ve öncelikli destek hizmetleri gerektiren kullanıcılar için Açık Kaynak Ui.Vision PRO ve Kurumsal Sürümleri mevcuttur. Zaten PRO veya Kurumsal Sürüm lisans anahtarını aldıysanız, lütfen aşağıya girin:
                     </p>
                     <div className="actions">
                       <a href={getLicenseService().getUpgradeUrl()} target="_blank">
-                        Click here to upgrade.
+                        Yükseltmek için buraya tıklayın.
                       </a>
                     </div>
                   </div>
 
                   <div className="register-form">
-                    <label>Enter license key:</label>
+                    <label>Lisans anahtarını girin:</label>
                     <div className="register-row">
                       <Input
                         value={this.state.registerKey}
@@ -2827,7 +2818,7 @@ class Header extends React.Component {
                         loading={this.state.isCheckingLicense}
                         onClick={this.checkRegisterKey}
                       >
-                        Check Key
+                        Anahtarı Kontrol Et
                       </Button>
                     </div>
                   </div>
@@ -2835,55 +2826,247 @@ class Header extends React.Component {
                   <div className="register-status">
                     {getLicenseService().hasNoLicense() ? (
                       <div>
-                        <span>License status: </span>
+                        <span>Lisans durumu: </span>
                         <b>
                           {this.isEitherXModuleInstalled()
-                            ? getLicenseService().getEditionName() + " active"
-                            : "Not installed"}
+                            ? getLicenseService().getEditionName() + " aktif"
+                            : "Yüklü değil"}
                         </b>
                         .
                         <a href={getLicenseService().getUpgradeUrl()} target="_blank">
-                          Upgrade to Ui.Vision PRO or Enterprise
+                          Ui.Vision PRO veya Kurumsal'a Yükselt
                         </a>
                       </div>
                     ) : null}
 
                     {getLicenseService().isPersonalLicense() ? (
                       <div>
-                        XModules status:{" "}
-                        <b>{getLicenseService().getEditionName()} active</b>.
+                        XModules durumu:{" "}
+                        <b>{getLicenseService().getEditionName()} aktif</b>.
                         <a href={getLicenseService().getUpgradeUrl()} target="_blank">
-                          Upgrade to PRO or Enterprise
+                          PRO veya Kurumsal'a Yükselt
                         </a>
                       </div>
                     ) : null}
 
                     {getLicenseService().isProLicense() ? (
                       <div>
-                        XModules status:{" "}
-                        <b>{getLicenseService().getEditionName()} active</b>.
+                        XModules durumu:{" "}
+                        <b>{getLicenseService().getEditionName()} aktif</b>.
                         <a href={getLicenseService().getUpgradeUrl()} target="_blank">
-                          Contact Support
+                          Destekle İletişime Geç
                         </a>
                       </div>
                     ) : null}
 
                     {getLicenseService().isPlayerLicense() ? (
                       <div>
-                        XModules status:{" "}
-                        <b>{getLicenseService().getEditionName()} active</b>.
+                        XModules durumu:{" "}
+                        <b>{getLicenseService().getEditionName()} aktif</b>.
                         <a href={getLicenseService().getUpgradeUrl()} target="_blank">
-                          Contact Support
+                          Destekle İletişime Geç
                         </a>
                       </div>
                     ) : null}
                   </div>
                 </>
               )
+            },
+            {
+              key: 'floating-buttons',
+              label: 'Butonlar',
+              children: (
+                <>
+                  <div style={{ marginBottom: '16px' }}>
+                    <p style={{ marginBottom: '8px', color: '#666' }}>
+                      Web sayfalarına makro çalıştırma butonları ekleyin. Butonlar belirtilen URL'lerde otomatik olarak görünür.
+                    </p>
+                  </div>
+
+                  <div style={{ marginBottom: '16px', padding: '12px', background: '#f5f5f5', borderRadius: '6px' }}>
+                    <h4 style={{ margin: '0 0 12px 0' }}>Yeni Buton Ekle</h4>
+                    <Form layout="vertical">
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <Form.Item label="URL Kalıbı (örn: *youtube.com*)">
+                            <Input
+                              value={this.state.newButtonUrlPattern || ''}
+                              onChange={(e) => this.setState({ newButtonUrlPattern: e.target.value })}
+                              placeholder="*youtube.com*"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item label="Makro Adı">
+                            <Input
+                              value={this.state.newButtonMacroName || ''}
+                              onChange={(e) => this.setState({ newButtonMacroName: e.target.value })}
+                              placeholder="makro_adi"
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={8}>
+                          <Form.Item label="Buton Yazısı">
+                            <Input
+                              value={this.state.newButtonLabel || ''}
+                              onChange={(e) => this.setState({ newButtonLabel: e.target.value })}
+                              placeholder="▶ Çalıştır"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                          <Form.Item label="Konum">
+                            <Select
+                              value={this.state.newButtonPosition || 'bottom-right'}
+                              onChange={(val) => this.setState({ newButtonPosition: val })}
+                              style={{ width: '100%' }}
+                            >
+                              <Select.Option value="bottom-right">Sağ Alt</Select.Option>
+                              <Select.Option value="bottom-left">Sol Alt</Select.Option>
+                              <Select.Option value="top-right">Sağ Üst</Select.Option>
+                              <Select.Option value="top-left">Sol Üst</Select.Option>
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                          <Form.Item label="Renk">
+                            <Input
+                              type="color"
+                              value={this.state.newButtonColor || '#4CAF50'}
+                              onChange={(e) => this.setState({ newButtonColor: e.target.value })}
+                              style={{ width: '100%', height: '32px', padding: '2px' }}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          const urlPattern = this.state.newButtonUrlPattern?.trim()
+                          const macroName = this.state.newButtonMacroName?.trim()
+                          const label = this.state.newButtonLabel?.trim() || '▶ Çalıştır'
+                          const position = this.state.newButtonPosition || 'bottom-right'
+                          const color = this.state.newButtonColor || '#4CAF50'
+
+                          if (!urlPattern || !macroName) {
+                            message.error('URL kalıbı ve makro adı zorunludur')
+                            return
+                          }
+
+                          const newButton = {
+                            id: Date.now().toString(),
+                            urlPattern,
+                            macroName,
+                            label,
+                            position,
+                            color
+                          }
+
+                          const currentButtons = this.props.config.floatingButtons || []
+                          onConfigChange('floatingButtons', [...currentButtons, newButton])
+
+                          this.setState({
+                            newButtonUrlPattern: '',
+                            newButtonMacroName: '',
+                            newButtonLabel: '',
+                            newButtonPosition: 'bottom-right',
+                            newButtonColor: '#4CAF50'
+                          })
+
+                          message.success('Buton eklendi!')
+                        }}
+                      >
+                        Ekle
+                      </Button>
+                    </Form>
+                  </div>
+
+                  <div>
+                    <h4>Mevcut Butonlar</h4>
+                    {(!this.props.config.floatingButtons || this.props.config.floatingButtons.length === 0) ? (
+                      <p style={{ color: '#999' }}>Henüz buton eklenmedi.</p>
+                    ) : (
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr style={{ background: '#fafafa' }}>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Sıra</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>URL Kalıbı</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Makro</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Yazı</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Konum</th>
+                            <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>İşlem</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(this.props.config.floatingButtons || []).map((btn, index) => (
+                            <tr key={btn.id}>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                                <Button.Group>
+                                  <Button
+                                    size="small"
+                                    disabled={index === 0}
+                                    onClick={() => {
+                                      const buttons = [...this.props.config.floatingButtons];
+                                      if (index > 0) {
+                                        [buttons[index - 1], buttons[index]] = [buttons[index], buttons[index - 1]];
+                                        onConfigChange('floatingButtons', buttons);
+                                      }
+                                    }}
+                                  >⬆️</Button>
+                                  <Button
+                                    size="small"
+                                    disabled={index === (this.props.config.floatingButtons.length - 1)}
+                                    onClick={() => {
+                                      const buttons = [...this.props.config.floatingButtons];
+                                      if (index < buttons.length - 1) {
+                                        [buttons[index], buttons[index + 1]] = [buttons[index + 1], buttons[index]];
+                                        onConfigChange('floatingButtons', buttons);
+                                      }
+                                    }}
+                                  >⬇️</Button>
+                                </Button.Group>
+                              </td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.urlPattern}</td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.macroName}</td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                                <span style={{
+                                  background: btn.color,
+                                  color: '#fff',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px'
+                                }}>
+                                  {btn.label}
+                                </span>
+                              </td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.position}</td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
+                                <Button
+                                  size="small"
+                                  danger
+                                  onClick={() => {
+                                    const updatedButtons = this.props.config.floatingButtons.filter(b => b.id !== btn.id)
+                                    onConfigChange('floatingButtons', updatedButtons)
+                                    message.success('Buton silindi')
+                                  }}
+                                >
+                                  Sil
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                </>
+              )
             }
-          
+
           ]}
-        >          
+        >
         </Tabs>
       </Modal>
     );
@@ -2894,7 +3077,7 @@ class Header extends React.Component {
     const renderInner = () => {
       switch (status) {
         case C.APP_STATUS.RECORDER:
-          return "Recording";
+          return "Kayıt yapılıyor";
 
         case C.APP_STATUS.PLAYER: {
           switch (player.status) {
@@ -2924,7 +3107,7 @@ class Header extends React.Component {
             }
 
             case C.PLAYER_STATUS.PAUSED:
-              return "Player paused";
+              return "Oynatıcı duraklatıldı";
 
             default:
               return "";
@@ -2963,7 +3146,7 @@ class Header extends React.Component {
       return (
         <div className="actions">
           <Button onClick={this.onToggleRecord} style={{ color: "#ff0000" }}>
-            <span>Stop Record</span>
+            <span>Kaydı Durdur</span>
           </Button>
         </div>
       );
@@ -2975,10 +3158,10 @@ class Header extends React.Component {
           <div className="actions">
             <Button.Group>
               <Button onClick={() => this.getPlayer().stop()}>
-                <span>Stop</span>
+                <span>Durdur</span>
               </Button>
               <Button onClick={() => this.getPlayer("testCase").pause()}>
-                <span>Pause</span>
+                <span>Duraklat</span>
               </Button>
             </Button.Group>
           </div>
@@ -2991,12 +3174,12 @@ class Header extends React.Component {
             <Button.Group>
               {this.props.player.mode === C.PLAYER_MODE.TEST_CASE ? (
                 <Button onClick={() => this.getPlayer("testCase").resume(true)}>
-                  Step
+                  Adım
                 </Button>
               ) : null}
-              <Button onClick={() => this.getPlayer().stop()}>Stop</Button>
+              <Button onClick={() => this.getPlayer().stop()}>Durdur</Button>
               <Button onClick={() => this.getPlayer("testCase").resume()}>
-                Resume
+                Devam Et
               </Button>
             </Button.Group>
           </div>
@@ -3010,18 +3193,18 @@ class Header extends React.Component {
               disabled={!getLicenseService().canPerform(Feature.Record)}
               onClick={this.onToggleRecord}
             >
-              <span>Record</span>
+              <span>Kaydet</span>
             </Button>
 
             <Button.Group className="play-actions">
-              <Button onClick={() => this.playCurrentMacro(true)}>Step</Button>
+              <Button onClick={() => this.playCurrentMacro(true)}>Adım</Button>
               <Dropdown.Button
                 onClick={() => this.playCurrentMacro(false)}
                 menu={{
                   items: [
                     {
                       key: "play_loop",
-                      label: "Play loop..",
+                      label: "Döngüyü oynat..",
                       disabled: false,
                     },
                   ],
@@ -3030,7 +3213,7 @@ class Header extends React.Component {
                   trigger: ["click"],
                 }}
               >
-                <span>Play Macro</span>
+                <span>Makroyu Oynat</span>
               </Dropdown.Button>
             </Button.Group>
             {/* <Button onClick={async() => {
@@ -3067,15 +3250,15 @@ class Header extends React.Component {
     return (
       <div className="select-case">
         <span
-          title={src ? src.name : "Untitled"}
+          title={src ? src.name : "Başlıksız"}
           className={"test-case-name " + klass}
         >
-          {src ? src.name : "Untitled"}
+          {src ? src.name : "Başlıksız"}
         </span>
 
         {!isPlayerStopped ? null : (
           <Button disabled={saveBtnState.disabled} onClick={this.onClickSave}>
-            <span>{saveBtnState.text}</span>
+            <span>{saveBtnState.text === "Save" ? "Kaydet" : "Kaydet.."}</span>
           </Button>
         )}
       </div>

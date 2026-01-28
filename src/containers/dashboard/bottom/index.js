@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators }  from 'redux'
+import { bindActionCreators } from 'redux'
 import {
   Button, Dropdown, Menu, Input, Table, Checkbox,
   Select, Modal, message, Tabs
@@ -60,8 +60,8 @@ class DashboardBottom extends React.Component {
     // refer to https://stackoverflow.com/questions/33434275/firefox-on-drag-end-is-not-called-in-a-react-component
     e.dataTransfer.setData('text', '')
 
-    const style   = window.getComputedStyle(this.$dom)
-    const height  = parseInt(style.height)
+    const style = window.getComputedStyle(this.$dom)
+    const height = parseInt(style.height)
 
     this.setState(
       setIn(['drag'], {
@@ -81,8 +81,8 @@ class DashboardBottom extends React.Component {
     // reference:
     // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
     // https://developer.mozilla.org/en-US/docs/Web/Events/dragend
-    const diff    = e.screenY - this.state.drag.startY
-    const height  = this.state.drag.lastHeight - diff
+    const diff = e.screenY - this.state.drag.startY
+    const height = this.state.drag.lastHeight - diff
 
     this.setState(
       setIn(['drag'], {
@@ -92,21 +92,21 @@ class DashboardBottom extends React.Component {
         currentMinHeight: height
       })
     )
-    
+
     this.props.onBottomPanelHeightChange(height)
   }
 
   onFileChange = (e) => {
-    const csvStorage  = getStorageManager().getCSVStorage()
-    const files       = [].slice.call(e.target.files)
-    if (!files || !files.length)  return
+    const csvStorage = getStorageManager().getCSVStorage()
+    const files = [].slice.call(e.target.files)
+    if (!files || !files.length) return
 
     const read = (file) => {
       return new Promise((resolve, reject) => {
-        const reader  = new FileReader()
+        const reader = new FileReader()
 
         reader.onload = (readerEvent) => {
-          const text  = readerEvent.target.result
+          const text = readerEvent.target.result
           resolve({
             text,
             fileName: file.name
@@ -118,30 +118,30 @@ class DashboardBottom extends React.Component {
     }
 
     Promise.all(files.map(read))
-    .then(list => {
-      const names = list.map(item => item.fileName)
-      const ps    = list.map(fileItem => csvStorage.write(sanitizeFileName(fileItem.fileName), new Blob([fileItem.text])))
+      .then(list => {
+        const names = list.map(item => item.fileName)
+        const ps = list.map(fileItem => csvStorage.write(sanitizeFileName(fileItem.fileName), new Blob([fileItem.text])))
 
-      return Promise.all(ps).then(() => this.props.listCSV())
-      .then(() => {
-        message.info(`${list.length} csv files imported`)
-        this.props.addLog('info', `${list.length} csv files imported: ${names.join(', ')}`)
+        return Promise.all(ps).then(() => this.props.listCSV())
+          .then(() => {
+            message.info(`${list.length} csv files imported`)
+            this.props.addLog('info', `${list.length} csv files imported: ${names.join(', ')}`)
+          })
       })
-    })
-    .catch(e => {
-      this.props.addLog('error', e.message)
-    })
+      .catch(e => {
+        this.props.addLog('error', e.message)
+      })
   }
 
   removeCSV = (csv) => {
-    const csvStorage  = getStorageManager().getCSVStorage()
+    const csvStorage = getStorageManager().getCSVStorage()
 
     csvStorage.remove(csv.name)
-    .then(() => this.props.listCSV())
-    .then(() => {
-      message.success(`successfully deleted`)
-      this.props.addLog('info', `${csv.name} deleted`)
-    })
+      .then(() => this.props.listCSV())
+      .then(() => {
+        message.success(`successfully deleted`)
+        this.props.addLog('info', `${csv.name} deleted`)
+      })
   }
 
   viewCSV = (csv) => {
@@ -150,24 +150,24 @@ class DashboardBottom extends React.Component {
 
   downloadCSV = (csv) => {
     getStorageManager().getCSVStorage().read(csv.fullPath, 'Text')
-    .then(text => {
-      const blob = new Blob([text])
-      FileSaver.saveAs(blob, csv.name)
-    })
+      .then(text => {
+        const blob = new Blob([text])
+        FileSaver.saveAs(blob, csv.name)
+      })
   }
 
   onImageFileChange = (e) => {
     const files = [].slice.call(e.target.files)
-    if (!files || !files.length)  return
+    if (!files || !files.length) return
 
     const read = (file) => {
       return new Promise((resolve, reject) => {
-        const reader  = new FileReader()
+        const reader = new FileReader()
 
         reader.onload = (readerEvent) => {
           try {
-            const dataUrl   = readerEvent.target.result
-            const obj       = storeImage({ dataUrl, name: file.name })
+            const dataUrl = readerEvent.target.result
+            const obj = storeImage({ dataUrl, name: file.name })
             resolve(obj)
           } catch (e) {
             resolve({ err: e, fileName: file.name })
@@ -182,32 +182,32 @@ class DashboardBottom extends React.Component {
       return uniqueName(name, {
         check: (name) => {
           return getStorageManager()
-          .getVisionStorage()
-          .exists(name)
-          .then(result => !result)
+            .getVisionStorage()
+            .exists(name)
+            .then(result => !result)
         }
       })
-      .then(fileName => {
-        return getStorageManager()
-        .getVisionStorage()
-        .write(sanitizeFileName(fileName), dataURItoBlob(dataUrl))
-        .then(() => fileName)
-      })
-      .catch(e => {
-        log.error(e.stack)
-      })
+        .then(fileName => {
+          return getStorageManager()
+            .getVisionStorage()
+            .write(sanitizeFileName(fileName), dataURItoBlob(dataUrl))
+            .then(() => fileName)
+        })
+        .catch(e => {
+          log.error(e.stack)
+        })
     }
 
     Promise.all(files.map(read))
-    .then(fileNames => {
-      message.success(`${fileNames.length} image files imported into Vision tab`)
-      this.props.addLog('info', `${fileNames.length} image files imported: ${fileNames.join(', ')}`)
-      this.props.listVisions()
-    })
-    .catch(e => {
-      log.error(e.stack)
-      this.props.addLog('error', e.message)
-    })
+      .then(fileNames => {
+        message.success(`${fileNames.length} image files imported into Vision tab`)
+        this.props.addLog('info', `${fileNames.length} image files imported: ${fileNames.join(', ')}`)
+        this.props.listVisions()
+      })
+      .catch(e => {
+        log.error(e.stack)
+        this.props.addLog('error', e.message)
+      })
   }
 
   viewVision = (filePath) => {
@@ -216,16 +216,16 @@ class DashboardBottom extends React.Component {
 
   renameVision = (oldName, newName) => {
     return getStorageManager()
-    .getVisionStorage()
-    .rename(oldName, ensureExtName('.png', newName))
-    .then(() => {
-      message.success('Successfully renamed')
-      this.props.listVisions()
-    })
-    .catch(e => {
-      message.error(e.message)
-      throw e
-    })
+      .getVisionStorage()
+      .rename(oldName, ensureExtName('.png', newName))
+      .then(() => {
+        message.success('Başarıyla yeniden adlandırıldı')
+        this.props.listVisions()
+      })
+      .catch(e => {
+        message.error(e.message)
+        throw e
+      })
   }
 
   isVisionNameValid = (name) => {
@@ -240,20 +240,20 @@ class DashboardBottom extends React.Component {
         return baseName
       })
     )
-    .then(
-      () => {
-        return getStorageManager()
-        .getVisionStorage()
-        .exists(name)
-        .then(result => {
-          if (result) {
-            message.error(`'${name}' already exists`)
-          }
-          return !result
-        })
-      },
-      () => false
-    )
+      .then(
+        () => {
+          return getStorageManager()
+            .getVisionStorage()
+            .exists(name)
+            .then(result => {
+              if (result) {
+                message.error(`'${name}' already exists`)
+              }
+              return !result
+            })
+        },
+        () => false
+      )
   }
 
   duplicateVision = (name) => {
@@ -262,19 +262,19 @@ class DashboardBottom extends React.Component {
 
   deleteVision = (name) => {
     return Modal.confirm({
-      title: 'Sure to delete?',
-      okText: 'Delete',
+      title: 'Silmek istediğinizden emin misiniz?',
+      okText: 'Sil',
       onOk: () => {
         return getStorageManager()
-        .getVisionStorage()
-        .remove(name)
-        .then(() => {
-          message.success('Successfully deleted')
-          this.props.listVisions()
-        })
-        .catch(e => {
-          log.error(e)
-        })
+          .getVisionStorage()
+          .remove(name)
+          .then(() => {
+            message.success('Başarıyla silindi')
+            this.props.listVisions()
+          })
+          .catch(e => {
+            log.error(e)
+          })
       },
       onCancel: () => {
         return Promise.resolve(true)
@@ -286,7 +286,7 @@ class DashboardBottom extends React.Component {
     const { config, selectedCommand: selectedCmd } = this.props
     const selectedCmdIsVisualSearch = (() => {
       if (!selectedCmd) return false
-      if (isCVTypeForDesktop(config.cvScope) && selectedCmd.cmd === 'visionLimitSearchArea')  return true
+      if (isCVTypeForDesktop(config.cvScope) && selectedCmd.cmd === 'visionLimitSearchArea') return true
 
       return [
         'visionFind', 'visualSearch',
@@ -297,7 +297,7 @@ class DashboardBottom extends React.Component {
     })()
 
     if (!selectedCmdIsVisualSearch) {
-      return message.error(`Image names can only be added to the target box if a vision related command is selected`)
+      return message.error(`Görüntü adları sadece görsel ile ilgili bir komut seçildiğinde hedef kutusuna eklenebilir`)
     }
 
     this.props.updateSelectedCommand({ target: filePath })
@@ -308,33 +308,33 @@ class DashboardBottom extends React.Component {
     const visionStorage = getStorageManager().getVisionStorage()
 
     visionStorage.list()
-    .then(visions => {
-      if (visions.length === 0) {
-        return message.error('No vision to export')
-      }
+      .then(visions => {
+        if (visions.length === 0) {
+          return message.error('Dışa aktarılacak görsel yok')
+        }
 
-      const ps = visions.map(ss => {
-        return visionStorage.read(ss.fullPath, 'ArrayBuffer')
-        .then(buffer => {
-          zip.file(ss.name, buffer, { binary: true })
+        const ps = visions.map(ss => {
+          return visionStorage.read(ss.fullPath, 'ArrayBuffer')
+            .then(buffer => {
+              zip.file(ss.name, buffer, { binary: true })
+            })
         })
-      })
 
-      return Promise.all(ps)
-      .then(() => {
-        zip.generateAsync({ type: 'blob' })
-        .then(function (blob) {
-          FileSaver.saveAs(blob, 'vision-images-export.zip');
-        })
+        return Promise.all(ps)
+          .then(() => {
+            zip.generateAsync({ type: 'blob' })
+              .then(function (blob) {
+                FileSaver.saveAs(blob, 'vision-images-export.zip');
+              })
+          })
       })
-    })
   }
 
   downloadScreenshot = (name, fullPath) => {
     return getStorageManager().getScreenshotStorage().read(fullPath, 'ArrayBuffer')
-    .then(buffer => {
-      FileSaver.saveAs(new Blob([new Uint8Array(buffer)]), name)
-    })
+      .then(buffer => {
+        FileSaver.saveAs(new Blob([new Uint8Array(buffer)]), name)
+      })
   }
 
   toggleBottom = () => {
@@ -343,13 +343,13 @@ class DashboardBottom extends React.Component {
     })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     getStorageManager().on(StorageManagerEvent.StrategyTypeChanged, (type) => {
       this.forceUpdate()
     })
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.logs.length !== this.props.logs.length) {
       const $logContent = document.querySelector('.log-content')
 
@@ -379,13 +379,13 @@ class DashboardBottom extends React.Component {
 
       setTimeout(() => {
         const $dom = document.getElementById(toFocus.name)
-        if (!$dom)  return
+        if (!$dom) return
         $dom.scrollIntoView({ block: 'center', behavior: 'smooth' })
       }, 100)
     }
   }
 
-  logStyle (log) {
+  logStyle(log) {
     // console.log('logStyle:>> ', log)
     // this comes from 'aiComputerUse'
     if (log.type === 'a') {
@@ -401,7 +401,7 @@ class DashboardBottom extends React.Component {
     }
   }
 
-  prefixHardDisk (str) {
+  prefixHardDisk(str) {
     const isXFileMode = getStorageManager().isXFileMode()
     if (!isXFileMode) return str
 
@@ -420,12 +420,12 @@ class DashboardBottom extends React.Component {
             height: '15px'
           }}
         />
-        <span>{ str }</span>
+        <span>{str}</span>
       </div>
     )
   }
 
-  shouldUseFileSaverForDownloadingScreenshot () {
+  shouldUseFileSaverForDownloadingScreenshot() {
     if (Ext.isFirefox()) {
       return true
     }
@@ -433,7 +433,7 @@ class DashboardBottom extends React.Component {
     return getStorageManager().isXFileMode()
   }
 
-  shouldRenderLogStack (log) {
+  shouldRenderLogStack(log) {
     if (log.stack.length <= 1) {
       return false
     }
@@ -451,7 +451,7 @@ class DashboardBottom extends React.Component {
     }
   }
 
-  renderCSVModal () {
+  renderCSVModal() {
     return (
       <Modal
         title={`Preview - ${this.state.csvFile}`}
@@ -470,11 +470,11 @@ class DashboardBottom extends React.Component {
     )
   }
 
-  renderCSVTable () {
+  renderCSVTable() {
     if (!this.props.shouldLoadResources) {
       return (
         <ResourceNotLoaded
-          name="CSV list"
+          name="CSV listesi"
           from={this.props.from}
           showList={() => {
             this.props.setFrom(RunBy.Manual)
@@ -488,7 +488,7 @@ class DashboardBottom extends React.Component {
     }
 
     if (this.props.isPlaying && this.props.csvs.length > config.performanceLimit.fileCount) {
-      return <div className="hidden-during-replay">{ M.contentHidden }</div>
+      return <div className="hidden-during-replay">{M.contentHidden}</div>
     }
 
     return (
@@ -501,12 +501,12 @@ class DashboardBottom extends React.Component {
     )
   }
 
-  renderVisionSection () {
+  renderVisionSection() {
     if (!this.props.shouldLoadResources) {
       return (
         <div className="vision-content">
           <ResourceNotLoaded
-            name="Image list"
+            name="Görsel listesi"
             from={this.props.from}
             showList={() => {
               this.props.setFrom(RunBy.Manual)
@@ -524,7 +524,7 @@ class DashboardBottom extends React.Component {
               <span
                 className="load-image-button ant-btn ant-btn-primary"
               >
-                <label htmlFor="select_image_files">Load Image</label>
+                <label htmlFor="select_image_files">Görsel Yükle</label>
                 <input
                   multiple
                   type="file"
@@ -532,13 +532,13 @@ class DashboardBottom extends React.Component {
                   id="select_image_files"
                   onChange={this.onImageFileChange}
                   ref={ref => { this.imageFileInput = ref }}
-                  style={{display: 'none'}}
+                  style={{ display: 'none' }}
                 />
               </span>
               <Button
                 onClick={this.exportAllVisions}
               >
-                Export All
+                Tümünü Dışa Aktar
               </Button>
             </div>
 
@@ -550,22 +550,22 @@ class DashboardBottom extends React.Component {
                 onChange: e => this.setState({ searchImageText: e.target.value })
               }}
             /> */}
-            <Input.Search style={{ flex: 0.8 }} placeholder="Search image" onChange={e => this.setState({ searchImageText: e.target.value })} />
+            <Input.Search style={{ flex: 0.8 }} placeholder="Görsel ara" onChange={e => this.setState({ searchImageText: e.target.value })} />
           </div>
-          <a className="more-info" target="_blank" href="https://goto.ui.vision/x/idehelp?help=visual">More Info</a>
+          <a className="more-info" target="_blank" href="https://goto.ui.vision/x/idehelp?help=visual">Daha Fazla Bilgi</a>
         </div>
         {this.renderVisionTable()}
       </div>
     )
   }
 
-  renderVisionTable () {
+  renderVisionTable() {
     if (this.state.activeTabForLogScreenshot !== 'Vision') {
       return null
     }
 
     if (this.props.isPlaying && this.props.visions.length > config.performanceLimit.fileCount) {
-      return <div className="hidden-during-replay">{ M.contentHidden }</div>
+      return <div className="hidden-during-replay">{M.contentHidden}</div>
     }
 
     if (!this.$dom) {
@@ -587,7 +587,7 @@ class DashboardBottom extends React.Component {
     )
   }
 
-  renderScreenshots () {
+  renderScreenshots() {
     if (this.state.activeTabForLogScreenshot !== 'Screenshots') {
       return null
     }
@@ -605,18 +605,18 @@ class DashboardBottom extends React.Component {
     )
   }
 
-  renderVariableTable () {
+  renderVariableTable() {
     if (this.state.activeTabForLogScreenshot !== 'Variables') {
       return null
     }
 
     const columns = [
-      { title: 'Name',    dataIndex: 'key',      key: 'key',    width: '40%' },
-      { title: 'Value',   dataIndex: 'value',    key: 'value',  render: (val) => JSON.stringify(val) || 'undefined' }
+      { title: 'Ad', dataIndex: 'key', key: 'key', width: '40%' },
+      { title: 'Değer', dataIndex: 'value', key: 'value', render: (val) => JSON.stringify(val) || 'undefined' }
     ]
     const { showCommonInternalVariables, showAdvancedInternalVariables } = this.props.config
     const filter = createVarsFilter({
-      withCommonInternal:   showCommonInternalVariables,
+      withCommonInternal: showCommonInternalVariables,
       withAdvancedInternal: showAdvancedInternalVariables
     })
     const variables = this.props.variables.filter(variable => filter(variable.key))
@@ -633,7 +633,7 @@ class DashboardBottom extends React.Component {
       },
       rowClassName: (record, index) => {
         const vars = getVarsInstance()
-        if (!vars)  return ''
+        if (!vars) return ''
         return vars.isReadOnly(record.key) ? 'read-only' : ''
       }
     }
@@ -641,7 +641,7 @@ class DashboardBottom extends React.Component {
     return <Table {...tableConfig} />
   }
 
-  renderLogStack (log) {
+  renderLogStack(log) {
     // Don't care about the top element in stack
     const stack = log.stack.slice(0, -1).reverse()
 
@@ -676,13 +676,13 @@ class DashboardBottom extends React.Component {
 
   logLinkPatterns = [
     [/Error #101/i, 'https://goto.ui.vision/x/idehelp?help=error101'],
-	[/Error #120/i, 'https://goto.ui.vision/x/idehelp?help=error120'],
-	[/Error #121/i, 'https://goto.ui.vision/x/idehelp?help=error121'],
-	[/Error #170/i, 'https://goto.ui.vision/x/idehelp?help=error179'],
-	[/Error #220/i, 'https://goto.ui.vision/x/idehelp?help=error220']	
+    [/Error #120/i, 'https://goto.ui.vision/x/idehelp?help=error120'],
+    [/Error #121/i, 'https://goto.ui.vision/x/idehelp?help=error121'],
+    [/Error #170/i, 'https://goto.ui.vision/x/idehelp?help=error179'],
+    [/Error #220/i, 'https://goto.ui.vision/x/idehelp?help=error220']
   ]
 
-  appendLinkIfPatternMatched (text) {
+  appendLinkIfPatternMatched(text) {
     const linksToAdd = []
 
     this.logLinkPatterns.forEach((item) => {
@@ -707,7 +707,7 @@ class DashboardBottom extends React.Component {
     )
   }
 
-  renderLogText (log) {
+  renderLogText(log) {
     if (typeof log.text === 'function') {
       return log.text({ renderText: this.renderLogText.bind(this) })
     }
@@ -718,8 +718,8 @@ class DashboardBottom extends React.Component {
 
     const content = (() => {
       if (/XClick\/XClickText\/XClickTextRelative\/XMoveText\/XMove\/XType \d+ commands limit reached/.test(log.text) ||
-          /OCR conversion limit reached/.test(log.text) ||
-          /PROXY \d+ commands? limit reached/.test(log.text)) {
+        /OCR conversion limit reached/.test(log.text) ||
+        /PROXY \d+ commands? limit reached/.test(log.text)) {
         const licenceType = (() => {
           if (getLicenseService().hasNoLicense()) {
             return 'PRO'
@@ -745,7 +745,7 @@ class DashboardBottom extends React.Component {
                 this.props.updateUI({ showSettings: true, settingsTab: 'register' })
               }}
             >
-              Get a {licenceType} license key to remove this limit
+              Bu limiti kaldırmak için {licenceType} lisans anahtarı edinin
             </a>
           </span>
         )
@@ -754,7 +754,7 @@ class DashboardBottom extends React.Component {
       if (/(XModule|xFile) is not installed yet/.test(log.text)) {
         return (
           <span>
-            <span>{log.text}</span>
+            <span>{log.text.replace('RealUser Simulation XModule is not installed yet', 'RealUser Simülasyon XModule henüz yüklenmedi').replace('XFileAccess XModule is not installed yet', 'XFileAccess XModule henüz yüklenmedi')}</span>
             <a
               href="#"
               style={{ marginLeft: '10px' }}
@@ -763,7 +763,7 @@ class DashboardBottom extends React.Component {
                 this.props.updateUI({ showSettings: true, settingsTab: 'xmodules' })
               }}
             >
-              Install now
+              Şimdi yükle
             </a>
           </span>
         )
@@ -772,7 +772,7 @@ class DashboardBottom extends React.Component {
       if (/OCR feature disabled/.test(log.text)) {
         return (
           <span>
-            <span>OCR feature disabled. Please enable it in the </span>
+            <span>OCR özelliği devre dışı. Lütfen etkinleştirin: </span>
             <a
               href="#"
               onClick={e => {
@@ -780,7 +780,7 @@ class DashboardBottom extends React.Component {
                 this.props.updateUI({ showSettings: true, settingsTab: 'ocr' })
               }}
             >
-              OCR Settings
+              OCR Ayarları
             </a>
           </span>
         )
@@ -817,23 +817,23 @@ class DashboardBottom extends React.Component {
           )}
         </a>
         <span>: </span>
-        { content }
+        {content}
       </span>
     )
   }
 
-  render () {
+  render() {
     const { activeTabForLogScreenshot } = this.state
     const filters = {
-      'All':    () => true,
-      'Echo':   (item) => item.type === 'echo' || (item.type === 'error' && (!item.options || !item.options.ignored)),
-      'Echo_And_Status':   (item) => item.type === 'echo' || (item.type === 'error' && (!item.options || !item.options.ignored)) || item.type === 'status',
+      'All': () => true,
+      'Echo': (item) => item.type === 'echo' || (item.type === 'error' && (!item.options || !item.options.ignored)),
+      'Echo_And_Status': (item) => item.type === 'echo' || (item.type === 'error' && (!item.options || !item.options.ignored)) || item.type === 'status',
       // 'Info':   (item) => item.type === 'info' || item.type === 'echo' || item.type === 'reflect' || item.type === 'status',
-      'Error':  (item) => item.type === 'error' || item.type === 'report',
-      'None':   () => false
+      'Error': (item) => item.type === 'error' || item.type === 'report',
+      'None': () => false
     }
     const logFilter = this.props.config.logFilter || 'All'
-    const logs      = this.props.logs.filter(filters[logFilter] || (() => true));
+    const logs = this.props.logs.filter(filters[logFilter] || (() => true));
 
     return (
       <div
@@ -863,7 +863,7 @@ class DashboardBottom extends React.Component {
           }}
           items={[
             {
-              label: 'Logs',
+              label: 'Günlükler',
               key: 'Logs',
               children: (
                 <ul className="log-content">
@@ -878,7 +878,7 @@ class DashboardBottom extends React.Component {
               )
             },
             {
-              label: 'Variables',
+              label: 'Değişkenler',
               key: 'Variables',
               children: (
                 <div className="variable-content">
@@ -887,13 +887,13 @@ class DashboardBottom extends React.Component {
                       onClick={e => this.props.updateConfig({ showCommonInternalVariables: e.target.checked })}
                       checked={this.props.config.showCommonInternalVariables}
                     >
-                      Show most common <a href="https://goto.ui.vision/x/idehelp?help=internalvars" target="_blank">internal variables</a>
+                      En yaygın <a href="https://goto.ui.vision/x/idehelp?help=internalvars" target="_blank">dahili değişkenleri</a> göster
                     </Checkbox>
                     <Checkbox
                       onClick={e => this.props.updateConfig({ showAdvancedInternalVariables: e.target.checked })}
                       checked={this.props.config.showAdvancedInternalVariables}
                     >
-                      Show advanced <a href="https://goto.ui.vision/x/idehelp?help=internalvars" target="_blank">internal variables</a>
+                      Gelişmiş <a href="https://goto.ui.vision/x/idehelp?help=internalvars" target="_blank">dahili değişkenleri</a> göster
                     </Checkbox>
                   </div>
                   {this.renderVariableTable()}
@@ -901,7 +901,7 @@ class DashboardBottom extends React.Component {
               )
             },
             {
-              label: this.prefixHardDisk('Screenshots'),
+              label: this.prefixHardDisk('Ekran Görüntüleri'),
               key: 'Screenshots',
               children: this.renderScreenshots()
             },
@@ -935,18 +935,18 @@ class DashboardBottom extends React.Component {
               popupMatchSelectWidth={false}
               size="small"
             >
-              <Select.Option value='All'>All</Select.Option>
+              <Select.Option value='All'>Tümü</Select.Option>
               <Select.Option value='Echo'>Echo</Select.Option>
-              <Select.Option value='Echo_And_Status'>Echo &amp; Status</Select.Option>
-              <Select.Option value='Error'>Error &amp; Reports</Select.Option>
-              <Select.Option value='None'>No log</Select.Option>
+              <Select.Option value='Echo_And_Status'>Echo & Durum</Select.Option>
+              <Select.Option value='Error'>Hata & Raporlar</Select.Option>
+              <Select.Option value='None'>Günlük yok</Select.Option>
             </Select>,
             <Button
               key="clear-logs"
               size="small"
               onClick={this.props.clearLogs}
             >
-              Clear
+              Temizle
             </Button>
           ] : null}
 
@@ -955,7 +955,7 @@ class DashboardBottom extends React.Component {
               size="small"
               onClick={this.props.clearScreenshots}
             >
-              Clear
+              Temizle
             </Button>
           ) : null}
 
@@ -965,15 +965,15 @@ class DashboardBottom extends React.Component {
               onClick={() => {
                 if (getStorageManager().isXFileMode()) {
                   Modal.info({
-                    title: 'In hard-drive mode, there is no need to import CSV files.',
-                    content: 'To view the latest /datasource folder content, press the "Refresh" icon next to the word "Storage mode" on the left.'
+                    title: 'Sabit disk modunda CSV dosyalarını içe aktarmaya gerek yoktur.',
+                    content: 'En son /datasource klasör içeriğini görmek için soldaki "Depolama modu" yazısının yanındaki "Yenile" simgesine basın.'
                   })
                 } else {
                   this.fileInput.click()
                 }
               }}
             >
-              Import CSV
+              CSV İçe Aktar
               <input
                 multiple
                 type="file"
@@ -989,8 +989,8 @@ class DashboardBottom extends React.Component {
             size="small"
             onClick={this.toggleBottom}
           >
-            {/* <Icon type={this.props.config.showBottomArea ? 'down' : 'up'} /> */} 
-            { this.props.config.showBottomArea ? <DownOutlined /> : <UpOutlined /> }
+            {/* <Icon type={this.props.config.showBottomArea ? 'down' : 'up'} /> */}
+            {this.props.config.showBottomArea ? <DownOutlined /> : <UpOutlined />}
           </Button>
         </div>
       </div>
@@ -1013,5 +1013,5 @@ export default connect(
     visions: state.visions,
     config: state.config
   }),
-  dispatch => bindActionCreators({...actions, ...simpleActions}, dispatch)
+  dispatch => bindActionCreators({ ...actions, ...simpleActions }, dispatch)
 )(DashboardBottom)

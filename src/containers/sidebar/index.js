@@ -54,7 +54,7 @@ class Sidebar extends React.Component {
     // reference:
     // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
     // https://developer.mozilla.org/en-US/docs/Web/Events/dragend
-    const diff  = e.screenX - this.state.drag.startX
+    const diff = e.screenX - this.state.drag.startX
     const width = diff + this.state.drag.lastWidth
 
     this.setState(
@@ -83,28 +83,28 @@ class Sidebar extends React.Component {
     const man = getStorageManager()
 
     man.isStrategyTypeAvailable(storageMode)
-    .then(isOk => {
-      if (isOk) {
-        // Note: it will emit events, so that `index.js` could handle the rest (refresh / reload resources)
-        this.props.updateConfig({ storageMode })
-        return man.setCurrentStrategyType(storageMode)
-      }
+      .then(isOk => {
+        if (isOk) {
+          // Note: it will emit events, so that `index.js` could handle the rest (refresh / reload resources)
+          this.props.updateConfig({ storageMode })
+          return man.setCurrentStrategyType(storageMode)
+        }
 
-      throw new Error('It should be impossible to get isOk as false')
-    })
-    .catch(e => {
-      message.warn(e.message)
+        throw new Error('It should be impossible to get isOk as false')
+      })
+      .catch(e => {
+        message.warn(e.message)
 
-      if (e.message && /xFile is not installed yet/.test(e.message)) {
-        this.props.updateUI({ showXFileNotInstalledDialog: true })
-      } else {
-        this.props.updateUI({ showSettings: true, settingsTab: 'xmodules' })
-      }
-    })
+        if (e.message && /xFile is not installed yet/.test(e.message)) {
+          this.props.updateUI({ showXFileNotInstalledDialog: true })
+        } else {
+          this.props.updateUI({ showSettings: true, settingsTab: 'xmodules' })
+        }
+      })
   }
 
   openRegisterSettings = (e) => {
-    if (e && e.preventDefault)  e.preventDefault()
+    if (e && e.preventDefault) e.preventDefault()
     this.props.updateUI({ showSettings: true, settingsTab: 'register' })
   }
 
@@ -132,14 +132,14 @@ class Sidebar extends React.Component {
     })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const type = getStorageManager().getCurrentStrategyType()
     this.setState({ storageMode: type })
     // this.bindScroll()
     this.applyTreeViewScrollTop()
   }
 
-  prefixHardDisk (str) {
+  prefixHardDisk(str) {
     const isXFileMode = getStorageManager().isXFileMode()
     if (!isXFileMode) return str
 
@@ -158,12 +158,12 @@ class Sidebar extends React.Component {
             height: '15px'
           }}
         />
-        <span>{ str }</span>
+        <span>{str}</span>
       </div>
     )
   }
 
-  renderXFileNotInstalledModal () {
+  renderXFileNotInstalledModal() {
     return (
       <Modal
         title=""
@@ -176,7 +176,7 @@ class Sidebar extends React.Component {
         }}
       >
         <p>
-          XFileAccess Module not installed.
+          XFileAccess Modülü yüklü değil.
         </p>
         <div>
           <Button
@@ -189,25 +189,25 @@ class Sidebar extends React.Component {
               })
             }}
           >
-            Open Settings
+            Ayarları Aç
           </Button>
         </div>
       </Modal>
     )
   }
 
-  shouldRenderMacroNote () {
+  shouldRenderMacroNote() {
     const { xmodulesStatus, storageMode } = this.props.config
 
-    if (storageMode !== StorageStrategyType.XFile)  return false
+    if (storageMode !== StorageStrategyType.XFile) return false
     if (xmodulesStatus === 'pro') return false
 
     const macroStorage = getStorageManager().getMacroStorage()
     return macroStorage.getDisplayCount() < macroStorage.getTotalCount()
   }
 
-  renderMacroNote () {
-    if (!this.shouldRenderMacroNote())  return null
+  renderMacroNote() {
+    if (!this.shouldRenderMacroNote()) return null
 
     const max = getLicenseService().getMaxXFileMacros()
     const link = getLicenseService().getUpgradeUrl()
@@ -233,7 +233,7 @@ class Sidebar extends React.Component {
     )
   }
 
-  render () {
+  render() {
     return (
       <div
         className={cn('sidebar', { 'with-xmodules-note': this.shouldRenderMacroNote() })}
@@ -255,34 +255,34 @@ class Sidebar extends React.Component {
           {this.renderMacroNote()}
 
           <div className="storage-mode-header">
-            <h3>Storage Mode</h3>
+            <h3>Depolama Modu</h3>
             {getStorageManager().isXFileMode() ? (
               <img
                 src="./img/reload.svg"
-                title="Reload all resources on hard drive"
+                title="Sabit diskteki tüm kaynakları yeniden yükle"
                 style={{
                   height: '15px',
                   cursor: 'pointer'
                 }}
                 onClick={() => {
                   getStorageManager().emit(StorageManagerEvent.ForceReload)
-                  message.info('reloaded from hard drive')
+                  message.info('sabit diskten yeniden yüklendi')
                 }}
               />
             ) : null}
-            <a href="https://goto.ui.vision/x/idehelp?help=storage_mode" target="_blank">More Info</a>
+            <a href="https://goto.ui.vision/x/idehelp?help=storage_mode" target="_blank">Daha Fazla Bilgi</a>
           </div>
           <Select
             style={{ width: '100%' }}
-            placeholder="Storage Mode"
+            placeholder="Depolama Modu"
             value={this.props.config.storageMode}
             onChange={this.onTryToChangeStorageMode}
           >
             <Select.Option value={StorageStrategyType.Browser}>
-              Local Storage (in browser)
+              Yerel Depolama (tarayıcıda)
             </Select.Option>
             <Select.Option value={StorageStrategyType.XFile}>
-              File system (on hard drive)
+              Dosya Sistemi (sabit diskte)
             </Select.Option>
           </Select>
         </div>
@@ -310,5 +310,5 @@ export default connect(
     config: state.config,
     ui: state.ui
   }),
-  dispatch => bindActionCreators({...actions}, dispatch)
+  dispatch => bindActionCreators({ ...actions }, dispatch)
 )(Sidebar)

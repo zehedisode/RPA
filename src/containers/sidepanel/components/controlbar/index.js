@@ -25,11 +25,11 @@ class Controls extends React.Component {
   }
 
   openRegisterSettings = (e) => {
-    if (e && e.preventDefault)  e.preventDefault()
+    if (e && e.preventDefault) e.preventDefault()
     this.props.updateUI({ showSettings: true, settingsTab: 'register' })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const type = getStorageManager().getCurrentStrategyType()
     this.setState({ storageMode: type })
   }
@@ -44,9 +44,9 @@ class Controls extends React.Component {
     switch (this.props.player.mode) {
       case C.PLAYER_MODE.TEST_CASE:
         return getPlayer({ name: "testCase" })
-        case C.PLAYER_MODE.TEST_SUITE:
-          return getPlayer({ name: "testSuite" })
-      }
+      case C.PLAYER_MODE.TEST_SUITE:
+        return getPlayer({ name: "testSuite" })
+    }
   }
 
   checkWindowisOpen = async (bwindowId) => {
@@ -65,69 +65,69 @@ class Controls extends React.Component {
     });
   }
 
-  playCurrentMacro = async (isStep)  => {
+  playCurrentMacro = async (isStep) => {
     const state = await getState()
     const bwindowId = state.tabIds.bwindowId;
     const wTab = bwindowId != '' ? await this.checkWindowisOpen(bwindowId) : '';
     Ext.tabs.query({ active: true })
-    .then(tabs => {
-      if (tabs.length === 0) {
-        getPlayTab().then(tab => {
-          updateState(setIn(['tabIds', 'toPlay'], tab.id))
+      .then(tabs => {
+        if (tabs.length === 0) {
+          getPlayTab().then(tab => {
+            updateState(setIn(['tabIds', 'toPlay'], tab.id))
 
+            const { commands } = this.props.editing
+            const { src } = this.props.editing.meta
+            const openTc = commands.find(tc => tc.cmd.toLowerCase() === 'open' || 'openbrowser')
+            this.setState({ lastOperation: 'play' })
+            this.props.playerPlay({
+              macroId: src && src.id,
+              title: this.getTestCaseName(),
+              extra: {
+                id: src && src.id
+              },
+              mode: getPlayer().C.MODE.STRAIGHT,
+              playUrl: tab.url,
+              playtabIndex: tab.index,
+              playtabId: tab.id,
+              startIndex: 0,
+              startUrl: openTc ? openTc.target : null,
+              resources: commands,
+              postDelay: this.props.config.playCommandInterval * 1000,
+              isStep: isStep
+            })
+          })
+        } else {
+          const tab = wTab != '' ? wTab : tabs[0];
+          updateState(setIn(['tabIds', 'toPlay'], tab.id))
           const { commands } = this.props.editing
           const { src } = this.props.editing.meta
-          const openTc  = commands.find(tc => tc.cmd.toLowerCase() === 'open' || 'openbrowser')
+          const openTc = commands.find(tc => tc.cmd.toLowerCase() === 'open' || 'openbrowser')
           this.setState({ lastOperation: 'play' })
           this.props.playerPlay({
-          macroId: src && src.id,
-          title: this.getTestCaseName(),
-          extra: {
-          id: src && src.id
-          },
-          mode: getPlayer().C.MODE.STRAIGHT,
-          playUrl:tab.url,
-          playtabIndex:tab.index,
-          playtabId:tab.id,
-          startIndex: 0,
-          startUrl: openTc ? openTc.target : null,
-          resources: commands,
-          postDelay: this.props.config.playCommandInterval * 1000,
-          isStep: isStep
+            macroId: src && src.id,
+            title: this.getTestCaseName(),
+            extra: {
+              id: src && src.id
+            },
+            mode: getPlayer().C.MODE.STRAIGHT,
+            playUrl: tab.url,
+            playtabIndex: tab.index,
+            playtabId: tab.id,
+            startIndex: 0,
+            startUrl: openTc ? openTc.target : null,
+            resources: commands,
+            postDelay: this.props.config.playCommandInterval * 1000,
+            isStep: isStep
           })
-            })
-      } else {
-        const tab = wTab != '' ? wTab : tabs[0];
-        updateState(setIn(['tabIds', 'toPlay'], tab.id))
-        const { commands } = this.props.editing
-        const { src } = this.props.editing.meta
-        const openTc  = commands.find(tc => tc.cmd.toLowerCase() === 'open' || 'openbrowser')
-        this.setState({ lastOperation: 'play' })
-        this.props.playerPlay({
-        macroId: src && src.id,
-        title: this.getTestCaseName(),
-        extra: {
-        id: src && src.id
-        },
-        mode: getPlayer().C.MODE.STRAIGHT,
-        playUrl:tab.url,
-        playtabIndex:tab.index,
-        playtabId:tab.id,
-        startIndex: 0,
-        startUrl: openTc ? openTc.target : null,
-        resources: commands,
-        postDelay: this.props.config.playCommandInterval * 1000,
-        isStep: isStep
-        })
-      }
-    })
+        }
+      })
   }
 
   onClickOpenIDE = async (showSettingsOnStart = false) => {
 
-    if(Ext.isFirefox()) {
+    if (Ext.isFirefox()) {
       const userResponse = confirm('To Open IDE, click OK and click the Extension icon in extension bar.')
-      if (!userResponse) return  
+      if (!userResponse) return
 
       await this.props.updateConfig({ ["oneTimeShowSidePanel"]: false })
       Ext.sidebarAction.close()
@@ -183,35 +183,35 @@ class Controls extends React.Component {
     }
   }
 
-  render () {
+  render() {
     return (
-        <div className="control-panel-container">
+      <div className="control-panel-container">
         <div className="control-panel">
           <div className='action-button-container'>
-            <Button disabled={this.props.player.status === C.PLAYER_STATUS.PLAYING || this.props.player.status === C.PLAYER_STATUS.PAUSED } onClick={() => this.playCurrentMacro(false)} >
+            <Button disabled={this.props.player.status === C.PLAYER_STATUS.PLAYING || this.props.player.status === C.PLAYER_STATUS.PAUSED} onClick={() => this.playCurrentMacro(false)} >
               <FontAwesomeIcon icon={faCirclePlay} />
-              <span> Play</span> 
+              <span> Oynat</span>
             </Button>
             {this.props.player.status === C.PLAYER_STATUS.PAUSED ? (
               <Button onClick={() => this.getPlayer().resume()}>
                 <FontAwesomeIcon icon={faCirclePlay} />
-                <span> Resume</span>              
+                <span> Devam Et</span>
               </Button>
             ) : (
               <Button disabled={this.props.player.status !== C.PLAYER_STATUS.PLAYING} onClick={() => this.getPlayer().pause()}>
                 <FontAwesomeIcon icon={faCirclePause} />
-                <span> Pause</span>
+                <span> Duraklat</span>
               </Button>
             )}
             <Button disabled={this.props.player.status === C.PLAYER_STATUS.STOPPED} onClick={() => this.getPlayer().stop()}>
               <FontAwesomeIcon icon={faCircleStop} />
-              <span> Stop</span>
+              <span> Durdur</span>
             </Button>
           </div>
           <div className='action-button-container'>
             <Button disabled={this.props.player.status === C.PLAYER_STATUS.PLAYING || this.state.openIDEClicked} onClick={() => this.onClickOpenIDE()}>
               <FontAwesomeIcon icon={faPenToSquare} />
-              <span> Open IDE</span>
+              <span> IDE'yi Aç</span>
             </Button>
             <Button disabled={this.props.player.status === C.PLAYER_STATUS.PLAYING} onClick={() => this.onClickOpenIDE(true)} shape="circle" >
               <SettingOutlined />
@@ -219,7 +219,7 @@ class Controls extends React.Component {
           </div>
           <div className='action-button-container'>
             <a onClick={() => {
-              chrome.tabs.create({url: "https://goto.ui.vision/x/idehelp?help=sidepanel"})
+              chrome.tabs.create({ url: "https://goto.ui.vision/x/idehelp?help=sidepanel" })
             }}>Ui.Vision Side Panel</a>
           </div>
         </div>
@@ -238,5 +238,5 @@ export default connect(
     ui: state.ui,
     proxy: state.proxy
   }),
-  dispatch  => bindActionCreators({...actions, ...simpleActions}, dispatch)
-  )(Controls)
+  dispatch => bindActionCreators({ ...actions, ...simpleActions }, dispatch)
+)(Controls)
