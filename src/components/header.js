@@ -1063,7 +1063,7 @@ class Header extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={12}>
-                        <Col span={8}>
+                        <Col span={6}>
                           <Form.Item label="Buton Yazısı">
                             <Input
                               value={this.state.newButtonLabel || ''}
@@ -1072,7 +1072,7 @@ class Header extends React.Component {
                             />
                           </Form.Item>
                         </Col>
-                        <Col span={8}>
+                        <Col span={6}>
                           <Form.Item label="Konum">
                             <Select
                               value={this.state.newButtonPosition || 'bottom-right'}
@@ -1086,7 +1086,20 @@ class Header extends React.Component {
                             </Select>
                           </Form.Item>
                         </Col>
-                        <Col span={8}>
+                        <Col span={6}>
+                          <Form.Item label="Boyut">
+                            <Select
+                              value={this.state.newButtonSize || 'medium'}
+                              onChange={(val) => this.setState({ newButtonSize: val })}
+                              style={{ width: '100%' }}
+                            >
+                              <Select.Option value="small">Küçük</Select.Option>
+                              <Select.Option value="medium">Orta</Select.Option>
+                              <Select.Option value="large">Büyük</Select.Option>
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={6}>
                           <Form.Item label="Renk">
                             <Input
                               type="color"
@@ -1097,45 +1110,80 @@ class Header extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          const urlPattern = this.state.newButtonUrlPattern?.trim()
-                          const macroName = this.state.newButtonMacroName?.trim()
-                          const label = this.state.newButtonLabel?.trim() || '▶ Çalıştır'
-                          const position = this.state.newButtonPosition || 'bottom-right'
-                          const color = this.state.newButtonColor || '#4CAF50'
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <Button
+                          type="primary"
+                          onClick={() => {
+                            const urlPattern = this.state.newButtonUrlPattern?.trim()
+                            const macroName = this.state.newButtonMacroName?.trim()
+                            const label = this.state.newButtonLabel?.trim() || '▶ Çalıştır'
+                            const position = this.state.newButtonPosition || 'bottom-right'
+                            const size = this.state.newButtonSize || 'medium'
+                            const color = this.state.newButtonColor || '#4CAF50'
 
-                          if (!urlPattern || !macroName) {
-                            message.error('URL kalıbı ve makro adı zorunludur')
-                            return
-                          }
+                            if (!urlPattern || !macroName) {
+                              message.error('URL kalıbı ve makro adı zorunludur')
+                              return
+                            }
 
-                          const newButton = {
-                            id: Date.now().toString(),
-                            urlPattern,
-                            macroName,
-                            label,
-                            position,
-                            color
-                          }
+                            const currentButtons = this.props.config.floatingButtons || []
+                            let updatedButtons
 
-                          const currentButtons = this.props.config.floatingButtons || []
-                          onConfigChange('floatingButtons', [...currentButtons, newButton])
+                            if (this.state.editingButtonId) {
+                              updatedButtons = currentButtons.map(btn => {
+                                if (btn.id === this.state.editingButtonId) {
+                                  return { ...btn, urlPattern, macroName, label, position, size, color }
+                                }
+                                return btn
+                              })
+                              message.success('Buton güncellendi!')
+                            } else {
+                              const newButton = {
+                                id: Date.now().toString(),
+                                urlPattern,
+                                macroName,
+                                label,
+                                position,
+                                size,
+                                color
+                              }
+                              updatedButtons = [...currentButtons, newButton]
+                              message.success('Buton eklendi!')
+                            }
 
-                          this.setState({
-                            newButtonUrlPattern: '',
-                            newButtonMacroName: '',
-                            newButtonLabel: '',
-                            newButtonPosition: 'bottom-right',
-                            newButtonColor: '#4CAF50'
-                          })
+                            onConfigChange('floatingButtons', updatedButtons)
 
-                          message.success('Buton eklendi!')
-                        }}
-                      >
-                        Ekle
-                      </Button>
+                            this.setState({
+                              newButtonUrlPattern: '',
+                              newButtonMacroName: '',
+                              newButtonLabel: '',
+                              newButtonPosition: 'bottom-right',
+                              newButtonSize: 'medium',
+                              newButtonColor: '#4CAF50',
+                              editingButtonId: null
+                            })
+                          }}
+                        >
+                          {this.state.editingButtonId ? 'Güncelle' : 'Ekle'}
+                        </Button>
+                        {this.state.editingButtonId && (
+                          <Button
+                            onClick={() => {
+                              this.setState({
+                                newButtonUrlPattern: '',
+                                newButtonMacroName: '',
+                                newButtonLabel: '',
+                                newButtonPosition: 'bottom-right',
+                                newButtonSize: 'medium',
+                                newButtonColor: '#4CAF50',
+                                editingButtonId: null
+                              })
+                            }}
+                          >
+                            İptal
+                          </Button>
+                        )}
+                      </div>
                     </Form>
                   </div>
 
@@ -1151,13 +1199,14 @@ class Header extends React.Component {
                             <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>URL Kalıbı</th>
                             <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Makro</th>
                             <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Yazı</th>
+                            <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Boyut</th>
                             <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Konum</th>
                             <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>İşlem</th>
                           </tr>
                         </thead>
                         <tbody>
                           {(this.props.config.floatingButtons || []).map((btn, index) => (
-                            <tr key={btn.id}>
+                            <tr key={btn.id} style={{ background: this.state.editingButtonId === btn.id ? '#e6f7ff' : 'transparent' }}>
                               <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
                                 <Button.Group>
                                   <Button
@@ -1197,19 +1246,51 @@ class Header extends React.Component {
                                   {btn.label}
                                 </span>
                               </td>
+                              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                                {btn.size === 'small' ? 'Küçük' : btn.size === 'large' ? 'Büyük' : 'Orta'}
+                              </td>
                               <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{btn.position}</td>
                               <td style={{ padding: '8px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
-                                <Button
-                                  size="small"
-                                  danger
-                                  onClick={() => {
-                                    const updatedButtons = this.props.config.floatingButtons.filter(b => b.id !== btn.id)
-                                    onConfigChange('floatingButtons', updatedButtons)
-                                    message.success('Buton silindi')
-                                  }}
-                                >
-                                  Sil
-                                </Button>
+                                <Button.Group>
+                                  <Button
+                                    size="small"
+                                    onClick={() => {
+                                      this.setState({
+                                        newButtonUrlPattern: btn.urlPattern,
+                                        newButtonMacroName: btn.macroName,
+                                        newButtonLabel: btn.label,
+                                        newButtonPosition: btn.position,
+                                        newButtonSize: btn.size || 'medium',
+                                        newButtonColor: btn.color,
+                                        editingButtonId: btn.id
+                                      })
+                                    }}
+                                  >
+                                    Düzenle
+                                  </Button>
+                                  <Button
+                                    size="small"
+                                    danger
+                                    onClick={() => {
+                                      const updatedButtons = this.props.config.floatingButtons.filter(b => b.id !== btn.id)
+                                      onConfigChange('floatingButtons', updatedButtons)
+                                      if (this.state.editingButtonId === btn.id) {
+                                        this.setState({
+                                          newButtonUrlPattern: '',
+                                          newButtonMacroName: '',
+                                          newButtonLabel: '',
+                                          newButtonPosition: 'bottom-right',
+                                          newButtonSize: 'medium',
+                                          newButtonColor: '#4CAF50',
+                                          editingButtonId: null
+                                        })
+                                      }
+                                      message.success('Buton silindi')
+                                    }}
+                                  >
+                                    Sil
+                                  </Button>
+                                </Button.Group>
                               </td>
                             </tr>
                           ))}

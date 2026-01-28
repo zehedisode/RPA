@@ -1655,8 +1655,16 @@ const createFloatingButton = (btnConfig) => {
   btn.innerText = btnConfig.label || '▶ Çalıştır'
   btn.title = `Makro: ${btnConfig.macroName}`
 
+  const size = btnConfig.size || 'medium'
+  const sizeConfig = {
+    small: { padding: '6px 10px', fontSize: '12px', height: 32 },
+    medium: { padding: '10px 16px', fontSize: '14px', height: 44 },
+    large: { padding: '14px 22px', fontSize: '16px', height: 56 }
+  }
+  const config = sizeConfig[size] || sizeConfig.medium
+
   const position = btnConfig.position || 'bottom-right'
-  const buttonHeight = 44 // Buton yüksekliği + margin
+  const buttonHeight = config.height // Buton yüksekliği + margin
   const baseOffset = 20 // Kenardan uzaklık
   const index = floatingButtonCounters[position] || 0
   floatingButtonCounters[position] = index + 1
@@ -1685,14 +1693,14 @@ const createFloatingButton = (btnConfig) => {
   Object.assign(btn.style, {
     position: 'fixed',
     zIndex: '2147483647', // Max z-index
-    padding: '10px 16px',
+    padding: config.padding,
     backgroundColor: btnConfig.color || '#4CAF50',
     color: '#fff',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-    fontSize: '14px',
+    fontSize: config.fontSize,
     fontWeight: '500',
     boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
     transition: 'all 0.2s ease',
