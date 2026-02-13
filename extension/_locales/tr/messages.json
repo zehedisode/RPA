@@ -1,0 +1,14 @@
+{
+    "name": {
+        "message": "Ui.Vision RPA Tarayıcı Otomasyon Aracı",
+        "description": "extension name"
+    },
+    "description": {
+        "message": "Bilgisayarla Görme/OCR ile görev ve kullanıcı arayüzü test otomasyonu. Ui.Vision tarayıcı otomasyonunu ve masaüstü otomasyonunu bir arada sunar.",
+        "description": "extension description"
+    },
+    "short_name": {
+        "message": "Ui.Vision",
+        "description": "extension short_name"
+    }
+}

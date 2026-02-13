@@ -4,7 +4,7 @@ import React, { lazy } from 'react'
 import ReactDOM from 'react-dom'
 import { HashRouter } from 'react-router-dom'
 import { ConfigProvider, message, LocaleProvider } from 'antd'
-import en_US from "antd/lib/locale/en_US"
+import tr_TR from "antd/lib/locale/tr_TR"
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DndProvider } from 'react-dnd'
 import FuzzySet from 'fuzzyset.js'
@@ -93,7 +93,7 @@ polyfillTimeoutFunctions(csIpc)
 
 handleDelegatedBrowserFileSystemAPI()
 
-let DefaultStorageMode =  StorageStrategyType.Browser
+let DefaultStorageMode = StorageStrategyType.Browser
 
 // TODO: uncomment/fix later
 // const store = createStore(
@@ -114,49 +114,49 @@ const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 const render = () => root.render(
   <DndProvider backend={HTML5Backend}>
-    <ConfigProvider locale={en_US}>
+    <ConfigProvider locale={tr_TR}>
       <Provider store={store}>
         <HashRouter>
-          { isSidePanelWindow() ? <SidepanelApp/> : <App /> }
+          {isSidePanelWindow() ? <SidepanelApp /> : <App />}
         </HashRouter>
       </Provider>
     </ConfigProvider>
   </DndProvider>
-  );
+);
 
-const timestampCache  = {}
-const DURATION        = 2000
+const timestampCache = {}
+const DURATION = 2000
 
 // Note: listen to any db changes and restore all data from db to redux store
 // All test cases are stored in indexeddb (dexie)
 const bindMacroAndTestSuites = () => {
-  const curStorageMode  = getStorageManager().getCurrentStrategyType()
-  const macroStorage    = getStorageManager().getMacroStorage()
-  const suiteStorage    = getStorageManager().getTestSuiteStorage()
-  const onError         = (errorList) => {
+  const curStorageMode = getStorageManager().getCurrentStrategyType()
+  const macroStorage = getStorageManager().getMacroStorage()
+  const suiteStorage = getStorageManager().getTestSuiteStorage()
+  const onError = (errorList) => {
     errorList
-    .filter(item => item.fileName !== '__Untitled__')
-    .forEach(errorItem => {
-      const key = errorItem.fullFilePath
+      .filter(item => item.fileName !== '__Untitled__')
+      .forEach(errorItem => {
+        const key = errorItem.fullFilePath
 
-      if (!timestampCache[key] || new Date() * 1 - timestampCache[key] > DURATION) {
-        timestampCache[key] = new Date() * 1
-        store.dispatch(addLog('warning', errorItem.error.message))
-      }
-    })
+        if (!timestampCache[key] || new Date() * 1 - timestampCache[key] > DURATION) {
+          timestampCache[key] = new Date() * 1
+          store.dispatch(addLog('warning', errorItem.error.message))
+        }
+      })
   }
 
   const restoreTestCases = () => {
     store.dispatch(Actions.setIsLoadingMacros(true))
 
     const pMacrosExtra = getMacroExtraKeyValueData().getAll()
-    .then(data => {
-      // log('restoreMacrosExtra', data)
+      .then(data => {
+        // log('restoreMacrosExtra', data)
 
-      store.dispatch(
-        setMacrosExtra(data)
-      )
-    })
+        store.dispatch(
+          setMacrosExtra(data)
+        )
+      })
 
     const pFolderStructure = (() => {
       if (!getShouldLoadResources(store.getState())) {
@@ -164,28 +164,28 @@ const bindMacroAndTestSuites = () => {
       }
 
       return macroStorage.listR()
-      .then(entryNodes => {
-        // log('restoreMacroFolderStructure', entryNodes)
+        .then(entryNodes => {
+          // log('restoreMacroFolderStructure', entryNodes)
 
-        store.dispatch(
-          Actions.setMacroFolderStructure(entryNodes)
-        )
-      })
+          store.dispatch(
+            Actions.setMacroFolderStructure(entryNodes)
+          )
+        })
     })()
 
     return Promise.all([pMacrosExtra, pFolderStructure])
-    .finally(() => store.dispatch(Actions.setIsLoadingMacros(false)))
+      .finally(() => store.dispatch(Actions.setIsLoadingMacros(false)))
   }
 
-  // FIXME: need to unbind previous listeners when bindMacroAndTestSuites is called for more than once
-  ;[FlatStorageEvent.ListChanged, FlatStorageEvent.FilesChanged].forEach(eventName => {
-    macroStorage.off(eventName)
-    macroStorage.on(eventName, () => {
-      if (curStorageMode !== getStorageManager().getCurrentStrategyType())  return
-      log('macroStorage - eventName', eventName)
-      setTimeout(restoreTestCases, 50)
+    // FIXME: need to unbind previous listeners when bindMacroAndTestSuites is called for more than once
+    ;[FlatStorageEvent.ListChanged, FlatStorageEvent.FilesChanged].forEach(eventName => {
+      macroStorage.off(eventName)
+      macroStorage.on(eventName, () => {
+        if (curStorageMode !== getStorageManager().getCurrentStrategyType()) return
+        log('macroStorage - eventName', eventName)
+        setTimeout(restoreTestCases, 50)
+      })
     })
-  })
 
   return flow(
     guardVoidPromise(restoreTestCases)
@@ -201,7 +201,7 @@ const restoreEditing = () => {
       let finalEditing = editing
 
       if (editing.baseUrl) {
-        finalEditing = {...editing}
+        finalEditing = { ...editing }
         finalEditing.commands = finalEditing.commands.map(
           commandWithoutBaseUrl(editing.baseUrl)
         )
@@ -272,7 +272,7 @@ const restoreConfig = () => {
         xmodulesStatus: 'unregistered',
         // orc related
         ocrCalibration: 6,
-        ocrCalibration_internal:6,
+        ocrCalibration_internal: 6,
         ocrScaling: 100,
         ocrEngine: 98,
         ocrMode: 'enabled', // 'disabled',
@@ -332,7 +332,7 @@ const prepareBeforeRun = (options) => {
   }
 }
 
-const genPlayerPlayCallback = ({ options,installed}) => {
+const genPlayerPlayCallback = ({ options, installed }) => {
   // Only run this callback once, we've added it to two places
   // 1. Player callback
   // 2. Promise finally of the entire macro run
@@ -344,64 +344,64 @@ const genPlayerPlayCallback = ({ options,installed}) => {
 
     alreadyRun = true
 
-    let pSaveLog = delay(() => {}, 1000)
-    
-    if (options.savelog) {
-      const isFullPath  = /\\|\//.test(options.savelog)
-      
-      const logs        = store.getState().logs
-      const errorLog    = logs.find(log => log.type === 'error' && !(log.options && log.options.ignored))
-      const error       = err || (errorLog && { message: errorLog.text })
-      const logTitle    = error ? `Status=Error: ${error.message}` : `Status=OK`
-      const logContent  = logs.map(log => renderLog(log, false))
-      const text        = [logTitle, '###', ...logContent].join('\n')
+    let pSaveLog = delay(() => { }, 1000)
 
-      if (isFullPath) {              
+    if (options.savelog) {
+      const isFullPath = /\\|\//.test(options.savelog)
+
+      const logs = store.getState().logs
+      const errorLog = logs.find(log => log.type === 'error' && !(log.options && log.options.ignored))
+      const error = err || (errorLog && { message: errorLog.text })
+      const logTitle = error ? `Status=Error: ${error.message}` : `Status=OK`
+      const logContent = logs.map(log => renderLog(log, false))
+      const text = [logTitle, '###', ...logContent].join('\n')
+
+      if (isFullPath) {
         const ua = window.navigator.userAgent
         const path = options.savelog;
 
         function os() {
-          if (/windows/i.test(ua))  return 'windows'
-          if (/mac/i.test(ua))      return 'mac'
+          if (/windows/i.test(ua)) return 'windows'
+          if (/mac/i.test(ua)) return 'mac'
           return 'linux'
         }
-        
-        if (installed && installed!=undefined )  {
+
+        if (installed && installed != undefined) {
           let osType = os();
-          runDownloadLog(text,path,osType)
-          .then(data => {
-            return getDownloadMan().prepareDownload(options.savelog)
-          })          
+          runDownloadLog(text, path, osType)
+            .then(data => {
+              return getDownloadMan().prepareDownload(options.savelog)
+            })
         } else {
-          pSaveLog = delay(() => {}, 500).then(() => {
+          pSaveLog = delay(() => { }, 500).then(() => {
             downloadTextFile(text, decodeURIComponent(options.savelog))
             // Note: We have to wait until savelog download completes if there is any
             return getDownloadMan().prepareDownload(options.savelog)
-          })        
-        }        
+          })
+        }
       } else {
         if (!isFullPath || !getStorageManager().isXFileMode()) {
-          pSaveLog = delay(() => {}, 500).then(() => {
+          pSaveLog = delay(() => { }, 500).then(() => {
             downloadTextFile(text, decodeURIComponent(options.savelog))
             // Note: We have to wait until savelog download completes if there is any
             return getDownloadMan().prepareDownload(options.savelog)
           })
         } else {
-        pSaveLog = getLogService().logTo(options.savelog, text)
-        }            
-      } 
-    } 
+          pSaveLog = getLogService().logTo(options.savelog, text)
+        }
+      }
+    }
 
-    const closeBrowser  = parseBoolLike(options.closeBrowser, false)
-    const closeRPA      = parseBoolLike(options.closeRPA !== undefined ? options.closeRPA : options.closeKantu, true)
+    const closeBrowser = parseBoolLike(options.closeBrowser, false)
+    const closeRPA = parseBoolLike(options.closeRPA !== undefined ? options.closeRPA : options.closeKantu, true)
 
     if (closeBrowser && reason !== Player.C.END_REASON.MANUAL) {
       // Close all tabs If close option is set
       pSaveLog
-      .catch(e => {
-        log.warn('Save log error: ', e.message)
-      })
-      .then(() => csIpc.ask('PANEL_CLOSE_ALL_WINDOWS', {}))
+        .catch(e => {
+          log.warn('Save log error: ', e.message)
+        })
+        .then(() => csIpc.ask('PANEL_CLOSE_ALL_WINDOWS', {}))
     }
 
     // Note: it's better to keep kantu open if it's opened manually before
@@ -413,7 +413,7 @@ const genPlayerPlayCallback = ({ options,installed}) => {
     }
   }
 
-  
+
 }
 
 const genOverrideScope = ({ options }) => {
@@ -437,7 +437,7 @@ const fuzzyObj = new FuzzySet(validParams)
 
 const initFromCommandLineArgs = (args) => {
   const loadMacroTree = parseBoolLike(args.loadmacrotree)
-  const noDisplay     = parseBoolLike(args.nodisplay, false)
+  const noDisplay = parseBoolLike(args.nodisplay, false)
 
   if (loadMacroTree) {
     store.dispatch(Actions.setFrom(RunBy.Manual))
@@ -547,10 +547,10 @@ const bindIpcEvent = () => {
 
       case 'RECORD_ADD_COMMAND':
         log('got add command', cmd, args)
-        const state         = store.getState()
-        const commandCount  = editorCommandCount(state)
-        const recordIndex   = getIndexToInsertRecorded(state)
-        const shouldSkip    = state.recorder.skipOpen && args.cmd === 'open'
+        const state = store.getState()
+        const commandCount = editorCommandCount(state)
+        const recordIndex = getIndexToInsertRecorded(state)
+        const shouldSkip = state.recorder.skipOpen && args.cmd === 'open'
 
         store.dispatch(Actions.toggleRecorderSkipOpen(false))
 
@@ -565,16 +565,16 @@ const bindIpcEvent = () => {
         }
 
         return true
-        case 'TIMEOUT_STATUS':
-          if (store.getState().status !== C.APP_STATUS.PLAYER) {
-            return
-          }
-          if (args.playUID && !getPlayer().checkPlayUID(args.playUID)) {
-            return
-          }
-      
-          store.dispatch(setTimeoutStatus(args))
-          return true;
+      case 'TIMEOUT_STATUS':
+        if (store.getState().status !== C.APP_STATUS.PLAYER) {
+          return
+        }
+        if (args.playUID && !getPlayer().checkPlayUID(args.playUID)) {
+          return
+        }
+
+        store.dispatch(setTimeoutStatus(args))
+        return true;
       case 'RUN_TEST_CASE': {
         if (store.getState().status !== C.APP_STATUS.NORMAL) {
           message.error('can only run macros when it is not recording or playing')
@@ -586,123 +586,123 @@ const bindIpcEvent = () => {
         guardCommandLineArgs(options)
         initFromCommandLineArgs(options)
 
-        const storageMan  = getStorageManager()
+        const storageMan = getStorageManager()
         const storageMode = testCase.storageMode || storageMan.getCurrentStrategyType()
 
         storageMan.isStrategyTypeAvailable(storageMode)
-        .catch(e => {
-          message.error(e.message)
-          throw e
-        })
-        .then(() => {
-          const needChange = storageMan.setCurrentStrategyType(storageMode)
-          store.dispatch(updateConfig({ storageMode }))
-          return needChange ? delay(() => reloadResources.onLastReloadFinished(), 100) : undefined
-        })
-        .then(() => prepareByOptions(options))
-        .then(() => {
-          const state = store.getState()
-          const shouldLoadResources = getShouldLoadResources(state)
-
-          if (!shouldLoadResources) {
-            return Promise.resolve(true)
-          }
-
-          return new Promise((resolve) => {
-            resolve(reloadResources.onLastReloadFinished ? reloadResources.onLastReloadFinished() : null)
+          .catch(e => {
+            message.error(e.message)
+            throw e
           })
-          .then(() => until('macros ready', () => {
+          .then(() => {
+            const needChange = storageMan.setCurrentStrategyType(storageMode)
+            store.dispatch(updateConfig({ storageMode }))
+            return needChange ? delay(() => reloadResources.onLastReloadFinished(), 100) : undefined
+          })
+          .then(() => prepareByOptions(options))
+          .then(() => {
             const state = store.getState()
-            const macroNodes = getMacroFileNodeList(state)
+            const shouldLoadResources = getShouldLoadResources(state)
 
-            return {
-              pass:   macroNodes && macroNodes.length > 0,
-              result: true
-            }
-          }, 1000, 20 * 1000))
-        })
-        .then(() => {
-          // Note: for backward compatibility, still use `name` field (which makes sense in flat fs mode) to store `path`
-          // after we migrate to standard folder mode
-          const state = store.getState()
-          const shouldLoadResources = getShouldLoadResources(state)
-          let macroPath = testCase.name
-
-          if (shouldLoadResources) {
-            const found = findMacroNodeWithCaseInsensitiveRelativePath(state, testCase.name)
-
-            if (!found) {
-              throw new Error(`Can't find macro with name "${testCase.name}"`)
+            if (!shouldLoadResources) {
+              return Promise.resolve(true)
             }
 
-            macroPath = found.fullPath
-          } else if (path.isAbsolute(macroPath) && getStorageManager().isXFileMode()) {
-            const msg = [
-              `Absolute path locations like "${macroPath}" are not supported yet. `,
-              `Macro location must be relative to macro root folder (currently "${getXFile().getCachedConfig().rootDir}")`
-            ].join('')
-
-            throw new Error(msg)
-          }
-
-          const errorMsg = `No macro found with path '${macroPath}'`
-
-          return storageMan.getMacroStorage().read(macroPath, 'Text')
-          .then(
-            macro => {
-              if (!macro) {
-                message.error(errorMsg)
-                throw new Error(errorMsg)
-              }
-
-              return macro
-            },
-            (e) => {
-              if (/File size cannot be determined.|A requested file or directory could not be found/.test(e.message)) {
-                throw new Error(errorMsg)
-              } else {
-                return Promise.reject(e)
-              }
-            }
-          )
-          .then(tc => {
-            getXLocal().getVersionLocal().then(data => {
-            const { installed, version } = data
-            const openTc  = tc.data.commands.find(item => item.cmd.toLowerCase() === 'open')
-
-            prepareBeforeRun(options)
-
-            const callback = genPlayerPlayCallback({ options,installed,version })
-
-            store.dispatch(editTestCase(tc.id))
-            store.dispatch(playerPlay({
-              macroId: tc && tc.id,
-              title: macroPath,
-              extra: {
-                id: tc && tc.id
-              },
-              mode:           Player.C.MODE.STRAIGHT,
-              startIndex:     0,
-              startUrl:       openTc ? openTc.target : null,
-              resources:      tc.data.commands,
-              postDelay:      state.player.playInterval * 1000,
-              overrideScope:  genOverrideScope({ options }),
-              callback:       callback
-            }))
-            .finally(callback)
-
-            checkIfSidePanelOpen().then((isOpen) => {
-              store.dispatch(updateUI({ sidebarTab: 'Macro' }))
+            return new Promise((resolve) => {
+              resolve(reloadResources.onLastReloadFinished ? reloadResources.onLastReloadFinished() : null)
             })
+              .then(() => until('macros ready', () => {
+                const state = store.getState()
+                const macroNodes = getMacroFileNodeList(state)
+
+                return {
+                  pass: macroNodes && macroNodes.length > 0,
+                  result: true
+                }
+              }, 1000, 20 * 1000))
           })
-        })
-        })
-        .catch(e => {
-          store.dispatch(addLog('error', e.message))
-        })
+          .then(() => {
+            // Note: for backward compatibility, still use `name` field (which makes sense in flat fs mode) to store `path`
+            // after we migrate to standard folder mode
+            const state = store.getState()
+            const shouldLoadResources = getShouldLoadResources(state)
+            let macroPath = testCase.name
+
+            if (shouldLoadResources) {
+              const found = findMacroNodeWithCaseInsensitiveRelativePath(state, testCase.name)
+
+              if (!found) {
+                throw new Error(`Can't find macro with name "${testCase.name}"`)
+              }
+
+              macroPath = found.fullPath
+            } else if (path.isAbsolute(macroPath) && getStorageManager().isXFileMode()) {
+              const msg = [
+                `Absolute path locations like "${macroPath}" are not supported yet. `,
+                `Macro location must be relative to macro root folder (currently "${getXFile().getCachedConfig().rootDir}")`
+              ].join('')
+
+              throw new Error(msg)
+            }
+
+            const errorMsg = `No macro found with path '${macroPath}'`
+
+            return storageMan.getMacroStorage().read(macroPath, 'Text')
+              .then(
+                macro => {
+                  if (!macro) {
+                    message.error(errorMsg)
+                    throw new Error(errorMsg)
+                  }
+
+                  return macro
+                },
+                (e) => {
+                  if (/File size cannot be determined.|A requested file or directory could not be found/.test(e.message)) {
+                    throw new Error(errorMsg)
+                  } else {
+                    return Promise.reject(e)
+                  }
+                }
+              )
+              .then(tc => {
+                getXLocal().getVersionLocal().then(data => {
+                  const { installed, version } = data
+                  const openTc = tc.data.commands.find(item => item.cmd.toLowerCase() === 'open')
+
+                  prepareBeforeRun(options)
+
+                  const callback = genPlayerPlayCallback({ options, installed, version })
+
+                  store.dispatch(editTestCase(tc.id))
+                  store.dispatch(playerPlay({
+                    macroId: tc && tc.id,
+                    title: macroPath,
+                    extra: {
+                      id: tc && tc.id
+                    },
+                    mode: Player.C.MODE.STRAIGHT,
+                    startIndex: 0,
+                    startUrl: openTc ? openTc.target : null,
+                    resources: tc.data.commands,
+                    postDelay: state.player.playInterval * 1000,
+                    overrideScope: genOverrideScope({ options }),
+                    callback: callback
+                  }))
+                    .finally(callback)
+
+                  checkIfSidePanelOpen().then((isOpen) => {
+                    store.dispatch(updateUI({ sidebarTab: 'Macro' }))
+                  })
+                })
+              })
+          })
+          .catch(e => {
+            store.dispatch(addLog('error', e.message))
+          })
 
         return true
-      }      
+      }
 
       case 'RUN_TEST_SUITE': {
         if (store.getState().status !== C.APP_STATUS.NORMAL) {
@@ -716,134 +716,134 @@ const bindIpcEvent = () => {
         initFromCommandLineArgs(options)
 
         const storageMode = testSuite.storageMode || StorageStrategyType.Browser
-        const storageMan  = getStorageManager()
+        const storageMan = getStorageManager()
 
         storageMan.isStrategyTypeAvailable(storageMode)
-        .catch(e => {
-          message.error(e.message)
-          throw e
-        })
-        .then(() => {
-          const needChange = storageMan.setCurrentStrategyType(storageMode)
-          return needChange ? delay(() => {}, 1000) : undefined
-        })
-        .then(() => prepareByOptions(options))
-        .then(() => {
-          const state = store.getState()
-          const shouldLoadResources = getShouldLoadResources(state)
+          .catch(e => {
+            message.error(e.message)
+            throw e
+          })
+          .then(() => {
+            const needChange = storageMan.setCurrentStrategyType(storageMode)
+            return needChange ? delay(() => { }, 1000) : undefined
+          })
+          .then(() => prepareByOptions(options))
+          .then(() => {
+            const state = store.getState()
+            const shouldLoadResources = getShouldLoadResources(state)
 
-          if (testSuite.macroFolder && testSuite.macroFolder.length > 0) {
-            const pMacroNodes = (() => {
-              if (shouldLoadResources) {
-                return until('macros ready', () => {
-                  const state = store.getState()
-                  const macroNodes = getMacroFileNodeList(state)
+            if (testSuite.macroFolder && testSuite.macroFolder.length > 0) {
+              const pMacroNodes = (() => {
+                if (shouldLoadResources) {
+                  return until('macros ready', () => {
+                    const state = store.getState()
+                    const macroNodes = getMacroFileNodeList(state)
 
-                  return {
-                    pass:   macroNodes && macroNodes.length > 0,
-                    result: macroNodes
-                  }
-                }, 1000, 20 * 1000)
-                .then(() => {
-                  const folder = findMacroFolderWithCaseInsensitiveRelativePath(store.getState(), testSuite.macroFolder)
-                  return (folder && folder.children) || []
+                    return {
+                      pass: macroNodes && macroNodes.length > 0,
+                      result: macroNodes
+                    }
+                  }, 1000, 20 * 1000)
+                    .then(() => {
+                      const folder = findMacroFolderWithCaseInsensitiveRelativePath(store.getState(), testSuite.macroFolder)
+                      return (folder && folder.children) || []
+                    })
+                }
+
+                return storageMan.getMacroStorage().listR(testSuite.macroFolder)
+                  .then(nodes => nodes.filter(node => node.isFile))
+              })()
+
+              return pMacroNodes.then((foundNodes) => {
+                const macroStorage = storageMan.getMacroStorage()
+                const dirPath = macroStorage.dirPath(testSuite.macroFolder.replace(/\\/g, '/'))
+                const path = macroStorage.getPathLib()
+                const folderName = path.basename(dirPath)
+
+                if (foundNodes.length === 0) {
+                  throw new Error(`No folder found for ${testSuite.macroFolder}, or no macro found in it`)
+                }
+
+                prepareBeforeRun(options)
+
+                getPlayer({ name: 'testSuite' }).play({
+                  title: folderName,
+                  mode: getPlayer().C.MODE.STRAIGHT,
+                  startIndex: 0,
+                  resources: foundNodes.map(item => ({
+                    id: item.fullPath,
+                    loops: 1
+                  })),
+                  extra: {
+                    id: dirPath,
+                    name: folderName
+                  },
+                  public: {
+                    scope: genOverrideScope({ options })
+                  },
+                  callback: genPlayerPlayCallback({ options })
                 })
-              }
-
-              return storageMan.getMacroStorage().listR(testSuite.macroFolder)
-              .then(nodes => nodes.filter(node => node.isFile))
-            })()
-
-            return pMacroNodes.then((foundNodes) => {
-              const macroStorage = storageMan.getMacroStorage()
-              const dirPath      = macroStorage.dirPath(testSuite.macroFolder.replace(/\\/g, '/'))
-              const path         = macroStorage.getPathLib()
-              const folderName   = path.basename(dirPath)
-
-              if (foundNodes.length === 0) {
-                throw new Error(`No folder found for ${testSuite.macroFolder}, or no macro found in it`)
-              }
-
-              prepareBeforeRun(options)
-
-              getPlayer({ name: 'testSuite' }).play({
-                title:      folderName,
-                mode:       getPlayer().C.MODE.STRAIGHT,
-                startIndex: 0,
-                resources:  foundNodes.map(item => ({
-                  id:       item.fullPath,
-                  loops:    1
-                })),
-                extra: {
-                  id:   dirPath,
-                  name: folderName
-                },
-                public: {
-                  scope: genOverrideScope({ options })
-                },
-                callback: genPlayerPlayCallback({ options })
               })
-            })
-          }
+            }
 
-          if (testSuite.name && testSuite.name.length > 0) {
-            const pTestSuite = (() => {
-              if (shouldLoadResources) {
-                return until('testSuites ready', () => {
-                  const state = store.getState()
-                  const { testSuites } = state.editor
+            if (testSuite.name && testSuite.name.length > 0) {
+              const pTestSuite = (() => {
+                if (shouldLoadResources) {
+                  return until('testSuites ready', () => {
+                    const state = store.getState()
+                    const { testSuites } = state.editor
 
-                  return {
-                    pass:   testSuites && testSuites.length > 0,
-                    result: true
-                  }
+                    return {
+                      pass: testSuites && testSuites.length > 0,
+                      result: true
+                    }
+                  })
+                    .then(() => {
+                      const state = store.getState()
+                      return findSameNameTestSuite(testSuite.name, state.editor.testSuites)
+                    })
+                }
+
+                return storageMan.getTestSuiteStorage().read(testSuite.name, 'Text')
+              })()
+
+              return pTestSuite.then((ts) => {
+                if (!ts) {
+                  message.error(`no macro found with name '${testSuite.name}'`)
+                  return false
+                }
+
+                prepareBeforeRun(options)
+
+                getPlayer({ name: 'testSuite' }).play({
+                  title: ts.name,
+                  extra: {
+                    id: ts.id,
+                    name: ts.name
+                  },
+                  mode: getPlayer().C.MODE.STRAIGHT,
+                  startIndex: 0,
+                  resources: ts.cases.map(item => ({
+                    id: item.testCaseId,
+                    loops: item.loops
+                  })),
+                  public: {
+                    scope: genOverrideScope({ options })
+                  },
+                  callback: genPlayerPlayCallback({ options })
                 })
-                .then(() => {
-                  const state = store.getState()
-                  return findSameNameTestSuite(testSuite.name, state.editor.testSuites)
-                })
-              }
 
-              return storageMan.getTestSuiteStorage().read(testSuite.name, 'Text')
-            })()
-
-            return pTestSuite.then((ts) => {
-              if (!ts) {
-                message.error(`no macro found with name '${testSuite.name}'`)
-                return false
-              }
-
-              prepareBeforeRun(options)
-
-              getPlayer({ name: 'testSuite' }).play({
-                title: ts.name,
-                extra: {
-                  id: ts.id,
-                  name: ts.name
-                },
-                mode: getPlayer().C.MODE.STRAIGHT,
-                startIndex: 0,
-                resources: ts.cases.map(item => ({
-                  id:     item.testCaseId,
-                  loops:  item.loops
-                })),
-                public: {
-                  scope: genOverrideScope({ options })
-                },
-                callback: genPlayerPlayCallback({ options })
+                return store.dispatch(updateUI({ sidebarTab: 'test_suites' }))
               })
-
-              return store.dispatch(updateUI({ sidebarTab: 'test_suites' }))
-            })
-          }
-        })
-        .catch(e => {
-          store.dispatch(addLog('error', e.message))
-        })
+            }
+          })
+          .catch(e => {
+            store.dispatch(addLog('error', e.message))
+          })
 
         return true
       }
-      
+
       case 'IMPORT_AND_RUN': {
         const { options } = args
         let testCase
@@ -875,90 +875,90 @@ const bindIpcEvent = () => {
         guardCommandLineArgs(options)
 
         const storageMode = args.storageMode || StorageStrategyType.Browser
-        const storageMan  = getStorageManager()
+        const storageMan = getStorageManager()
 
         return storageMan.isStrategyTypeAvailable(storageMode)
-        .catch(e => {
-          message.error(e.message)
-          throw e
-        })
-        .then(() => {
-          const needChange = storageMan.setCurrentStrategyType(storageMode)
-          return needChange ? delay(() => {}, 1000) : undefined
-        })
-        .then(() => prepareByOptions(options))
-        .then(() => {
-          const state = store.getState()
-          const shouldLoadResources = getShouldLoadResources(state)
-
-          if (!shouldLoadResources) {
-            return Promise.resolve(true)
-          }
-
-          return new Promise((resolve) => {
-            resolve(reloadResources.onLastReloadFinished ? reloadResources.onLastReloadFinished() : null)
-          })
-          .then(() => {
-            return until('macros ready', () => {
-              const state = store.getState()
-              const macroNodes = getMacroFileNodeList(state)
-
-              return {
-                pass:   macroNodes && macroNodes.length > 0,
-                result: true
-              }
-            }, 1000, 20 * 1000)
-          })
-        })
-        .then(() => {
-          return store.dispatch(upsertTestCase(testCase))
-          .then(() => store.dispatch(editTestCase(testCase.name)))
-          .then((macro) => {
-              const state = store.getState()
-              const openTc = macro.data.commands.find(command => command.cmd.toLowerCase() === 'open')
-
-              store.dispatch(playerPlay({
-                macroId: macro.id,
-                title: macro.name,
-                extra: {
-                  id: macro.id
-                },
-                mode:           Player.C.MODE.STRAIGHT,
-                startIndex:     0,
-                startUrl:       openTc ? openTc.target : null,
-                resources:      macro.data.commands,
-                postDelay:      state.player.playInterval * 1000,
-                overrideScope:  genOverrideScope({ options }),
-                callback:       genPlayerPlayCallback({ options })
-              }))
-              return true
-          })
           .catch(e => {
-            log.error(e.stack)
+            message.error(e.message)
             throw e
           })
-        })
+          .then(() => {
+            const needChange = storageMan.setCurrentStrategyType(storageMode)
+            return needChange ? delay(() => { }, 1000) : undefined
+          })
+          .then(() => prepareByOptions(options))
+          .then(() => {
+            const state = store.getState()
+            const shouldLoadResources = getShouldLoadResources(state)
+
+            if (!shouldLoadResources) {
+              return Promise.resolve(true)
+            }
+
+            return new Promise((resolve) => {
+              resolve(reloadResources.onLastReloadFinished ? reloadResources.onLastReloadFinished() : null)
+            })
+              .then(() => {
+                return until('macros ready', () => {
+                  const state = store.getState()
+                  const macroNodes = getMacroFileNodeList(state)
+
+                  return {
+                    pass: macroNodes && macroNodes.length > 0,
+                    result: true
+                  }
+                }, 1000, 20 * 1000)
+              })
+          })
+          .then(() => {
+            return store.dispatch(upsertTestCase(testCase))
+              .then(() => store.dispatch(editTestCase(testCase.name)))
+              .then((macro) => {
+                const state = store.getState()
+                const openTc = macro.data.commands.find(command => command.cmd.toLowerCase() === 'open')
+
+                store.dispatch(playerPlay({
+                  macroId: macro.id,
+                  title: macro.name,
+                  extra: {
+                    id: macro.id
+                  },
+                  mode: Player.C.MODE.STRAIGHT,
+                  startIndex: 0,
+                  startUrl: openTc ? openTc.target : null,
+                  resources: macro.data.commands,
+                  postDelay: state.player.playInterval * 1000,
+                  overrideScope: genOverrideScope({ options }),
+                  callback: genPlayerPlayCallback({ options })
+                }))
+                return true
+              })
+              .catch(e => {
+                log.error(e.stack)
+                throw e
+              })
+          })
       }
 
       case 'ADD_VISION_IMAGE': {
         const { dataUrl, requireRename = false } = args
-        const fileName    = `${randomName()}_dpi_${getPageDpi()}.png`
+        const fileName = `${randomName()}_dpi_${getPageDpi()}.png`
 
         return getStorageManager()
-        .getVisionStorage()
-        .write(fileName, dataURItoBlob(dataUrl))
-        .then(restoreVisions)
-        .then(() => {
-          if (!requireRename) return { fileName }
+          .getVisionStorage()
+          .write(fileName, dataURItoBlob(dataUrl))
+          .then(restoreVisions)
+          .then(() => {
+            if (!requireRename) return { fileName }
 
-          return store.dispatch(
-            renameVisionImage(fileName)
-          )
-          .then(fileName => {
-            restoreVisions()
-            return { fileName }
+            return store.dispatch(
+              renameVisionImage(fileName)
+            )
+              .then(fileName => {
+                restoreVisions()
+                return { fileName }
+              })
           })
-        })
       }
 
       case 'RESTORE_SCREENSHOTS': {
@@ -976,10 +976,10 @@ const bindIpcEvent = () => {
       }
 
       case 'ADD_LOG': {
-        if (!args)          return false
-        if (args.info)      store.dispatch(addLog('info', args.info, args.options))
-        if (args.warning)   store.dispatch(addLog('warning', args.warning))
-        if (args.error)     store.dispatch(addLog('error', args.error))
+        if (!args) return false
+        if (args.info) store.dispatch(addLog('info', args.info, args.options))
+        if (args.warning) store.dispatch(addLog('warning', args.warning))
+        if (args.error) store.dispatch(addLog('error', args.error))
 
         return true
       }
@@ -992,9 +992,9 @@ const bindIpcEvent = () => {
             devicePixelRatio: args.devicePixelRatio
           }
         )
-        .then(dataUrl => {
-          return handleCommand('ADD_VISION_IMAGE', { dataUrl, requireRename: false })
-        })
+          .then(dataUrl => {
+            return handleCommand('ADD_VISION_IMAGE', { dataUrl, requireRename: false })
+          })
       }
 
       case 'STORE_SCREENSHOT_IN_SELECTION': {
@@ -1002,26 +1002,26 @@ const bindIpcEvent = () => {
 
         return getIpcCache().get(tabId).then(ipc => {
           return activateTab(tabId, true)
-          .then(() => delay(() => {}, C.SCREENSHOT_DELAY))
-          .then(() => captureScreenshotService.captureScreenInSelection(tabId, { rect, devicePixelRatio }, {
-            startCapture: () => {
-              return ipc.ask('START_CAPTURE_FULL_SCREENSHOT', { hideScrollbar: false })
-            },
-            endCapture: (pageInfo) => {
-              return ipc.ask('END_CAPTURE_FULL_SCREENSHOT', { pageInfo })
-            },
-            scrollPage: (offset) => {
-              return ipc.ask('SCROLL_PAGE', { offset })
-            }
-          }))
-          .then(dataUrl => {
-            return getStorageManager().getScreenshotStorage()
-            .overwrite(fileName, dataURItoBlob(dataUrl))
-            .then(() => {
-              handleCommand('RESTORE_SCREENSHOTS')
-              return fileName
+            .then(() => delay(() => { }, C.SCREENSHOT_DELAY))
+            .then(() => captureScreenshotService.captureScreenInSelection(tabId, { rect, devicePixelRatio }, {
+              startCapture: () => {
+                return ipc.ask('START_CAPTURE_FULL_SCREENSHOT', { hideScrollbar: false })
+              },
+              endCapture: (pageInfo) => {
+                return ipc.ask('END_CAPTURE_FULL_SCREENSHOT', { pageInfo })
+              },
+              scrollPage: (offset) => {
+                return ipc.ask('SCROLL_PAGE', { offset })
+              }
+            }))
+            .then(dataUrl => {
+              return getStorageManager().getScreenshotStorage()
+                .overwrite(fileName, dataURItoBlob(dataUrl))
+                .then(() => {
+                  handleCommand('RESTORE_SCREENSHOTS')
+                  return fileName
+                })
             })
-          })
         })
       }
     }
@@ -1096,69 +1096,69 @@ const initSaveTestCase = () => {
 
 const updatePageTitle = (args) => {
   // Note: Firefox includes page url in title, there could be not enough space for tab title
-  if (Ext.isFirefox())  return true
+  if (Ext.isFirefox()) return true
   const origTitle = document.title.replace(/ - .*$/, '')
   document.title = `${origTitle} - (Tab: ${args.title})`
 }
 
-function tryPreinstall () {
+function tryPreinstall() {
   return storage.get('preinstall_info')
-  .then(info => {
-    const status = (() => {
-      if (!info)  return 'fresh'
+    .then(info => {
+      const status = (() => {
+        if (!info) return 'fresh'
 
-      const { askedVersions = [] } = info
-      if (askedVersions.indexOf(globalConfig.preinstall.version) === -1) return 'new_version_available'
+        const { askedVersions = [] } = info
+        if (askedVersions.indexOf(globalConfig.preinstall.version) === -1) return 'new_version_available'
 
-      return 'up_to_date'
-    })()
+        return 'up_to_date'
+      })()
 
-    switch (status) {
-      case 'fresh':
-        return store.dispatch(preinstall())
+      switch (status) {
+        case 'fresh':
+          return store.dispatch(preinstall())
 
-      case 'new_version_available':
-        return store.dispatch(updateUI({ newPreinstallVersion: true }))
+        case 'new_version_available':
+          return store.dispatch(updateUI({ newPreinstallVersion: true }))
 
-      case 'up_to_date':
-      default:
-        return false
-    }
-  })
+        case 'up_to_date':
+        default:
+          return false
+      }
+    })
 }
 
-function reloadResources () {
+function reloadResources() {
   const p = bindMacroAndTestSuites()
-  .then(() => {
-    return flow(
-      guardVoidPromise(restoreCSV),
-      guardVoidPromise(restoreVisions),
-      guardVoidPromise(restoreScreenshots),
-      guardVoidPromise(() => store.dispatch(resetEditingIfNeeded()))
-    )
-  })
+    .then(() => {
+      return flow(
+        guardVoidPromise(restoreCSV),
+        guardVoidPromise(restoreVisions),
+        guardVoidPromise(restoreScreenshots),
+        guardVoidPromise(() => store.dispatch(resetEditingIfNeeded()))
+      )
+    })
 
   reloadResources.onLastReloadFinished = (callback) => callback ? p.then(callback) : p
   return p
 }
 
-function checkXFileVersion () {
+function checkXFileVersion() {
   return getXFile().getVersion()
-  .then(versionInfo => {
-    if (!versionInfo.version) {
-      return
-    }
+    .then(versionInfo => {
+      if (!versionInfo.version) {
+        return
+      }
 
-    if (semver.lt(versionInfo.version, globalConfig.xfile.minVersionToReadBigFile)) {
-      const msg = `Can not read/save screenshot on hard-drive. Please upgrade FileAccess XModule to latest version (>= ${globalConfig.xfile.minVersionToReadBigFile}).`
+      if (semver.lt(versionInfo.version, globalConfig.xfile.minVersionToReadBigFile)) {
+        const msg = `Can not read/save screenshot on hard-drive. Please upgrade FileAccess XModule to latest version (>= ${globalConfig.xfile.minVersionToReadBigFile}).`
 
-      message.warn(msg)
-      store.dispatch(addLog('warning', msg))
-    }
-  })
+        message.warn(msg)
+        store.dispatch(addLog('warning', msg))
+      }
+    })
 }
 
-function bindStorageModeChanged () {
+function bindStorageModeChanged() {
   let first = true
 
   getStorageManager().on(StorageManagerEvent.StrategyTypeChanged, (type) => {
@@ -1177,10 +1177,10 @@ function bindStorageModeChanged () {
       })()
 
       p
-      .then(reloadResources)
-      .then(() => {
-        store.dispatch(Actions.selectInitialMacro(type))
-      })
+        .then(reloadResources)
+        .then(() => {
+          store.dispatch(Actions.selectInitialMacro(type))
+        })
     } catch (e) {
       log.warn(e)
     }
@@ -1195,10 +1195,10 @@ function bindStorageModeChanged () {
   })
 }
 
-function remedyMigrationIfNeeded () {
+function remedyMigrationIfNeeded() {
   const todo = []
   const shouldRemedyMacroFsMigration = getMigrateMacroTestSuiteToBrowserFileSystem().shouldMigrate() &&
-                                        !getKantuMigrationService().isMigrated(MigrationJobType.MigrateMacroTestSuiteToBrowserFileSystem)
+    !getKantuMigrationService().isMigrated(MigrationJobType.MigrateMacroTestSuiteToBrowserFileSystem)
 
   if (shouldRemedyMacroFsMigration || globalConfig.forceMigrationRemedy) {
     alert(`Kantu introduced an internal storage migration in this version. It isn't supposed to disturb you, but looks like there is some unexpected error: \n\n=> Solution: After you click OK Kantu is going to download your macros and test suites from the old storage into a ZIP file. You can then manually import the macros back into the new Kantu version.\n\nIf you see this dialog, please also inform us at team@a9t9.com or in the user forum about the issue.`)
@@ -1208,7 +1208,7 @@ function remedyMigrationIfNeeded () {
   return flow(...todo)
 }
 
-function initFromQuery () {
+function initFromQuery() {
   const queries = parseQuery(window.location.search)
 
   store.dispatch(Actions.setFrom(queries.from || RunBy.Manual))
@@ -1220,16 +1220,16 @@ function initFromQuery () {
   }
 }
 
-function initProxyState () {
+function initProxyState() {
   csIpc.ask('PANEL_GET_PROXY')
-  .then(proxy => {
-    store.dispatch(
-      updateProxy(proxy)
-    )
-  })
+    .then(proxy => {
+      store.dispatch(
+        updateProxy(proxy)
+      )
+    })
 }
 
-function init () {
+function init() {
   initFromQuery()
   bindIpcEvent()
   bindWindowEvents()
@@ -1242,12 +1242,12 @@ function init () {
   initProxyState()
 
   tryPreinstall()
-  .catch((e) => {
-    log.warn('Error in preinstall', e)
-  })
-  .then(() => {
-    reloadResources()
-  })
+    .catch((e) => {
+      log.warn('Error in preinstall', e)
+    })
+    .then(() => {
+      reloadResources()
+    })
 
   setTimeout(() => {
     remedyMigrationIfNeeded()
@@ -1258,15 +1258,15 @@ function init () {
   document.title = document.title + ' ' + Ext.runtime.getManifest().version
 
   csIpc.ask('PANEL_CURRENT_PLAY_TAB_INFO')
-  .then(updatePageTitle)
+    .then(updatePageTitle)
 
   storage.get('config')
-  .then(config => {
-    if (config && config.useDarkTheme) {
-      document.documentElement.setAttribute('data-theme', 'dark')
-    }
-    render(config)    
-  })
+    .then(config => {
+      if (config && config.useDarkTheme) {
+        document.documentElement.setAttribute('data-theme', 'dark')
+      }
+      render(config)
+    })
 }
 
 Promise.all([
@@ -1274,27 +1274,27 @@ Promise.all([
   getXFile().getConfig(),
   getLicenseService().getLatestInfo()
 ])
-.then(([config, xFileConfig]) => {
-  // Note: This is the first call of getStorageManager
-  // and it must passed in `getMacros` to make test suite work
-  getStorageManager(config.storageMode, {
-    getConfig: () => store.getState().config,
-    getMacros: () => getMacroFileNodeList(store.getState()),
-    getMaxMacroCount: (strategyType) => {
-      const count = (() => {
-        switch (strategyType) {
-          case StorageStrategyType.XFile:
-            return getLicenseService().getMaxXFileMacros()
+  .then(([config, xFileConfig]) => {
+    // Note: This is the first call of getStorageManager
+    // and it must passed in `getMacros` to make test suite work
+    getStorageManager(config.storageMode, {
+      getConfig: () => store.getState().config,
+      getMacros: () => getMacroFileNodeList(store.getState()),
+      getMaxMacroCount: (strategyType) => {
+        const count = (() => {
+          switch (strategyType) {
+            case StorageStrategyType.XFile:
+              return getLicenseService().getMaxXFileMacros()
 
-          case StorageStrategyType.Browser:
-          default:
-            return Infinity
-        }
-      })()
+            case StorageStrategyType.Browser:
+            default:
+              return Infinity
+          }
+        })()
 
-      return Promise.resolve(count)
-    }
-  })
+        return Promise.resolve(count)
+      }
+    })
 
-  init()
-}, init)
+    init()
+  }, init)

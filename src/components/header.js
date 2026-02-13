@@ -24,6 +24,7 @@ import { ocrViewport, ocrViewportCalibration } from "@/modules/ocr.ts";
 import { SettingOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import * as actions from "../actions";
+import { t } from "../common/i18n";
 import { Actions, Actions as simpleActions } from "../actions/simple_actions";
 import * as C from "../common/constant";
 import { fromHtml, generateEmptyHtml } from "../common/convert_utils";
@@ -77,7 +78,7 @@ function withRouter(Component) {
 }
 
 const applyPresetLicense = (registerKey) => {
-  if(getLicenseService().isProLicense() || getLicenseService().isPersonalLicense() ){
+  if (getLicenseService().isProLicense() || getLicenseService().isPersonalLicense()) {
     console.log("license already active.")
     return
   }
@@ -87,12 +88,12 @@ const applyPresetLicense = (registerKey) => {
     }
     console.log(`license status: ${license.status}`);
   })
-  .catch((e) => {
-    const text = isNetworkError(e)
-      ? "Internet connection required for activation. If you want use the software on a machine without Internet connection, please contact tech support"
-      : e.message;
-     console.error(text);
-  })
+    .catch((e) => {
+      const text = isNetworkError(e)
+        ? "Internet connection required for activation. If you want use the software on a machine without Internet connection, please contact tech support"
+        : e.message;
+      console.error(text);
+    })
 }
 
 class Header extends React.Component {
@@ -120,7 +121,7 @@ class Header extends React.Component {
     connectedAPIEndpointType: null // null | "free" | "pro"
   };
 
-   getConnectedAPIEndpointType = (ocrSpaceApiKey) => {
+  getConnectedAPIEndpointType = (ocrSpaceApiKey) => {
     const apiEndpointType = ocrSpaceApiKey ? (isOcrSpaceFreeKey(ocrSpaceApiKey) ? "free" : "pro") : null
     return Promise.resolve(apiEndpointType);
   }
@@ -172,7 +173,7 @@ class Header extends React.Component {
       console.log('startRecording:>> askPermission')
       const permissionResult = await this.askPermission()
       console.log('startRecording:>> askPermission complete: permissionResult:>>', permissionResult)
-      if(!permissionResult) {
+      if (!permissionResult) {
         return
       }
       this.props.startRecording();
@@ -347,18 +348,18 @@ class Header extends React.Component {
 
     return new Promise((resolve, reject) => {
       if (Ext.isFirefox()) {
-        Ext.permissions.contains({ origins: ["<all_urls>"]}).then(
+        Ext.permissions.contains({ origins: ["<all_urls>"] }).then(
           (permissionGranted) => {
-            if (!permissionGranted) { 
+            if (!permissionGranted) {
               Modal.confirm({
                 title: "Grant Permission To Replay Macros",
                 content: `Ui.Vision is an open-source tool for automating tasks. To replay macros, it requires permission from Firefox to 'access data in all tabs'. If you click 'OK', Ui.Vision will open the Firefox permission dialog, allowing you to provide this permission. Continue?`,
                 okText: "Continue",
                 cancelText: "Cancel",
-                onOk: () => { 
-                  Ext.permissions.request({origins: ['<all_urls>']}).then((result) => {
-                    console.log('permission result:>>', result)  
-                    if(result) {                    
+                onOk: () => {
+                  Ext.permissions.request({ origins: ['<all_urls>'] }).then((result) => {
+                    console.log('permission result:>>', result)
+                    if (result) {
                       resolve(true)
                     } else {
                       // visit https://goto.ui.vision/x/idehelp?help=firefox_access_data_permission in new tab 
@@ -368,22 +369,22 @@ class Header extends React.Component {
                       })
                       resolve(false)
                     }
-                  })                  
+                  })
                 },
-                onCancel: () => { 
+                onCancel: () => {
                   // visit https://goto.ui.vision/x/idehelp?help=firefox_access_data_permission in new tab 
                   Ext.tabs.create({
                     url: 'https://goto.ui.vision/x/idehelp?help=firefox_access_data_permission',
                     active: true
                   })
-                  
-                  resolve(false) 
+
+                  resolve(false)
                 },
               })
             } else {
               resolve(true);
             }
-          }  
+          }
         )
       } else {
         resolve(true);
@@ -393,7 +394,7 @@ class Header extends React.Component {
 
   playCurrentMacro = async (isStep) => {
     const permissionResult = await this.askPermission();
-    if(!permissionResult) {
+    if (!permissionResult) {
       return
     }
 
@@ -597,7 +598,7 @@ class Header extends React.Component {
       .then((data) => {
         const { installed, version } = data;
         const p = !installed ? Promise.resolve() : getXLocal().initConfig();
-        p.catch((e) => {}).then(() => {
+        p.catch((e) => { }).then(() => {
           this.setState(
             updateIn(
               ["xModuleDataLocal", getXLocal().getName()],
@@ -627,7 +628,7 @@ class Header extends React.Component {
         // Note: call init config for each xmodule and discard any error
         return mod
           .initConfig()
-          .catch((e) => {})
+          .catch((e) => { })
           .then(() => mod.getVersion())
           .then((versionInfo) => {
             if (versionInfo.installed) {
@@ -879,10 +880,10 @@ class Header extends React.Component {
       switch (value) {
         case "off":
           return ipc.ask("PANEL_SET_PROXY", { proxy: null });
-  
+
         case "on": {
           let proxy;
-  
+
           try {
             proxy = parseProxyUrl(
               this.props.config.defaultProxy,
@@ -891,12 +892,12 @@ class Header extends React.Component {
           } catch (e) {
             return message.error(e.message);
           }
-  
+
           return ipc.ask("PANEL_SET_PROXY", { proxy });
         }
       }
     }
-  
+
     const onChangeDefaultOCREngine = (value) => {
       const lastSelectedEngine = this.props.config.ocrEngine;
       onConfigChange("ocrEngine", parseInt(value, 10));
@@ -918,12 +919,12 @@ class Header extends React.Component {
                   this.state.ocrLanguageOptions.map((item) =>
                     options.indexOf(item.value) > -1
                       ? newOcrlangAr.push({
-                          text: item.text,
-                          value: item.value,
-                        })
+                        text: item.text,
+                        value: item.value,
+                      })
                       : []
                   );
-  
+
                   this.setState({
                     ocrLanguageOptions: newOcrlangAr,
                   });
@@ -939,7 +940,7 @@ class Header extends React.Component {
                       newOcrlangAr[0]["value"]
                     );
                   }
-  
+
                 } else {
                   const msg = "Not Installed";
                   message.info(`status updated: ${msg}`);
@@ -961,31 +962,32 @@ class Header extends React.Component {
             );
         }
       } else if (value === "98") {
-         
-          let tesseractLangAr = this.state.tesseractLanguageOptions.map((item) =>  {
-            return {
-              text: item.text,
-              value: item.value,
-            }});              
-          
 
-          this.setState({
-            tesseractLanguageOptions: tesseractLangAr,
-          });
-
-          // onConfigChange("tesseractLanguageOption", tesseractLangAr);
-          let haveEng = tesseractLangAr.filter(
-            (lang) => lang.value == "eng"
-          );
-          if (haveEng.length != 0) {
-            onConfigChange("ocrLanguage", "eng");
-          } else {
-            onConfigChange(
-              "ocrLanguage",
-              tesseractLangAr[0]["value"]
-            );
+        let tesseractLangAr = this.state.tesseractLanguageOptions.map((item) => {
+          return {
+            text: item.text,
+            value: item.value,
           }
-  
+        });
+
+
+        this.setState({
+          tesseractLanguageOptions: tesseractLangAr,
+        });
+
+        // onConfigChange("tesseractLanguageOption", tesseractLangAr);
+        let haveEng = tesseractLangAr.filter(
+          (lang) => lang.value == "eng"
+        );
+        if (haveEng.length != 0) {
+          onConfigChange("ocrLanguage", "eng");
+        } else {
+          onConfigChange(
+            "ocrLanguage",
+            tesseractLangAr[0]["value"]
+          );
+        }
+
       } else {
         this.setState({ ocrLanguageOptions: ocrLanguageOptions });
         onConfigChange("ocrLanguageOption", ocrLanguageOptions);
@@ -998,7 +1000,7 @@ class Header extends React.Component {
       wrapperCol: { span: 16 },
     };
 
-    const ocrClassName =  cn( "ocr-pane", {
+    const ocrClassName = cn("ocr-pane", {
       "ocr-disabled": this.props.config.ocrMode === "disabled",
       "ocr-enabled": this.props.config.ocrMode === "enabled",
       "ocr-offline": this.props.config.ocrMode === "offline_enabled",
@@ -1018,7 +1020,7 @@ class Header extends React.Component {
           this.props.updateConfig({
             showSettingsOnStart: false
           })
-          this.setState({ userEnteredOCRAPIKey: '' });  
+          this.setState({ userEnteredOCRAPIKey: '' });
         }}
       >
         <Tabs
@@ -1030,7 +1032,7 @@ class Header extends React.Component {
           items={[
             {
               key: "replay",
-              label: "Replay",
+              label: t('replayHelper'),
               children: (
                 <Form>
                   <Form.Item label="Replay Helper" {...displayConfig}>
@@ -1182,7 +1184,7 @@ class Header extends React.Component {
                     <span className="tip">Max. allowed time for file</span>
                   </Form.Item>
                   <Form.Item label="If error happens in loop" {...displayConfig}>
-                    <Radio.Group                      
+                    <Radio.Group
                       value={this.props.config.onErrorInLoop}
                     >
                       <Radio onClick={(e) =>
@@ -1228,14 +1230,14 @@ class Header extends React.Component {
                       onClick={(e) => {
                         const useDarkTheme = !e.target.checked;
                         onConfigChange("useDarkTheme", !e.target.checked);
-                        if(useDarkTheme) {
+                        if (useDarkTheme) {
                           document.documentElement.setAttribute('data-theme', 'dark')
                         } else {
                           document.documentElement.setAttribute('data-theme', 'light')
                         }
                       }}
                       checked={this.props.config.useDarkTheme}
-                      style={{marginBottom: 0}}
+                      style={{ marginBottom: 0 }}
                     >
                       Use Dark Mode (
                       <a
@@ -1364,26 +1366,26 @@ class Header extends React.Component {
                     </p>
                   </div>
                   <div >
-                    <span className="label-text">Local OCR Options: 
-					{'  ['}
-                        <a
-                          href="https://goto.ui.vision/x/idehelp?help=ocr-local"
-                          target="_blank"
-                        >
-                          more info
-                        </a>
-                        {']'}
-					</span>
-                    <br/>
+                    <span className="label-text">Local OCR Options:
+                      {'  ['}
+                      <a
+                        href="https://goto.ui.vision/x/idehelp?help=ocr-local"
+                        target="_blank"
+                      >
+                        more info
+                      </a>
+                      {']'}
+                    </span>
+                    <br />
                     <Radio.Group
                       className="radio-block"
                       style={{ marginLeft: "5%" }}
                       value={"" + this.props.config.ocrEngine}
                     >
-                      
+
                       <Radio value="98" onClick={() => onChangeDefaultOCREngine("98")}>
-                        Javascript OCR (Works well for many use cases, additional OCR languages available on 			 
-						 	<a
+                        Javascript OCR (Works well for many use cases, additional OCR languages available on
+                        <a
                           href="https://goto.ui.vision/x/idehelp?help=ocr-request"
                           target="_blank"
                         > request</a>)
@@ -1392,28 +1394,28 @@ class Header extends React.Component {
                       <Radio value="99" onClick={() => onChangeDefaultOCREngine("99")}>
                         XModule Local OCR (Faster/better, especially for text on images)
                       </Radio>
-                      
+
                     </Radio.Group>
                   </div>
                   <div className="row">
                     <span className="label-text">Use Ocr.Space Online OCR:
-					{'   ['}
-					<a
-                          href="https://goto.ui.vision/x/idehelp?help=free-ocr-api"
-                          target="_blank"
-                        >Free OCR API account required</a>{']'}
-					</span>
-                    <br/>
+                      {'   ['}
+                      <a
+                        href="https://goto.ui.vision/x/idehelp?help=free-ocr-api"
+                        target="_blank"
+                      >Free OCR API account required</a>{']'}
+                    </span>
+                    <br />
                     <Radio.Group
                       className="radio-block"
                       style={{ marginLeft: "5%" }}
                       value={"" + this.props.config.ocrEngine}
                     >
                       <Radio value="1" onClick={() => onChangeDefaultOCREngine("1")}>
-                        Cloud OCR: OCR.Space, Engine1 
+                        Cloud OCR: OCR.Space, Engine1
                       </Radio>
                       <Radio value="2" onClick={() => onChangeDefaultOCREngine("2")}>
-                        Cloud OCR: OCR.Space, Engine2 
+                        Cloud OCR: OCR.Space, Engine2
                       </Radio>
                     </Radio.Group>
                     <div>
@@ -1422,19 +1424,18 @@ class Header extends React.Component {
                         type="text"
                         style={{ width: "120px" }}
                         value={this.state.userEnteredOCRAPIKey}
-                        disabled={[1,2].includes( this.props.config.ocrEngine) ? false : true }
-                        onChange={(e) =>
-                          {
-                            this.setState({ userEnteredOCRAPIKey: e.target.value });    
-                          }
+                        disabled={[1, 2].includes(this.props.config.ocrEngine) ? false : true}
+                        onChange={(e) => {
+                          this.setState({ userEnteredOCRAPIKey: e.target.value });
+                        }
                         }
                       />
                       <Button
                         type="primary"
                         style={{ marginLeft: "8px" }}
-                        disabled={ [1,2].includes( this.props.config.ocrEngine) ? false : true }
+                        disabled={[1, 2].includes(this.props.config.ocrEngine) ? false : true}
                         onClick={() => {
-                           // connect to endpoint
+                          // connect to endpoint
                           let key = this.state.userEnteredOCRAPIKey?.trim();
                           if (!key) {
                             message.error("Please enter a valid API key");
@@ -1442,16 +1443,16 @@ class Header extends React.Component {
                           }
                           const isFreeApiKey = isOcrSpaceFreeKey(key)
                           let url;
- 
+
                           if (!isFreeApiKey) {
                             // it's a pro key  
                             url = this.props.config.ocrEngine == 1 ? CONFIG.ocr.proApi1Endpoint : CONFIG.ocr.proApi2Endpoint
                           } else {
                             url = CONFIG.ocr.freeApiEndpoint
                           }
-                           
+
                           testOcrSpaceAPIKey({ key, url }).then((res) => {
-                            if(res){
+                            if (res) {
                               let endpointType = isFreeApiKey ? 'free' : 'pro';
                               this.setState({ connectedAPIEndpointType: endpointType });
                               onConfigChange("ocrSpaceApiKey", key);
@@ -1463,14 +1464,14 @@ class Header extends React.Component {
                           }).catch((e) => {
                             message.error(e.message);
                           });
-                           
+
                         }}
                       >
                         Test
                       </Button>
-                       { this.state.connectedAPIEndpointType ? (<span className="api-key-notification">
-                        API key stored. Connected to { this.state.connectedAPIEndpointType.toUpperCase() } endpoint. 
-                      </span>) : null }
+                      {this.state.connectedAPIEndpointType ? (<span className="api-key-notification">
+                        API key stored. Connected to {this.state.connectedAPIEndpointType.toUpperCase()} endpoint.
+                      </span>) : null}
                     </div>
                   </div>
 
@@ -1489,7 +1490,7 @@ class Header extends React.Component {
                         }
                         onChange={(val) => onConfigChange("ocrLanguage", val)}
                       >
-                        { this.props.config.ocrEngine == 98 ? this.state.tesseractLanguageOptions.map((item) => (
+                        {this.props.config.ocrEngine == 98 ? this.state.tesseractLanguageOptions.map((item) => (
                           <Select.Option value={item.value} key={item.value}>
                             {item.text}
                           </Select.Option>
@@ -1497,7 +1498,7 @@ class Header extends React.Component {
                           <Select.Option value={item.value} key={item.value}>
                             {item.text}
                           </Select.Option>
-                        )) }
+                        ))}
                       </Select>
                     </div>
 
@@ -1531,8 +1532,8 @@ class Header extends React.Component {
                         }
                         onClick={() => {
                           this.setState({ testingOcrAPI: true });
-                          
-                          const isDesktopMode = isCVTypeForDesktop(this.props.config.cvScope)                          
+
+                          const isDesktopMode = isCVTypeForDesktop(this.props.config.cvScope)
                           isDesktopMode && store.dispatch(Actions.setOcrInDesktopMode(true))
 
                           ocrViewport({
@@ -1544,7 +1545,7 @@ class Header extends React.Component {
                             })
                             .then(() => {
                               this.setState({ testingOcrAPI: false });
-                              store.dispatch(Actions.setOcrInDesktopMode(false)) 
+                              store.dispatch(Actions.setOcrInDesktopMode(false))
                             });
                         }}
                       >
@@ -1567,7 +1568,7 @@ class Header extends React.Component {
                         min={1}
                         value={
                           this.props.config.ocrCalibration != undefined &&
-                          this.props.config.ocrCalibration != ""
+                            this.props.config.ocrCalibration != ""
                             ? this.props.config.ocrCalibration
                             : 6
                         }
@@ -1610,7 +1611,7 @@ class Header extends React.Component {
                                   "ocrCalibration_internal",
                                   calibrateNumber
                                 );
-                              } catch (e) {}
+                              } catch (e) { }
 
                               this.setState({
                                 testingCalibrate: false,
@@ -1640,7 +1641,7 @@ class Header extends React.Component {
                         min={100}
                         value={
                           this.props.config.ocrScaling != undefined &&
-                          this.props.config.ocrScaling != ""
+                            this.props.config.ocrScaling != ""
                             ? this.props.config.ocrScaling
                             : 100
                         }
@@ -1701,7 +1702,7 @@ class Header extends React.Component {
                                 ? Promise.resolve()
                                 : getXLocal().initConfig();
 
-                              p.catch((e) => {}).then(() => {
+                              p.catch((e) => { }).then(() => {
                                 this.setState(
                                   updateIn(
                                     ["xModuleDataLocal", getXLocal().getName()],
@@ -1724,7 +1725,7 @@ class Header extends React.Component {
                       <label>Status:</label>
 
                       {this.state.xModuleDataLocal[getXLocal().getName()] &&
-                      this.state.xModuleDataLocal[getXLocal().getName()].installed ? (
+                        this.state.xModuleDataLocal[getXLocal().getName()].installed ? (
                         <div className="status-box">
                           <span>
                             Installed (v
@@ -1738,8 +1739,8 @@ class Header extends React.Component {
                             target="_blank"
                             href={getXLocal().checkUpdateLink(
                               this.state.xModuleDataLocal[getXLocal().getName()] &&
-                                this.state.xModuleDataLocal[getXLocal().getName()]
-                                  .version,
+                              this.state.xModuleDataLocal[getXLocal().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -1763,8 +1764,8 @@ class Header extends React.Component {
                       </a>
                     </p>
                   </div>
-                
-                
+
+
                 </>
               )
             },
@@ -1797,8 +1798,8 @@ class Header extends React.Component {
                       >
                         <span>Desktop Automation (Search complete desktop)</span>
                         {this.state.xModuleData[getXDesktop().getName()] &&
-                        this.state.xModuleData[getXDesktop().getName()]
-                          .installed ? null : (
+                          this.state.xModuleData[getXDesktop().getName()]
+                            .installed ? null : (
                           <a
                             target="_blank"
                             href={getXDesktop().downloadLink()}
@@ -1823,7 +1824,7 @@ class Header extends React.Component {
                               this.props.config.cvScope !== "desktop" ||
                               !(
                                 this.state.xModuleData[
-                                  getXScreenCapture().getName()
+                                getXScreenCapture().getName()
                                 ] &&
                                 this.state.xModuleData[getXScreenCapture().getName()]
                                   .installed
@@ -1841,8 +1842,8 @@ class Header extends React.Component {
                               if installed (see XModule below)
                             </span>
                             {this.state.xModuleData[getXScreenCapture().getName()] &&
-                            this.state.xModuleData[getXScreenCapture().getName()]
-                              .installed ? null : (
+                              this.state.xModuleData[getXScreenCapture().getName()]
+                                .installed ? null : (
                               <a
                                 target="_blank"
                                 href={getXScreenCapture().downloadLink()}
@@ -1969,8 +1970,8 @@ class Header extends React.Component {
                       <label>Status:</label>
 
                       {this.state.xModuleData[getXScreenCapture().getName()] &&
-                      this.state.xModuleData[getXScreenCapture().getName()]
-                        .installed ? (
+                        this.state.xModuleData[getXScreenCapture().getName()]
+                          .installed ? (
                         <div className="status-box">
                           <span>
                             Installed (v
@@ -1984,8 +1985,8 @@ class Header extends React.Component {
                             target="_blank"
                             href={getXScreenCapture().checkUpdateLink(
                               this.state.xModuleData[getXScreenCapture().getName()] &&
-                                this.state.xModuleData[getXScreenCapture().getName()]
-                                  .version,
+                              this.state.xModuleData[getXScreenCapture().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -2012,7 +2013,7 @@ class Header extends React.Component {
               key: 'ai',
               label: 'AI(New)',
               className: 'ai-pane',
-              children: (           
+              children: (
                 <AITab />
               )
             },
@@ -2020,7 +2021,7 @@ class Header extends React.Component {
               key: 'xmodules',
               label: 'XModules',
               className: 'xmodules-pane',
-              children:(
+              children: (
                 <>
                   <div className="xmodule-item">
                     <div className="xmodule-title">
@@ -2046,7 +2047,7 @@ class Header extends React.Component {
                                 ? Promise.resolve()
                                 : getXFile().initConfig();
 
-                              p.catch((e) => {}).then(() => {
+                              p.catch((e) => { }).then(() => {
                                 this.setState(
                                   updateIn(
                                     ["xModuleData", getXFile().getName()],
@@ -2070,7 +2071,7 @@ class Header extends React.Component {
                       <label>Status:</label>
 
                       {this.state.xModuleData[getXFile().getName()] &&
-                      this.state.xModuleData[getXFile().getName()].installed ? (
+                        this.state.xModuleData[getXFile().getName()].installed ? (
                         <div className="status-box">
                           <span>
                             Installed (v
@@ -2080,7 +2081,7 @@ class Header extends React.Component {
                             target="_blank"
                             href={getXFile().checkUpdateLink(
                               this.state.xModuleData[getXFile().getName()] &&
-                                this.state.xModuleData[getXFile().getName()].version,
+                              this.state.xModuleData[getXFile().getName()].version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -2098,7 +2099,7 @@ class Header extends React.Component {
                     </div>
 
                     <div className="xmodule-settings">
-                      <h3>Settings</h3>
+                      <h3>{t('settings')}</h3>
                       <div className="xmodule-settings-item">
                         <div className="settings-detail">
                           <label>Home Folder</label>
@@ -2181,10 +2182,10 @@ class Header extends React.Component {
                             />
 
                             {this.state.xModuleData[getXFile().getName()] &&
-                            this.state.xModuleData[getXFile().getName()]
-                              .checkResult &&
-                            this.state.xModuleData[getXFile().getName()].checkResult
-                              .error ? (
+                              this.state.xModuleData[getXFile().getName()]
+                                .checkResult &&
+                              this.state.xModuleData[getXFile().getName()].checkResult
+                                .error ? (
                               <div className="check-result">
                                 {
                                   this.state.xModuleData[getXFile().getName()]
@@ -2245,7 +2246,7 @@ class Header extends React.Component {
                       <label>Status:</label>
 
                       {this.state.xModuleData[getXUserIO().getName()] &&
-                      this.state.xModuleData[getXUserIO().getName()].installed ? (
+                        this.state.xModuleData[getXUserIO().getName()].installed ? (
                         <div className="status-box">
                           <span>
                             Installed (v
@@ -2255,8 +2256,8 @@ class Header extends React.Component {
                             target="_blank"
                             href={getXUserIO().checkUpdateLink(
                               this.state.xModuleData[getXUserIO().getName()] &&
-                                this.state.xModuleData[getXUserIO().getName()]
-                                  .version,
+                              this.state.xModuleData[getXUserIO().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -2316,7 +2317,7 @@ class Header extends React.Component {
                       <label>Status:</label>
 
                       {this.state.xModuleData[getXDesktop().getName()] &&
-                      this.state.xModuleData[getXDesktop().getName()].installed ? (
+                        this.state.xModuleData[getXDesktop().getName()].installed ? (
                         <div className="status-box">
                           <span>
                             Installed (v
@@ -2326,8 +2327,8 @@ class Header extends React.Component {
                             target="_blank"
                             href={getXDesktop().checkUpdateLink(
                               this.state.xModuleData[getXDesktop().getName()] &&
-                                this.state.xModuleData[getXDesktop().getName()]
-                                  .version,
+                              this.state.xModuleData[getXDesktop().getName()]
+                                .version,
                               Ext.runtime.getManifest().version
                             )}
                           >
@@ -2343,13 +2344,13 @@ class Header extends React.Component {
                         </div>
                       )}
                     </div>
-                  </div>                
+                  </div>
                 </>
               )
             },
-         {
+            {
               key: "backup",
-              label: "Backup",
+              label: t('backup'),
               className: "backup-pane",
               children: (
                 <>
@@ -2385,7 +2386,7 @@ class Header extends React.Component {
                     <span> days</span>
                   </div>
                   <div className="row">
-                    <p>Backup includes <span style={{fontWeight: "bold"}}>macros, images, and CSV files</span>.</p>                  
+                    <p>Backup includes <span style={{ fontWeight: "bold" }}>macros, images, and CSV files</span>.</p>
                   </div>
                   <div className="row">
                     <Button type="primary" onClick={() => this.props.runBackup()}>
@@ -2461,14 +2462,14 @@ class Header extends React.Component {
                       }}
                     />
                   </div>
-                </>                
+                </>
               )
             },
             {
               key: 'security',
-              label: 'Security',
+              label: t('security'),
               className: 'security-pane',
-              children:(
+              children: (
                 <>
                   <h4>Master password for Password Encryption</h4>
                   <p>
@@ -2575,9 +2576,9 @@ class Header extends React.Component {
                   </div>
                 </>
               )
-            },{
+            }, {
               key: "selenium",
-              label: "Selenium",
+              label: t('selenium'),
               className: "selenium-pane",
               children: (
                 <>
@@ -2615,15 +2616,13 @@ class Header extends React.Component {
                             .then((result) => {
                               const lines = [
                                 `Project "${result.projectName}" import into folder: "${result.folderName}"`,
-                                `- ${result.macros.successCount} ${
-                                  result.macros.successCount === 1
-                                    ? "macro"
-                                    : "macros"
+                                `- ${result.macros.successCount} ${result.macros.successCount === 1
+                                  ? "macro"
+                                  : "macros"
                                 } (imported)`,
-                                `- ${result.suites.ignoreCount} ${
-                                  result.suites.ignoreCount === 1
-                                    ? "test suite"
-                                    : "test suites"
+                                `- ${result.suites.ignoreCount} ${result.suites.ignoreCount === 1
+                                  ? "test suite"
+                                  : "test suites"
                                 } (test suites are not imported yet)`,
                               ];
 
@@ -2761,8 +2760,8 @@ class Header extends React.Component {
                       <Radio.Group
                         value={this.props.proxy ? "on" : "off"}
                       >
-                        <Radio value="on" onClick={()=> onChangeProxyStatus('on')}>Proxy ON</Radio>
-                        <Radio value="off" onClick={()=> onChangeProxyStatus('off')}>Proxy OFF</Radio>
+                        <Radio value="on" onClick={() => onChangeProxyStatus('on')}>Proxy ON</Radio>
+                        <Radio value="off" onClick={() => onChangeProxyStatus('off')}>Proxy OFF</Radio>
                       </Radio.Group>
 
                       <Checkbox
@@ -2780,15 +2779,15 @@ class Header extends React.Component {
                           setProxy command
                         </a>
                         )
-                      </Checkbox>               
+                      </Checkbox>
                     </Form.Item>
-                  </Form>                
-                </>                
+                  </Form>
+                </>
               )
             },
             {
               key: 'register',
-              label: 'Pro|Enterprise',
+              label: t('proEnterprise'),
               className: 'register-pane',
               children: (
                 <>
@@ -2797,11 +2796,11 @@ class Header extends React.Component {
                       inactive: !getLicenseService().hasNoLicense(),
                     })}
                   >
-                    <p>Open-Source Ui.Vision PRO and Enterprise Editions are available 
-					  for users requiring Enterprise capabilities,
-					  including direct file storage, update management, and priority support services. 
-					  Should you have already acquired a license key for either the PRO or Enterprise Edition,
-					  please proceed to enter it below:
+                    <p>Open-Source Ui.Vision PRO and Enterprise Editions are available
+                      for users requiring Enterprise capabilities,
+                      including direct file storage, update management, and priority support services.
+                      Should you have already acquired a license key for either the PRO or Enterprise Edition,
+                      please proceed to enter it below:
                     </p>
                     <div className="actions">
                       <a href={getLicenseService().getUpgradeUrl()} target="_blank">
@@ -2881,9 +2880,9 @@ class Header extends React.Component {
                 </>
               )
             }
-          
+
           ]}
-        >          
+        >
         </Tabs>
       </Modal>
     );
@@ -2894,7 +2893,7 @@ class Header extends React.Component {
     const renderInner = () => {
       switch (status) {
         case C.APP_STATUS.RECORDER:
-          return "Recording";
+          return t('recording');
 
         case C.APP_STATUS.PLAYER: {
           switch (player.status) {
@@ -2911,8 +2910,8 @@ class Header extends React.Component {
               }
 
               const parts = [
-                `Line ${nextCommandIndex + 1}`,
-                `Round ${currentLoop}/${loops}`,
+                `${t('line')} ${nextCommandIndex + 1}`,
+                `${t('round')} ${currentLoop}/${loops}`,
               ];
 
               if (timeoutStatus && timeoutStatus.type && timeoutStatus.total) {
@@ -2924,7 +2923,7 @@ class Header extends React.Component {
             }
 
             case C.PLAYER_STATUS.PAUSED:
-              return "Player paused";
+              return t('playerPaused');
 
             default:
               return "";
@@ -2963,7 +2962,7 @@ class Header extends React.Component {
       return (
         <div className="actions">
           <Button onClick={this.onToggleRecord} style={{ color: "#ff0000" }}>
-            <span>Stop Record</span>
+            <span>{t('stopRecord')}</span>
           </Button>
         </div>
       );
@@ -2975,10 +2974,10 @@ class Header extends React.Component {
           <div className="actions">
             <Button.Group>
               <Button onClick={() => this.getPlayer().stop()}>
-                <span>Stop</span>
+                <span>{t('stop')}</span>
               </Button>
               <Button onClick={() => this.getPlayer("testCase").pause()}>
-                <span>Pause</span>
+                <span>{t('pause')}</span>
               </Button>
             </Button.Group>
           </div>
@@ -2991,12 +2990,12 @@ class Header extends React.Component {
             <Button.Group>
               {this.props.player.mode === C.PLAYER_MODE.TEST_CASE ? (
                 <Button onClick={() => this.getPlayer("testCase").resume(true)}>
-                  Step
+                  {t('step')}
                 </Button>
               ) : null}
-              <Button onClick={() => this.getPlayer().stop()}>Stop</Button>
+              <Button onClick={() => this.getPlayer().stop()}>{t('stop')}</Button>
               <Button onClick={() => this.getPlayer("testCase").resume()}>
-                Resume
+                {t('resume')}
               </Button>
             </Button.Group>
           </div>
@@ -3010,18 +3009,18 @@ class Header extends React.Component {
               disabled={!getLicenseService().canPerform(Feature.Record)}
               onClick={this.onToggleRecord}
             >
-              <span>Record</span>
+              <span>{t('record')}</span>
             </Button>
 
             <Button.Group className="play-actions">
-              <Button onClick={() => this.playCurrentMacro(true)}>Step</Button>
+              <Button onClick={() => this.playCurrentMacro(true)}>{t('step')}</Button>
               <Dropdown.Button
                 onClick={() => this.playCurrentMacro(false)}
                 menu={{
                   items: [
                     {
                       key: "play_loop",
-                      label: "Play loop..",
+                      label: t('playLoop'),
                       disabled: false,
                     },
                   ],
@@ -3030,7 +3029,7 @@ class Header extends React.Component {
                   trigger: ["click"],
                 }}
               >
-                <span>Play Macro</span>
+                <span>{t('playMacroBtn')}</span>
               </Dropdown.Button>
             </Button.Group>
             {/* <Button onClick={async() => {
@@ -3060,17 +3059,17 @@ class Header extends React.Component {
     const klass = hasUnsaved ? "unsaved" : "";
 
     const saveBtnState = {
-      text: src ? "Save" : "Save..",
+      text: src ? t('save') : t('saveDotDot'),
       disabled: !hasUnsaved,
     };
 
     return (
       <div className="select-case">
         <span
-          title={src ? src.name : "Untitled"}
+          title={src ? src.name : t('untitled')}
           className={"test-case-name " + klass}
         >
-          {src ? src.name : "Untitled"}
+          {src ? src.name : t('untitled')}
         </span>
 
         {!isPlayerStopped ? null : (

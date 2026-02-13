@@ -1,10 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators }  from 'redux'
+import { bindActionCreators } from 'redux'
 import {
   Button,
   Menu,
-  Input,  
+  Input,
   Table,
   Form,
   Select,
@@ -25,7 +25,7 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/lib/codemirror.css'
 import { Column, Table as RcvTable } from "react-virtualized";
 import Draggable from "react-draggable";
-import "react-virtualized/styles.css"; 
+import "react-virtualized/styles.css";
 
 import { SelectInput } from '../../components/select_input'
 import { CommandItem } from './command_item'
@@ -34,6 +34,7 @@ import inspector from '../../common/inspector'
 import { Player } from '../../common/player'
 import csIpc from '../../common/ipc/ipc_cs'
 import * as actions from '../../actions'
+import { t } from '../../common/i18n'
 import { Actions as simpleActions } from '../../actions/simple_actions'
 import * as C from '../../common/constant'
 import log from '../../common/log'
@@ -107,7 +108,7 @@ class DashboardEditor extends React.Component {
     },
     userInputCmdValue: '',
   }
-  
+
   constructor(props) {
     super(props);
     this.macroTableRef = React.createRef();
@@ -122,7 +123,7 @@ class DashboardEditor extends React.Component {
   }
 
   onDetailChange = (key, value) => {
-    this.props.updateSelectedCommand({[key]: value})
+    this.props.updateSelectedCommand({ [key]: value })
   }
 
   onChangeCommandsView = (type) => {
@@ -133,9 +134,9 @@ class DashboardEditor extends React.Component {
 
         this.props.setEditorActiveTab(forceType)
 
-        if (type === 'source_view' ) {
+        if (type === 'source_view') {
           setTimeout(() => {
-            if(this.state.newMacroSelected) {
+            if (this.state.newMacroSelected) {
               this.setState({ newMacroSelected: false })
               this.codeMirrorRef.current.editor.focus()
               this.codeMirrorRef.current.editor.setCursor({ line: 0, ch: 0 }, true, true)
@@ -158,7 +159,7 @@ class DashboardEditor extends React.Component {
   }
 
   onClickFind = () => {
-    const { lastOperation }   = this.state
+    const { lastOperation } = this.state
     const { selectedCommand } = this.props
 
     const p = new Promise((resolve, reject) => {
@@ -182,15 +183,15 @@ class DashboardEditor extends React.Component {
         case 'OCRExtract':
         case 'OCRExtractRelative':
         case 'OCRExtractbyTextRelative':
-        case 'OCRSearch': 
+        case 'OCRSearch':
         case 'aiPrompt':
-        case 'aiScreenXY': 
+        case 'aiScreenXY':
         case 'aiComputerUse': {
           const selectedIndex = this.props.editing.meta.selectedIndex
           const run = () => {
             // Note: run visionFind/visualSearch as single line command, but without timeout waiting
             this.playLine(selectedIndex, {
-              overrideScope: {'!TIMEOUT_WAIT': 0},
+              overrideScope: { '!TIMEOUT_WAIT': 0 },
               commandExtra: {
                 throwError: true,
                 // visualXXX uses this flag in desktop mode to open Desktop Screenshot Editor to preview result
@@ -207,9 +208,9 @@ class DashboardEditor extends React.Component {
           return csIpc.ask('PANEL_HIGHLIGHT_DOM', {
             lastOperation,
             locator: selectedCommand.target,
-            cmd:selectedCommand.cmd
+            cmd: selectedCommand.cmd
           })
-          .then(resolve, reject)
+            .then(resolve, reject)
         }
       }
     })
@@ -244,8 +245,8 @@ class DashboardEditor extends React.Component {
             return csIpc.ask('PANEL_SELECT_AREA_ON_CURRENT_PAGE')
           }
         })
-        .then(res => this.props.renameVisionImage(res.fileName))
-        .then(resolve, reject)
+          .then(res => this.props.renameVisionImage(res.fileName))
+          .then(resolve, reject)
       }
 
       switch (selectedCommand.cmd) {
@@ -272,10 +273,10 @@ class DashboardEditor extends React.Component {
           ]
 
           if (disableTakeImageCommands.indexOf(selectedCommand.cmd) !== -1) {
-              throw new Error('No select possible for Command ' + selectedCommand.cmd + ', just enter the text')
+            throw new Error('No select possible for Command ' + selectedCommand.cmd + ', just enter the text')
           } else {
             return takeImage()
-          }      
+          }
         }
 
         case 'OCRSearch':
@@ -292,18 +293,18 @@ class DashboardEditor extends React.Component {
 
         case 'XClickText':
         case 'XClickTextRelative':
-        case 'XClick': {         
+        case 'XClick': {
 
           const disableTakeImageCommands = [
             'XClickText',
             'XClickTextRelative',
-          ]          
+          ]
 
           if (disableTakeImageCommands.indexOf(selectedCommand.cmd) !== -1) {
             throw new Error('No select possible for Command ' + selectedCommand.cmd + ', just enter the text')
           } else {
             return takeImage()
-          }  
+          }
 
           // if (/^ocr=/i.test(selectedCommand.target)) {
           //   throw new Error('No select possible in OCR mode, just enter the text')
@@ -324,7 +325,7 @@ class DashboardEditor extends React.Component {
 
         case 'setWindowSize': {
           return Modal.confirm({
-            title:  'Confirm',
+            title: 'Confirm',
             content: 'Do you want to use the current browser dimensions?',
             okText: 'Yes',
             cancelText: 'No',
@@ -365,7 +366,7 @@ class DashboardEditor extends React.Component {
 
     const code = keycode(e.keyCode)
     const isValidCtrlKeyPressed = isMac() ? e.metaKey : e.ctrlKey
-    const noModifierKeyPressed  = !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
+    const noModifierKeyPressed = !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
 
     if (isValidCtrlKeyPressed) {
       switch (code) {
@@ -440,7 +441,7 @@ class DashboardEditor extends React.Component {
 
       lastScreenX = e.screenX
       lastScreenY = e.screenY
-      lastTime    = now
+      lastTime = now
     }
   })()
 
@@ -485,37 +486,37 @@ class DashboardEditor extends React.Component {
     clearTimeout(this.state.visionFindPreview.timer)
 
     const visionStorage = getStorageManager().getVisionStorage()
-    const rect    = e.target.getBoundingClientRect()
-    const file    = command.target.trim().split('@')[0]
-    const common  = {
-      visible:  true,
-      left:     rect.left,
-      top:      rect.top + rect.height
+    const rect = e.target.getBoundingClientRect()
+    const file = command.target.trim().split('@')[0]
+    const common = {
+      visible: true,
+      left: rect.left,
+      top: rect.top + rect.height
     }
 
     visionStorage.exists(file)
-    .then(existed => {
-      if (!existed) {
-        return this.setState({
-          visionFindPreview: {
-            ...common,
-            url: './img/not_found.png',
-            timer: this.scheduleHideVisionFindPreview()
-          }
-        })
-      }
+      .then(existed => {
+        if (!existed) {
+          return this.setState({
+            visionFindPreview: {
+              ...common,
+              url: './img/not_found.png',
+              timer: this.scheduleHideVisionFindPreview()
+            }
+          })
+        }
 
-      return visionStorage.getLink(file)
-      .then(link => {
-        return this.setState({
-          visionFindPreview: {
-            ...common,
-            url: link,
-            timer: this.scheduleHideVisionFindPreview()
-          }
-        })
+        return visionStorage.getLink(file)
+          .then(link => {
+            return this.setState({
+              visionFindPreview: {
+                ...common,
+                url: link,
+                timer: this.scheduleHideVisionFindPreview()
+              }
+            })
+          })
       })
-    })
   }
 
   onMouseLeaveTarget = (e, command) => {
@@ -561,9 +562,9 @@ class DashboardEditor extends React.Component {
       const headingLineCount = 4;
       const ch = 0
 
-      const $tab      = document.querySelector('.source-view')
+      const $tab = document.querySelector('.source-view')
       const tabHeight = parseInt(window.getComputedStyle($tab).height, 10)
-      const margin    = (tabHeight - 60) / 2
+      const margin = (tabHeight - 60) / 2
 
       const lineCountForCommand = (command) => {
         return 6 + (command.targetOptions ? (command.targetOptions.length + 2) : 0)
@@ -578,9 +579,9 @@ class DashboardEditor extends React.Component {
       const endLine = startLine + lineCountForCommand(commands[commandIndex])
 
       log('margin', margin, tabHeight)
-      
-      if(!instance) { 
-        instance = document.querySelector('.CodeMirror').CodeMirror    
+
+      if (!instance) {
+        instance = document.querySelector('.CodeMirror').CodeMirror
       }
 
       instance.scrollIntoView({ ch, line: startLine }, margin)
@@ -595,8 +596,8 @@ class DashboardEditor extends React.Component {
   commandClassName = (record, index) => {
     const { editing, player, breakpointIndices, doneCommandIndices, errorCommandIndices, warningCommandIndices } = this.props
     const { nextCommandIndex } = player
-    const { commands }  = editing
-    const classNames    = []
+    const { commands } = editing
+    const classNames = []
 
     if (breakpointIndices.indexOf(index) !== -1) {
       classNames.push('breakpoint-command')
@@ -653,44 +654,44 @@ class DashboardEditor extends React.Component {
         this.setState({ tableWidth: $table.clientWidth })
         this.setState({ tableHeight: $table.clientHeight })
       }
-    })    
+    })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     document.addEventListener('click', this.onHideMenu)
     document.addEventListener('click', this.onDoubleClick)
     document.addEventListener('keydown', this.onKeyDown)
     window.addEventListener('resize', this.onWindowResize)
-    
+
     waitForRenderComplete('.table-wrapper').then(() => {
       this.getTableWrapper().then($table => {
         if ($table) {
           this.setState({ tableWidth: $table.clientWidth })
           this.setState({ tableHeight: $table.clientHeight })
         }
-      }) 
-    })      
-  }  
+      })
+    })
+  }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     document.removeEventListener('click', this.onHideMenu)
     document.removeEventListener('click', this.onDoubleClick)
     document.removeEventListener('keydown', this.onKeyDown)
     window.removeEventListener('resize', this.onWindowResize)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     // console.log('nextProps:>> ', nextProps)
     // Note: update sourceText whenever editing changed
     if (nextProps.editing.meta.src !== this.props.editing.meta.src ||
-        nextProps.editing.commands !== this.props.editing.commands) {
+      nextProps.editing.commands !== this.props.editing.commands) {
       const resetCursor = nextProps.editing.meta.src !== this.props.editing.meta.src
 
       this.setState(
         this.resetSourceCodeCursor(resetCursor)
       )
 
-      if(nextProps.editing.meta.src !== this.props.editing.meta.src) {
+      if (nextProps.editing.meta.src !== this.props.editing.meta.src) {
         this.setState({ newMacroSelected: true })
       }
     }
@@ -702,34 +703,34 @@ class DashboardEditor extends React.Component {
 
     if (nextProps.config.showBottomArea !== this.props.config.showBottomArea) {
       // update table height
-      this.onWindowResize()   
+      this.onWindowResize()
     }
 
     if (this.macroTableRef.current) {
-      if (nextProps.status === C.APP_STATUS.PLAYER && 
-          nextProps.player.nextCommandIndex !== this.props.player.nextCommandIndex) {
+      if (nextProps.status === C.APP_STATUS.PLAYER &&
+        nextProps.player.nextCommandIndex !== this.props.player.nextCommandIndex) {
 
-        const numberOfVisibleRows = Math.floor((this.macroTableRef.current.props.height - this.macroTableRef.current.props.headerHeight)/ this.macroTableRef.current.props.rowHeight)
-        if([undefined, null, 0].includes(nextProps.player.nextCommandIndex)){
+        const numberOfVisibleRows = Math.floor((this.macroTableRef.current.props.height - this.macroTableRef.current.props.headerHeight) / this.macroTableRef.current.props.rowHeight)
+        if ([undefined, null, 0].includes(nextProps.player.nextCommandIndex)) {
           this.macroTableRef.current.scrollToRow(nextProps.player.nextCommandIndex || 0)
-        } else { 
+        } else {
           const lastRowVisible = nextProps.player.nextCommandIndex + numberOfVisibleRows - 1
           this.macroTableRef.current.scrollToRow(lastRowVisible)
         }
       }
 
       if (nextProps.status === C.APP_STATUS.RECORDER &&
-          nextProps.editing.commands.length > this.props.editing.commands.length) {
+        nextProps.editing.commands.length > this.props.editing.commands.length) {
 
-        const numberOfVisibleRows = Math.floor((this.macroTableRef.current.props.height - this.macroTableRef.current.props.headerHeight)/ this.macroTableRef.current.props.rowHeight)
+        const numberOfVisibleRows = Math.floor((this.macroTableRef.current.props.height - this.macroTableRef.current.props.headerHeight) / this.macroTableRef.current.props.rowHeight)
         setTimeout(
-          () => {           
-            if([undefined, null, 0].includes(nextProps.player.nextCommandIndex)){
+          () => {
+            if ([undefined, null, 0].includes(nextProps.player.nextCommandIndex)) {
               this.macroTableRef.current.scrollToRow(nextProps.player.nextCommandIndex || 0)
-            } else { 
+            } else {
               const lastRowVisible = nextProps.player.nextCommandIndex + numberOfVisibleRows - 1
               this.macroTableRef.current.scrollToRow(lastRowVisible)
-            }      
+            }
           },
           100
         )
@@ -737,18 +738,18 @@ class DashboardEditor extends React.Component {
     }
   }
 
-  isPlayerStopped () {
+  isPlayerStopped() {
     return this.props.player.status === C.PLAYER_STATUS.STOPPED
   }
 
-  waitBeforeScreenCapture () {
+  waitBeforeScreenCapture() {
     if (!isCVTypeForDesktop(this.props.config.cvScope)) {
       return Promise.resolve()
     }
 
     if (this.props.config.waitBeforeDesktopScreenCapture && this.props.config.secondsBeforeDesktopScreenCapture > 0) {
       message.info(`About to take desktop screenshot in ${this.props.config.secondsBeforeDesktopScreenCapture} seconds`)
-      return delay(() => {}, this.props.config.secondsBeforeDesktopScreenCapture * 1000)
+      return delay(() => { }, this.props.config.secondsBeforeDesktopScreenCapture * 1000)
     }
 
     return Promise.resolve()
@@ -793,8 +794,8 @@ class DashboardEditor extends React.Component {
   }
 
   playLine = (commandIndex, extraOptions = {}) => {
-    const { commands }  = this.props.editing
-    const { src }       = this.props.editing.meta
+    const { commands } = this.props.editing
+    const { src } = this.props.editing.meta
 
     this.setState({ lastOperation: 'play' })
 
@@ -813,17 +814,17 @@ class DashboardEditor extends React.Component {
     })
   }
 
-  isSelectedCommandVisualSearch (command) {
-    const { editing, config }   = this.props
-    const { commands, meta }    = editing
-    const { selectedIndex }     = meta
+  isSelectedCommandVisualSearch(command) {
+    const { editing, config } = this.props
+    const { commands, meta } = editing
+    const { selectedIndex } = meta
 
-    const dataSource    = commands && commands.length ? commands : defaultDataSource
-    const selectedCmd   = command || dataSource[selectedIndex]
+    const dataSource = commands && commands.length ? commands : defaultDataSource
+    const selectedCmd = command || dataSource[selectedIndex]
 
     const selectedCmdIsVisualSearch = (() => {
       if (!selectedCmd) return false
-      if (isCVTypeForDesktop(config.cvScope) && selectedCmd.cmd === 'visionLimitSearchArea')  return true
+      if (isCVTypeForDesktop(config.cvScope) && selectedCmd.cmd === 'visionLimitSearchArea') return true
 
       return [
         'visionFind', 'visualSearch',
@@ -836,7 +837,7 @@ class DashboardEditor extends React.Component {
     return selectedCmdIsVisualSearch
   }
 
-  commandHasVisionImage (command) {
+  commandHasVisionImage(command) {
     if (!this.isSelectedCommandVisualSearch(command)) return false
 
     const commandsCouldHaveVisionImage = [
@@ -844,16 +845,16 @@ class DashboardEditor extends React.Component {
       'visionLimitSearchArea', 'visionLimitSearchAreaRelative', 'visionLimitSearchAreabyTextRelative'
     ]
 
-    if (commandsCouldHaveVisionImage.indexOf(command.cmd) !== -1 && !/\.png/i.test(command.target))  return false
+    if (commandsCouldHaveVisionImage.indexOf(command.cmd) !== -1 && !/\.png/i.test(command.target)) return false
     return true
   }
 
-  selectCommandAndScroll (commandIndex) {
+  selectCommandAndScroll(commandIndex) {
     this.props.selectCommand(commandIndex, true)
     this.props.scrollToCommandAtIndex(commandIndex)
   }
 
-  renderVisionFindPreview () {
+  renderVisionFindPreview() {
     const { visible, url, left, top } = this.state.visionFindPreview
     if (!visible) return null
 
@@ -875,21 +876,21 @@ class DashboardEditor extends React.Component {
     )
   }
 
-  renderContextMenu () {
+  renderContextMenu() {
     const { clipboard, status } = this.props
     const { contextMenu } = this.state
     const isNormal = status === C.APP_STATUS.NORMAL
-    const dw  = document.documentElement.clientWidth
-    const dh  = document.documentElement.clientHeight
-    const mw  = 240
-    let x     = contextMenu.x + window.scrollX
-    let y     = contextMenu.y + window.scrollY
+    const dw = document.documentElement.clientWidth
+    const dh = document.documentElement.clientHeight
+    const mw = 240
+    let x = contextMenu.x + window.scrollX
+    let y = contextMenu.y + window.scrollY
 
     if (!isNormal) {
       return null
     }
 
-    if (x + mw > dw)   x -= mw
+    if (x + mw > dw) x -= mw
 
     const style = {
       position: 'absolute',
@@ -902,8 +903,8 @@ class DashboardEditor extends React.Component {
       width: mw + 'px'
     }
 
-    const { commandIndex }      = contextMenu
-    const isBreakpoint          = this.props.breakpointIndices.indexOf(commandIndex) !== -1
+    const { commandIndex } = contextMenu
+    const isBreakpoint = this.props.breakpointIndices.indexOf(commandIndex) !== -1
     let target_item
     try {
       target_item = this.props.editing.commands.length !== 0 && commandIndex !== undefined ? this.props.editing.commands[commandIndex]['target'] : '';
@@ -927,54 +928,54 @@ class DashboardEditor extends React.Component {
           return this.playLine(commandIndex)
         }
         case 'play_from_here': {
-          const { commands }  = this.props.editing
+          const { commands } = this.props.editing
 
           this.setState({ lastOperation: 'play' })
 
           return this.props.playerPlay({
-            macroId:    this.props.macroId,
-            title:      this.getTestCaseName(),
-            extra:      { id: this.props.macroId },
-            mode:       Player.C.MODE.STRAIGHT,
+            macroId: this.props.macroId,
+            title: this.getTestCaseName(),
+            extra: { id: this.props.macroId },
+            mode: Player.C.MODE.STRAIGHT,
             startIndex: commandIndex,
-            keepVariables:'reset',
-            startUrl:   null,
-            resources:  commands,
-            postDelay:  this.props.config.playCommandInterval * 1000
+            keepVariables: 'reset',
+            startUrl: null,
+            resources: commands,
+            postDelay: this.props.config.playCommandInterval * 1000
           })
         }
         case 'play_from_here_keep_variables': {
-          const { commands }  = this.props.editing
+          const { commands } = this.props.editing
 
           this.setState({ lastOperation: 'play' })
 
           return this.props.playerPlay({
-            macroId:    this.props.macroId,
-            title:      this.getTestCaseName(),
-            extra:      { id: this.props.macroId },
-            mode:       Player.C.MODE.STRAIGHT,
+            macroId: this.props.macroId,
+            title: this.getTestCaseName(),
+            extra: { id: this.props.macroId },
+            mode: Player.C.MODE.STRAIGHT,
             startIndex: commandIndex,
-            keepVariables:'yes',
-            startUrl:   null,
-            resources:  commands,
-            postDelay:  this.props.config.playCommandInterval * 1000
+            keepVariables: 'yes',
+            startUrl: null,
+            resources: commands,
+            postDelay: this.props.config.playCommandInterval * 1000
           })
         }
         case 'play_to_here': {
-          const { commands }  = this.props.editing
+          const { commands } = this.props.editing
 
           this.setState({ lastOperation: 'play' })
 
           return this.props.playerPlay({
-            macroId:    this.props.macroId,
-            title:      this.getTestCaseName(),
-            extra:      { id: this.props.macroId },
-            mode:       Player.C.MODE.STRAIGHT,
-            keepVariables:'reset',
+            macroId: this.props.macroId,
+            title: this.getTestCaseName(),
+            extra: { id: this.props.macroId },
+            mode: Player.C.MODE.STRAIGHT,
+            keepVariables: 'reset',
             startIndex: 0,
-            startUrl:   null,
-            resources:  commands,
-            postDelay:  this.props.config.playCommandInterval * 1000,
+            startUrl: null,
+            resources: commands,
+            postDelay: this.props.config.playCommandInterval * 1000,
             breakpoints: [commandIndex]
           })
         }
@@ -1004,131 +1005,131 @@ class DashboardEditor extends React.Component {
       <div style={style} id="context_menu">
         <Menu onClick={handleClick} style={menuStyle} mode="vertical" selectable={false}
           items={[
-             {
+            {
               key: "cut",
               label: (
                 <>
-                  <span>Cut</span>
+                  <span>{t('cut')}</span>
                   <span className="shortcut">{ctrlKey}X</span>
                 </>
               ),
-              disabled: !getLicenseService().canPerform(Feature.Edit)              
-             },
-             {
+              disabled: !getLicenseService().canPerform(Feature.Edit)
+            },
+            {
               key: "copy",
               label: (
                 <>
-                  <span>Copy</span>
+                  <span>{t('copy')}</span>
                   <span className="shortcut">{ctrlKey}C</span>
                 </>
               ),
               disabled: !getLicenseService().canPerform(Feature.Edit)
-             },
-              {
-                key: "paste",
-                label: (
-                  <>
-                    <span>Paste</span>
-                    <span className="shortcut">{ctrlKey}P</span>
-                  </>
-                ),
-                disabled: clipboard.commands.length === 0
-              },
-              {
-                key: "delete",
-                label: (
-                  <>
-                    <span>Delete</span>
-                  </>
-                ),
-                disabled: !getLicenseService().canPerform(Feature.Edit)
-              },
-              {
-                type: 'divider'
-              },
-              {
-                key: "insert",
-                label: (
-                  <>
-                    <span>Insert new line</span>
-                  </>
-                ),
-                disabled: !getLicenseService().canPerform(Feature.Edit)
-              },
-              {
-                type: 'divider'
-              },
-              {
-                key: "jump_to_source_code",
-                label: (
-                  <>
-                    <span>Jump to source code</span>
-                  </>
-                )
-              },
-              {
-                key: isBreakpoint ? 'remove_breakpoint' : 'add_breakpoint',
-                label: (
-                  <>
-                    <span>{isBreakpoint ? 'Remove breakpoint' : 'Add breakpoint'}</span>
-                  </>
-                )
-              },
-              {
-                type: 'divider'
-              },
-              {
-                key: "run_line",
-                label: (
-                  <>
-                    <span>Execute this command</span>
-                  </>
-                )
-              },
-              {
-                key: "play_from_here",
-                label: (
-                  <>
-                    <span>Play from here</span>
-                  </>
-                )
-              },
-              {
-                key: "play_from_here_keep_variables",
-                label: (
-                  <>
-                    <span>Play from here and keep variables</span>
-                  </>
-                )
-              },
-              {
-                key: "play_to_here",
-                label: (
-                  <>
-                    <span>Play to this point</span>
-                  </>
-                )
-              },
-              {
-                key: "record_from_here",
-                label: (
-                  <>
-                    <span>Record from here</span>
-                  </>
-                ),
-                disabled: !getLicenseService().canPerform(Feature.Record)
-              },
-              {
-                key: "jump_to_image",
-                label: (
-                  <>
-                    <span>Jump to image</span>
-                  </>
-                ),
-                disabled: target_item.indexOf('.png') === -1
-              }
+            },
+            {
+              key: "paste",
+              label: (
+                <>
+                  <span>{t('paste')}</span>
+                  <span className="shortcut">{ctrlKey}P</span>
+                </>
+              ),
+              disabled: clipboard.commands.length === 0
+            },
+            {
+              key: "delete",
+              label: (
+                <>
+                  <span>{t('delete')}</span>
+                </>
+              ),
+              disabled: !getLicenseService().canPerform(Feature.Edit)
+            },
+            {
+              type: 'divider'
+            },
+            {
+              key: "insert",
+              label: (
+                <>
+                  <span>{t('insertNewLine')}</span>
+                </>
+              ),
+              disabled: !getLicenseService().canPerform(Feature.Edit)
+            },
+            {
+              type: 'divider'
+            },
+            {
+              key: "jump_to_source_code",
+              label: (
+                <>
+                  <span>{t('jumpToSourceCode')}</span>
+                </>
+              )
+            },
+            {
+              key: isBreakpoint ? 'remove_breakpoint' : 'add_breakpoint',
+              label: (
+                <>
+                  <span>{isBreakpoint ? t('removeBreakpoint') : t('addBreakpoint')}</span>
+                </>
+              )
+            },
+            {
+              type: 'divider'
+            },
+            {
+              key: "run_line",
+              label: (
+                <>
+                  <span>{t('executeThisCommand')}</span>
+                </>
+              )
+            },
+            {
+              key: "play_from_here",
+              label: (
+                <>
+                  <span>{t('playFromHere')}</span>
+                </>
+              )
+            },
+            {
+              key: "play_from_here_keep_variables",
+              label: (
+                <>
+                  <span>{t('playFromHereKeepVars')}</span>
+                </>
+              )
+            },
+            {
+              key: "play_to_here",
+              label: (
+                <>
+                  <span>{t('playToThisPoint')}</span>
+                </>
+              )
+            },
+            {
+              key: "record_from_here",
+              label: (
+                <>
+                  <span>{t('recordFromHere')}</span>
+                </>
+              ),
+              disabled: !getLicenseService().canPerform(Feature.Record)
+            },
+            {
+              key: "jump_to_image",
+              label: (
+                <>
+                  <span>{t('jumpToImage')}</span>
+                </>
+              ),
+              disabled: target_item.indexOf('.png') === -1
+            }
           ]}
-        />         
+        />
         {/* <Menu onClick={handleClick} style={menuStyle} mode="vertical" selectable={false}>
           <Menu.Item
             key="cut"
@@ -1194,14 +1195,14 @@ class DashboardEditor extends React.Component {
     )
   }
 
-  renderTargetEditor () {
-    const { status, editing, config, ui }   = this.props
-    const { commands, meta }    = editing
-    const { selectedIndex }     = meta
+  renderTargetEditor() {
+    const { status, editing, config, ui } = this.props
+    const { commands, meta } = editing
+    const { selectedIndex } = meta
 
     const isPlayerStopped = this.isPlayerStopped()
-    const dataSource    = commands && commands.length ? commands : defaultDataSource
-    const selectedCmd   = dataSource[selectedIndex]
+    const dataSource = commands && commands.length ? commands : defaultDataSource
+    const selectedCmd = dataSource[selectedIndex]
     const isCmdEditable = isPlayerStopped && !!selectedCmd
 
     if (!isCmdEditable || !this.state.targetEditor.visible) {
@@ -1251,26 +1252,26 @@ class DashboardEditor extends React.Component {
     )
   }
 
-  renderTable () {
+  renderTable() {
     const { editing, player } = this.props
-    const { commands }  = editing
+    const { commands } = editing
     const { dataSource } = (commands && commands.length ? commands : defaultDataSource)
-                            .reduce(({ dataSource, indent }, command, i) => {
-                              const { selfIndent, nextIndent } = indentCreatedByCommand(command.cmd)
+      .reduce(({ dataSource, indent }, command, i) => {
+        const { selfIndent, nextIndent } = indentCreatedByCommand(command.cmd)
 
-                              dataSource.push({
-                                ...command,
-                                key: Math.random(),
-                                indent: indent + selfIndent,
-                                realIndex: i,
-                                serial: i + 1
-                              })
+        dataSource.push({
+          ...command,
+          key: Math.random(),
+          indent: indent + selfIndent,
+          realIndex: i,
+          serial: i + 1
+        })
 
-                              return {
-                                dataSource,
-                                indent: Math.max(0, indent + selfIndent + nextIndent)
-                              }
-                            }, { dataSource: [], indent: 0 })
+        return {
+          dataSource,
+          indent: Math.max(0, indent + selfIndent + nextIndent)
+        }
+      }, { dataSource: [], indent: 0 })
 
     return this.needVirtualList() ? this.renderVirtualTable(dataSource) : this.renderNormalTable(dataSource)
   }
@@ -1321,8 +1322,8 @@ class DashboardEditor extends React.Component {
         case 'value':
           nextDataKey = 'ops'
           break
-          default:
-            nextDataKey = 'target';
+        default:
+          nextDataKey = 'target';
       }
 
       let columnWidths = {
@@ -1337,59 +1338,59 @@ class DashboardEditor extends React.Component {
     });
   }
 
-  renderVirtualTable (dataSource) {
+  renderVirtualTable(dataSource) {
 
-    let { commands }  = this.props.editing
+    let { commands } = this.props.editing
     commands = (commands || []).filter(res => res.cmd && res.cmd.length > 0);
-    const editable      = this.isPlayerStopped() && getLicenseService().canPerform(Feature.Edit)
+    const editable = this.isPlayerStopped() && getLicenseService().canPerform(Feature.Edit)
 
-    const  { columnWidths, tableWidth, headerWidthPatchFactor, tableHeight } = this.state;
+    const { columnWidths, tableWidth, headerWidthPatchFactor, tableHeight } = this.state;
     let itemHeight = ITEM_HEIGHT;
     return (
       <div className="t-body">
         {!this.listContainer ? null : (
           <RcvTable
-            ref={this.macroTableRef} 
+            ref={this.macroTableRef}
             width={tableWidth}
-            height= {tableHeight}
+            height={tableHeight}
             className='command-table'
             headerHeight={ITEM_HEIGHT}
             rowHeight={ITEM_HEIGHT}
             rowCount={dataSource.length + 1}
             rowGetter={({ index }) => dataSource[index] || { key: index }}
-            rowClassName ={({index}) => (index === -1 || index >= dataSource.length  ) ? '' : `command-row real-command ` + this.commandClassName(dataSource[index], index)}
+            rowClassName={({ index }) => (index === -1 || index >= dataSource.length) ? '' : `command-row real-command ` + this.commandClassName(dataSource[index], index)}
 
             rowRenderer={({ key, index, style }) => {
               const item = dataSource[index]
               const Footer = (
                 <div
-                key="footer" 
-                className="command-row footer-row" 
-                style={{ 
-                  top: index * itemHeight            
-                }}
-                onClick={() => {
-                  if (!getLicenseService().canPerform(Feature.Edit)) {
-                    return
-                  }
-                  this.props.updateUI({ focusArea: FocusArea.CommandTable })
-                  this.props.insertCommand(newCommand, commands.length)
-                }}
+                  key="footer"
+                  className="command-row footer-row"
+                  style={{
+                    top: index * itemHeight
+                  }}
+                  onClick={() => {
+                    if (!getLicenseService().canPerform(Feature.Edit)) {
+                      return
+                    }
+                    this.props.updateUI({ focusArea: FocusArea.CommandTable })
+                    this.props.insertCommand(newCommand, commands.length)
+                  }}
                 >
-                Add
-              </div>
+                  {t('add')}
+                </div>
               )
 
-              if(index === dataSource.length) {
+              if (index === dataSource.length) {
                 return Footer
-              }            
-              
+              }
+
               return (
                 <CommandItem
                   key={key}
                   index={item.realIndex + 1}
                   command={item}
-                  style={{ ...style, height: itemHeight + 'px',  }}
+                  style={{ ...style, height: itemHeight + 'px', }}
                   columnWidths={columnWidths}
                   tableWidth={tableWidth}
                   className={`command-row real-command ` + this.commandClassName(item, item.realIndex)}
@@ -1412,49 +1413,49 @@ class DashboardEditor extends React.Component {
               dataKey="serial"
               label=""
               width={columnWidths.serialFixed}
-            />  
+            />
             <Column
               headerRenderer={this.headerRenderer}
               dataKey="cmd"
-              label="Command"
+              label={t('command')}
               width={columnWidths.cmd * tableWidth * headerWidthPatchFactor}
-            />  
+            />
             <Column
               headerRenderer={this.headerRenderer}
               dataKey="target"
-              label="Target"
+              label={t('target')}
               width={columnWidths.target * tableWidth * headerWidthPatchFactor}
-            />  
+            />
             <Column
               dataKey="value"
-              label="Value"
+              label={t('value')}
               width={columnWidths.value * tableWidth * headerWidthPatchFactor}
             />
             <Column
               dataKey="ops"
-              label="Ops"
+              label={t('ops')}
               width={columnWidths.opsFixed + 20}
-            /> 
+            />
           </RcvTable>
         )}
       </div>
     )
   }
- 
 
-  renderNormalTable (dataSource) {
+
+  renderNormalTable(dataSource) {
     const { editing, player, doneCommandIndices, errorCommandIndices } = this.props
     const { nextCommandIndex } = player
-    const { commands }  = editing
-    const editable      = this.isPlayerStopped()
+    const { commands } = editing
+    const editable = this.isPlayerStopped()
 
     const columns = [
-      { title: '',         dataIndex: 'serial',   key: 'serial',  width: 40 },
-      { title: 'Command',  dataIndex: 'cmd',      key: 'cmd',     width: 130 },
-      { title: 'Target',   dataIndex: 'target',   key: 'target',  width: 250, ellipsis: true },
-      { title: 'Value',    dataIndex: 'value',    key: 'value',   ellipsis: true },
+      { title: '', dataIndex: 'serial', key: 'serial', width: 40 },
+      { title: t('command'), dataIndex: 'cmd', key: 'cmd', width: 130 },
+      { title: t('target'), dataIndex: 'target', key: 'target', width: 250, ellipsis: true },
+      { title: t('value'), dataIndex: 'value', key: 'value', ellipsis: true },
       {
-        title: 'Ops',
+        title: t('ops'),
         key: 'ops',
         width: 80,
         render: (text, record, index) => {
@@ -1466,7 +1467,7 @@ class DashboardEditor extends React.Component {
                 shape="circle"
                 onClick={(e) => { this.props.removeCommand(index); e.stopPropagation() }}
                 icon={<div>//</div>}
-              >                
+              >
               </Button>
               <Button
                 disabled={!editable}
@@ -1494,7 +1495,7 @@ class DashboardEditor extends React.Component {
 
           this.props.insertCommand(newCommand, commands.length)
         }}>
-          Add
+          {t('add')}
         </div>
       ),
       onRowClick: (record, index, e) => {
@@ -1506,25 +1507,25 @@ class DashboardEditor extends React.Component {
     return <Table {...tableConfig} />
   }
 
-  render () {
-    const { status, editing, config, ui }   = this.props
-    const { commands, meta }    = editing
-    const { selectedIndex }     = meta
+  render() {
+    const { status, editing, config, ui } = this.props
+    const { commands, meta } = editing
+    const { selectedIndex } = meta
 
     const isPlayerStopped = this.isPlayerStopped()
-    const dataSource    = commands && commands.length ? commands : defaultDataSource
-    const selectedCmd   = dataSource[selectedIndex]
-    const editable      = isPlayerStopped && !!selectedCmd
+    const dataSource = commands && commands.length ? commands : defaultDataSource
+    const selectedCmd = dataSource[selectedIndex]
+    const editable = isPlayerStopped && !!selectedCmd
     const isCmdEditable = editable && getLicenseService().canPerform(Feature.Edit)
-    const isInspecting  = status === C.APP_STATUS.INSPECTOR
+    const isInspecting = status === C.APP_STATUS.INSPECTOR
 
     const selectedCmdIsVisualSearch = this.isSelectedCommandVisualSearch()
 
     const isSelectEnabled = selectedCmd && selectedCmd.cmd && canCommandSelect(selectedCmd.cmd)
     const isFindEnabled = selectedCmd && selectedCmd.cmd && canCommandFind(selectedCmd.cmd)
 
-    const shouldUseSelectInputForTarget = selectedCmd && selectedCmd.targetOptions && selectedCmd.targetOptions.length  && doesCommandSupportTargetOptions(selectedCmd.cmd)
-    const shouldUseTextareaForTarget    = selectedCmd && ['executeScript', 'executeScript_Sandbox', 'aiPrompt', 'aiScreenXY', 'aiComputerUse'].indexOf(selectedCmd.cmd) !== -1
+    const shouldUseSelectInputForTarget = selectedCmd && selectedCmd.targetOptions && selectedCmd.targetOptions.length && doesCommandSupportTargetOptions(selectedCmd.cmd)
+    const shouldUseTextareaForTarget = selectedCmd && ['executeScript', 'executeScript_Sandbox', 'aiPrompt', 'aiScreenXY', 'aiComputerUse'].indexOf(selectedCmd.cmd) !== -1
     const shouldUseNormalInputForTarget = !shouldUseSelectInputForTarget && !shouldUseTextareaForTarget
 
     return (
@@ -1538,20 +1539,20 @@ class DashboardEditor extends React.Component {
             // defaultActiveKey="1"
             items={[
               {
-                label: 'Table View',
+                label: t('tableView'),
                 key: 'table_view',
                 children: (
                   <>
-                    <div className={`form-group table-wrapper ${this.needVirtualList() ? 'rcv-table-wrapper' : ''}` } style={{ marginBottom: 0 }} ref={ref => { this.listContainer = ref }}>
+                    <div className={`form-group table-wrapper ${this.needVirtualList() ? 'rcv-table-wrapper' : ''}`} style={{ marginBottom: 0 }} ref={ref => { this.listContainer = ref }}>
                       {this.renderTable()}
                     </div>
 
                     <div className="form-group fields-wrapper" style={{ marginBottom: 0 }}>
                       <Form>
-                        <Form.Item label="Command" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+                        <Form.Item label={t('command')} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
                           <div className="flex-row" ref={this.cmdInputRef}>
                             <Select
-                              
+
                               showSearch
                               optionFilterProp="children"
                               placeholder="command"
@@ -1560,11 +1561,11 @@ class DashboardEditor extends React.Component {
                               onChange={(value) => this.onDetailChange('cmd', value)}
                               onKeyDown={(e) => {
                                 const input = this.cmdInputRef.current.querySelector('input')
-                                if(/^[a-zA-Z0-9]$/.test(e.key)) {
+                                if (/^[a-zA-Z0-9]$/.test(e.key)) {
                                   this.setState({ userInputCmdValue: input.value + e.key })
-                                }                             
+                                }
                               }}
-                              onBlur={() => { 
+                              onBlur={() => {
                                 let value = this.state.userInputCmdValue
                                 if (value && value.length > 0) {
                                   const command = availableCommands.find(cmd => cmd.toLowerCase() === value.trim().toLowerCase())
@@ -1574,7 +1575,7 @@ class DashboardEditor extends React.Component {
                                 }
                                 this.setState({ userInputCmdValue: '' })
                               }}
-                              filterOption={(input, {key}) => key.toLowerCase().indexOf(input.toLowerCase()) !== -1}
+                              filterOption={(input, { key }) => key.toLowerCase().indexOf(input.toLowerCase()) !== -1}
                               style={{ flex: 1, maxWidth: '60%', marginRight: '10px' }}
                               size="default"
                             >
@@ -1595,12 +1596,12 @@ class DashboardEditor extends React.Component {
                                   href={`https://goto.ui.vision/x/idehelp?cmd=${selectedCmd.cmd.toLowerCase()}`}
                                   target="_blank"
                                 >
-                                  Info for this command
+                                  {t('infoForThisCommand')}
                                 </a>
                               ) : <span></span>}
                               <Button
                                 style={{ padding: '0 10px' }}
-                                title="Toggle comment"
+                                title={t('toggleComment')}
                                 disabled={!isCmdEditable}
                                 onClick={() => {
                                   this.props.toggleCommentOnSelectedCommand()
@@ -1611,7 +1612,7 @@ class DashboardEditor extends React.Component {
                             </div>
                           </div>
                         </Form.Item>
-                        <Form.Item label="Target" className="target-row" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+                        <Form.Item label={t('target')} className="target-row" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
                           <div className="flex-row">
                             {shouldUseNormalInputForTarget ? (
                               <Input
@@ -1649,7 +1650,7 @@ class DashboardEditor extends React.Component {
                                 <DoubleRightOutlined
                                   type="arrows-alt"
                                   className="open-full-editor"
-                                  title="Open full editor"
+                                  title={t('openFullEditor')}
                                   onClick={() => {
                                     this.setState({
                                       targetEditor: {
@@ -1667,19 +1668,19 @@ class DashboardEditor extends React.Component {
                               onClick={this.onToggleSelect}
                             >
                               {isInspecting
-                                ? (<span>{(selectedCmdIsVisualSearch ? '👁' : '') + 'Cancel'}</span>)
-                                : (<span>{(selectedCmdIsVisualSearch ? '👁' : '') + 'Select'}</span>)
+                                ? (<span>{(selectedCmdIsVisualSearch ? '👁' : '') + t('cancelBtn')}</span>)
+                                : (<span>{(selectedCmdIsVisualSearch ? '👁' : '') + t('selectBtn')}</span>)
                               }
                             </Button>
                             <Button
                               disabled={!editable || !isFindEnabled}
                               onClick={this.onClickFind}
                             >
-                              {(selectedCmdIsVisualSearch ? '👁' : '') + 'Find'}
+                              {(selectedCmdIsVisualSearch ? '👁' : '') + t('findBtn')}
                             </Button>
                           </div>
                         </Form.Item>
-                        <Form.Item label="Value" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+                        <Form.Item label={t('value')} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
                           <Input
                             disabled={!isCmdEditable}
                             value={selectedCmd && selectedCmd.value}
@@ -1689,7 +1690,7 @@ class DashboardEditor extends React.Component {
                             size="default"
                           />
                         </Form.Item>
-                        <Form.Item label="Description" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} style={{ marginBottom: 0 }}>
+                        <Form.Item label={t('description')} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} style={{ marginBottom: 0 }}>
                           <Input
                             disabled={!isCmdEditable}
                             value={selectedCmd && selectedCmd.description}
@@ -1705,7 +1706,7 @@ class DashboardEditor extends React.Component {
                 )
               },
               {
-                label: 'Source View (JSON)',
+                label: t('sourceViewJson'),
                 key: 'source_view',
                 className: "source-view",
                 children: (
@@ -1737,13 +1738,13 @@ class DashboardEditor extends React.Component {
                         lineNumbers: true,
                         matchBrackets: true,
                         autoCloseBrackets: true,
-                        readOnly: !getLicenseService().canPerform(Feature.Edit)                        
+                        readOnly: !getLicenseService().canPerform(Feature.Edit)
                       }}
-                    />                  
+                    />
                   </>
                 )
               }
-            
+
             ]}
           >
           </Tabs>
@@ -1756,19 +1757,19 @@ class DashboardEditor extends React.Component {
               }}
             >
               <ComputerSvg />
-              <span>Desktop mode</span>
+              <span>{t('desktopMode')}</span>
             </div>
           ) : <div
-              className="vision-type"
-              onClick={() => {
-                this.props.updateUI({ showSettings: true, settingsTab: 'vision' })
-              }}
-            >
-              <BrowserSvg />
-            <span>Browser mode</span>
-        </div>}
+            className="vision-type"
+            onClick={() => {
+              this.props.updateUI({ showSettings: true, settingsTab: 'vision' })
+            }}
+          >
+            <BrowserSvg />
+            <span>{t('browserMode')}</span>
+          </div>}
         </div>
- 
+
         {this.renderContextMenu()}
         {this.renderVisionFindPreview()}
         {/* ud: why do we need renderTargetEditor? */}
@@ -1800,5 +1801,5 @@ export default connect(
     macroId: getCurrentMacroId(state),
     canUseKeyboardShortcuts: isFocusOnCommandTable(state)
   }),
-  dispatch => bindActionCreators({...actions, ...simpleActions}, dispatch)
+  dispatch => bindActionCreators({ ...actions, ...simpleActions }, dispatch)
 )(DashboardEditor)

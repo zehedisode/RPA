@@ -9,6 +9,7 @@ import * as C from '@/common/constant'
 import storage from '@/common/storage'
 import { getState } from '@/ext/common/global_state'
 import * as actions from '../../actions'
+import { t } from '../../common/i18n'
 import { delayMs } from '../../common/utils'
 import getSaveTestCase from '../../components/save_test_case'
 import DashboardBottom from './bottom'
@@ -31,21 +32,21 @@ class Dashboard extends React.Component {
     // }
 
     if (changedObj.key === 'config') {
-      let getAllChangedProperties = Object.keys(changedObj.newValue).filter(key => changedObj.newValue[key] !== changedObj.oldValue[key]) 
-      if (getAllChangedProperties.includes('disableOpenSidepanelBtnTemporarily')) {   
+      let getAllChangedProperties = Object.keys(changedObj.newValue).filter(key => changedObj.newValue[key] !== changedObj.oldValue[key])
+      if (getAllChangedProperties.includes('disableOpenSidepanelBtnTemporarily')) {
         if (changedObj.newValue.disableOpenSidepanelBtnTemporarily) {
           this.setState({ isOpenInSidePanelBtnActive: false })
         } else {
           getState().then(state => {
-            this.setState({ tabIdToPlay: state.tabIds.toPlay })    
-            if(Ext.isFirefox()) {
+            this.setState({ tabIdToPlay: state.tabIds.toPlay })
+            if (Ext.isFirefox()) {
               return chrome.sidebarAction.open()
             } else {
               chrome.sidePanel.setOptions({
                 enabled: true
               }).then(() => {
                 this.setState({ isOpenInSidePanelBtnActive: true })
-              })  
+              })
             }
           })
         }
@@ -53,46 +54,46 @@ class Dashboard extends React.Component {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     // firefox requires explicit permission to access all urls
     // otherwise user will need to allow access for each url manually  
-    if(Ext.isFirefox()) {
+    if (Ext.isFirefox()) {
       Ext.permissions.contains({ origins: ['<all_urls>'] }).then(permissionGranted => {
         if (!permissionGranted) {
-          this.setState({ permissionRequired: true })          
-        }        
+          this.setState({ permissionRequired: true })
+        }
       })
     }
 
     // set open sidepanel button active after 4 seconds anyway
-    delayMs(4000).then(() => {        
+    delayMs(4000).then(() => {
       this.props.updateConfig({
         disableOpenSidepanelBtnTemporarily: false
-      })         
-      this.setState({ isOpenInSidePanelBtnActive: true }) 
+      })
+      this.setState({ isOpenInSidePanelBtnActive: true })
     })
 
     getState().then(state => {
-      this.setState({ tabIdToPlay: state.tabIds.toPlay })   
+      this.setState({ tabIdToPlay: state.tabIds.toPlay })
     })
-    .then(() => {
-      if (!Ext.isFirefox()) {
-        chrome.sidePanel.setOptions({
-          enabled: true
-        })
+      .then(() => {
+        if (!Ext.isFirefox()) {
+          chrome.sidePanel.setOptions({
+            enabled: true
+          })
+        }
+      })
+
+
+    storage.get('config').then(config => {
+      if (Object.keys(config).includes('disableOpenSidepanelBtnTemporarily')) {
+        this.setState({ isOpenInSidePanelBtnActive: !config.disableOpenSidepanelBtnTemporarily })
+      } else {
+        this.setState({ isOpenInSidePanelBtnActive: true })
       }
     })
 
-
-    storage.get('config').then(config => { 
-      if (Object.keys(config).includes('disableOpenSidepanelBtnTemporarily')) {
-          this.setState({ isOpenInSidePanelBtnActive: !config.disableOpenSidepanelBtnTemporarily })          
-      } else {
-        this.setState({ isOpenInSidePanelBtnActive: true })
-      }    
-    })
-
-    storage.addListener(this.handleStorageChange)  
+    storage.addListener(this.handleStorageChange)
   }
 
 
@@ -101,10 +102,10 @@ class Dashboard extends React.Component {
   }
 
   onGrantPermission = () => {
-    Ext.permissions.request({origins: ['<all_urls>']}).then((result) => {
-      console.log('permission result:>>', result)  
-      if(result) { 
-        this.setState({ permissionRequired: false})
+    Ext.permissions.request({ origins: ['<all_urls>'] }).then((result) => {
+      console.log('permission result:>>', result)
+      if (result) {
+        this.setState({ permissionRequired: false })
       } else {
         // visit https://goto.ui.vision/x/idehelp?help=firefox_access_data_permission in new tab 
         Ext.tabs.create({
@@ -115,7 +116,7 @@ class Dashboard extends React.Component {
     })
   }
 
-  render () {
+  render() {
     const isWindows = /windows/i.test(window.navigator.userAgent)
 
     return (
@@ -136,16 +137,16 @@ class Dashboard extends React.Component {
                 // csIpc.ask('PANEL_SHOW_SIDEBAR') 
 
                 const userResponse = confirm('To open the sidebar, click OK and then click the extension icon in the toolbar.')
-                if (!userResponse) return  
-          
-                await this.props.updateConfig({ ["oneTimeShowSidePanel"]: true }) 
-                
+                if (!userResponse) return
+
+                await this.props.updateConfig({ ["oneTimeShowSidePanel"]: true })
+
                 getSaveTestCase().save().then(() => {
-                    window.close()
+                  window.close()
                 }).catch((err) => {
                   console.log('getSaveTestCase err:>>', err)
-                })    
-                             
+                })
+
                 return
               } else {
 
@@ -164,27 +165,27 @@ class Dashboard extends React.Component {
             }}
           >
             <FontAwesomeIcon icon={faTableColumns} />
-            <span>Open in Side Panel</span> 
+            <span>{t('openInSidePanel')}</span>
           </Button>
           {
-            this.state.permissionRequired &&  
+            this.state.permissionRequired &&
             <Button
               className="btn-request-permission"
               onClick={() => {
-               this.onGrantPermission()
+                this.onGrantPermission()
               }}
             >
-            <span>Tabs Permission Required</span> 
-          </Button>
+              <span>{t('tabsPermissionRequired')}</span>
+            </Button>
           }
           <div style={{ visibility: isWindows ? 'visible' : 'hidden' }}>
             <a href="https://goto.ui.vision/x/idehelp?help=visual" target="_blank"></a>
           </div>
           <div>
-            Ui.Vision Community:&nbsp;
-            <a href="https://goto.ui.vision/x/idehelp?help=forum" target="_blank">Forums</a>&nbsp;|&nbsp; 
-            <a href="https://goto.ui.vision/x/idehelp?help=docs" target="_blank">Docs</a>&nbsp;|&nbsp;
-            <a href="https://goto.ui.vision/x/idehelp?help=github" target="_blank">Open-Source</a>
+            {t('uiVisionCommunity')}&nbsp;
+            <a href="https://goto.ui.vision/x/idehelp?help=forum" target="_blank">{t('forums')}</a>&nbsp;|&nbsp;
+            <a href="https://goto.ui.vision/x/idehelp?help=docs" target="_blank">{t('docs')}</a>&nbsp;|&nbsp;
+            <a href="https://goto.ui.vision/x/idehelp?help=github" target="_blank">{t('openSource')}</a>
           </div>
         </div>
       </div>
@@ -193,8 +194,8 @@ class Dashboard extends React.Component {
 }
 
 export default connect(
-  state => ({ 
+  state => ({
     player: state.player,
   }),
-  dispatch => bindActionCreators({...actions}, dispatch)
+  dispatch => bindActionCreators({ ...actions }, dispatch)
 )(Dashboard)

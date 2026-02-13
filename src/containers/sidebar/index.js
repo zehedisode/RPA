@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import * as actions from '../../actions'
+import { t } from '../../common/i18n'
 import { cn, delayMs, setIn, waitForRenderComplete } from '../../common/utils'
 import { FocusArea } from '../../reducers/state'
 import { getLicenseService } from '../../services/license'
@@ -54,7 +55,7 @@ class Sidebar extends React.Component {
     // reference:
     // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
     // https://developer.mozilla.org/en-US/docs/Web/Events/dragend
-    const diff  = e.screenX - this.state.drag.startX
+    const diff = e.screenX - this.state.drag.startX
     const width = diff + this.state.drag.lastWidth
 
     this.setState(
@@ -83,28 +84,28 @@ class Sidebar extends React.Component {
     const man = getStorageManager()
 
     man.isStrategyTypeAvailable(storageMode)
-    .then(isOk => {
-      if (isOk) {
-        // Note: it will emit events, so that `index.js` could handle the rest (refresh / reload resources)
-        this.props.updateConfig({ storageMode })
-        return man.setCurrentStrategyType(storageMode)
-      }
+      .then(isOk => {
+        if (isOk) {
+          // Note: it will emit events, so that `index.js` could handle the rest (refresh / reload resources)
+          this.props.updateConfig({ storageMode })
+          return man.setCurrentStrategyType(storageMode)
+        }
 
-      throw new Error('It should be impossible to get isOk as false')
-    })
-    .catch(e => {
-      message.warn(e.message)
+        throw new Error('It should be impossible to get isOk as false')
+      })
+      .catch(e => {
+        message.warn(e.message)
 
-      if (e.message && /xFile is not installed yet/.test(e.message)) {
-        this.props.updateUI({ showXFileNotInstalledDialog: true })
-      } else {
-        this.props.updateUI({ showSettings: true, settingsTab: 'xmodules' })
-      }
-    })
+        if (e.message && /xFile is not installed yet/.test(e.message)) {
+          this.props.updateUI({ showXFileNotInstalledDialog: true })
+        } else {
+          this.props.updateUI({ showSettings: true, settingsTab: 'xmodules' })
+        }
+      })
   }
 
   openRegisterSettings = (e) => {
-    if (e && e.preventDefault)  e.preventDefault()
+    if (e && e.preventDefault) e.preventDefault()
     this.props.updateUI({ showSettings: true, settingsTab: 'register' })
   }
 
@@ -132,14 +133,14 @@ class Sidebar extends React.Component {
     })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const type = getStorageManager().getCurrentStrategyType()
     this.setState({ storageMode: type })
     // this.bindScroll()
     this.applyTreeViewScrollTop()
   }
 
-  prefixHardDisk (str) {
+  prefixHardDisk(str) {
     const isXFileMode = getStorageManager().isXFileMode()
     if (!isXFileMode) return str
 
@@ -158,12 +159,12 @@ class Sidebar extends React.Component {
             height: '15px'
           }}
         />
-        <span>{ str }</span>
+        <span>{str}</span>
       </div>
     )
   }
 
-  renderXFileNotInstalledModal () {
+  renderXFileNotInstalledModal() {
     return (
       <Modal
         title=""
@@ -176,7 +177,7 @@ class Sidebar extends React.Component {
         }}
       >
         <p>
-          XFileAccess Module not installed.
+          {t('xFileNotInstalled')}
         </p>
         <div>
           <Button
@@ -189,25 +190,25 @@ class Sidebar extends React.Component {
               })
             }}
           >
-            Open Settings
+            {t('openSettings')}
           </Button>
         </div>
       </Modal>
     )
   }
 
-  shouldRenderMacroNote () {
+  shouldRenderMacroNote() {
     const { xmodulesStatus, storageMode } = this.props.config
 
-    if (storageMode !== StorageStrategyType.XFile)  return false
+    if (storageMode !== StorageStrategyType.XFile) return false
     if (xmodulesStatus === 'pro') return false
 
     const macroStorage = getStorageManager().getMacroStorage()
     return macroStorage.getDisplayCount() < macroStorage.getTotalCount()
   }
 
-  renderMacroNote () {
-    if (!this.shouldRenderMacroNote())  return null
+  renderMacroNote() {
+    if (!this.shouldRenderMacroNote()) return null
 
     const max = getLicenseService().getMaxXFileMacros()
     const link = getLicenseService().getUpgradeUrl()
@@ -218,7 +219,7 @@ class Sidebar extends React.Component {
           <div>
             Hard-Drive Access (PRO Feature):
             <br />In FREE version, only the first {max} files/folders are displayed.
-            <br /><a href={link} onClick={this.openRegisterSettings}>Upgrade to PRO</a> to remove limit.
+            <br /><a href={link} onClick={this.openRegisterSettings}>{t('upgradeToPro')}</a> {t('removeLimit')}
           </div>
         ) : null}
 
@@ -226,14 +227,14 @@ class Sidebar extends React.Component {
           <div>
             XModules in Free Edition:
             <br />Only the first {max} files/folders displayed.
-            <br /><a href={link} onClick={this.openRegisterSettings}>Upgrade to PRO or Enterprise</a> for unlimited files
+            <br /><a href={link} onClick={this.openRegisterSettings}>{t('upgradeToProOrEnterprise')}</a> {t('unlimitedFiles')}
           </div>
         ) : null}
       </div>
     )
   }
 
-  render () {
+  render() {
     return (
       <div
         className={cn('sidebar', { 'with-xmodules-note': this.shouldRenderMacroNote() })}
@@ -255,22 +256,22 @@ class Sidebar extends React.Component {
           {this.renderMacroNote()}
 
           <div className="storage-mode-header">
-            <h3>Storage Mode</h3>
+            <h3>{t('storageMode')}</h3>
             {getStorageManager().isXFileMode() ? (
               <img
                 src="./img/reload.svg"
-                title="Reload all resources on hard drive"
+                title={t('reloadHardDrive')}
                 style={{
                   height: '15px',
                   cursor: 'pointer'
                 }}
                 onClick={() => {
                   getStorageManager().emit(StorageManagerEvent.ForceReload)
-                  message.info('reloaded from hard drive')
+                  message.info(t('reloadedFromHardDrive'))
                 }}
               />
             ) : null}
-            <a href="https://goto.ui.vision/x/idehelp?help=storage_mode" target="_blank">More Info</a>
+            <a href="https://goto.ui.vision/x/idehelp?help=storage_mode" target="_blank">{t('moreInfo')}</a>
           </div>
           <Select
             style={{ width: '100%' }}
@@ -279,10 +280,10 @@ class Sidebar extends React.Component {
             onChange={this.onTryToChangeStorageMode}
           >
             <Select.Option value={StorageStrategyType.Browser}>
-              Local Storage (in browser)
+              {t('localStorage')}
             </Select.Option>
             <Select.Option value={StorageStrategyType.XFile}>
-              File system (on hard drive)
+              {t('fileSystem')}
             </Select.Option>
           </Select>
         </div>
@@ -310,5 +311,5 @@ export default connect(
     config: state.config,
     ui: state.ui
   }),
-  dispatch => bindActionCreators({...actions}, dispatch)
+  dispatch => bindActionCreators({ ...actions }, dispatch)
 )(Sidebar)
