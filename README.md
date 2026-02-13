@@ -1,41 +1,41 @@
 # Ui.Vision [RPA](https://ui.vision/rpa)
 
-- AI Robotic Process Automation, includes Selenium IDE import/export
+- Yapay Zeka Destekli Robotik Süreç Otomasyonu (RPA), Selenium IDE içe/dışa aktarma özelliğini içerir.
 
-Questions? Suggestions? - Meet us in the Ui.Vision [RPA user forum](https://forum.ui.vision).
+Sorularınız mı var? Önerileriniz mi var? - [Ui.Vision RPA kullanıcı forumunda](https://forum.ui.vision) bizimle buluşun.
 
-Every user benefits from the questions and answers provided in the forum, that is why we would ask you to post the question [in the RPA forum](https://forum.ui.vision) first if a public forum is appropriate for your question. The forum is monitored by active users, tech support and the developers, so we would like to concentrate the discussion "over there" in one place.
-
-
-# How to install  Ui.Vision:
-
- Ui.Vision RPA for Chrome, Edge and Firefox is modern cross-platform RPA software for macOS, Linux and Windows. It includes a Selenium IDE and Web Macro Recorder. You find the latest version always in the Chrome and Firefox stores. You can use it _completely free for private and commercial purposes_: 
-
-- [UI.Vision in the Google Chrome Webstore](https://chrome.google.com/webstore/detail/uivision-rpa/gcbalfbdmfieckjlnblleoemohcganoc)
-
-- [UI.Vision in the Firefox Webstore](https://addons.mozilla.org/en-US/firefox/addon/rpa/)
-
-- [UI.Vision in the Microsoft Edge Webstore](https://microsoftedge.microsoft.com/addons/detail/uivision-rpa/goapmjinbaeomoemgdcnnhoedopjnddd)
+Her kullanıcı, forumda sorulan sorulardan ve verilen yanıtlardan faydalanır; bu nedenle, sorunuz halka açık bir forum için uygunsa, sorunuzu önce [RPA forumunda](https://forum.ui.vision) paylaşmanızı rica ederiz. Forum, aktif kullanıcılar, teknik destek ekibi ve geliştiriciler tarafından izlenmektedir, bu nedenle tartışmaları tek bir yerde toplamayı tercih ediyoruz.
 
 
-- [Ui.Vision Homepage](https://ui.vision/rpa)
+# Ui.Vision Nasıl Kurulur:
 
-- List of supported [Selenium IDE commands](https://ui.vision/rpa/docs/selenium-ide/)
+Chrome, Edge ve Firefox için Ui.Vision RPA; macOS, Linux ve Windows için modern, platformlar arası bir RPA yazılımıdır. Bir Selenium IDE ve Web Makro Kaydedici içerir. En güncel sürümü her zaman Chrome ve Firefox mağazalarında bulabilirsiniz. Hem kişisel hem de ticari amaçlar için *tamamen ücretsiz* kullanabilirsiniz:
+
+- [Google Chrome Web Mağazası'nda UI.Vision](https://chrome.google.com/webstore/detail/uivision-rpa/gcbalfbdmfieckjlnblleoemohcganoc)
+
+- [Firefox Web Mağazası'nda UI.Vision](https://addons.mozilla.org/en-US/firefox/addon/rpa/)
+
+- [Microsoft Edge Web Mağazası'nda UI.Vision](https://microsoftedge.microsoft.com/addons/detail/uivision-rpa/goapmjinbaeomoemgdcnnhoedopjnddd)
 
 
-# Building the Chrome, Edge and Firefox Extension
+- [Ui.Vision Ana Sayfası](https://ui.vision/rpa)
 
-Building the extension is _not_ required if you "only" want to use it.
+- Desteklenen [Selenium IDE komutlarının listesi](https://ui.vision/rpa/docs/selenium-ide/)
 
-You can [install UI.Vision directly from the Chrome, Edge or Firefox stores](https://ui.vision/rpa), which is the easiest and the recommended way of using the Ui.Vision RPA software. Older versions can be found in the [RPA software](https://ui.vision/rpa/archive) archive. 
 
-The information below is only required and intended for developers:
+# Chrome, Edge ve Firefox Uzantısını Derleme
 
-The project uses Node V20.11.1 and NPM V10.2.4
+Uzantıyı sadece kullanmak istiyorsanız, derlemenize gerek *yoktur*.
 
-If you have any questions, please contact us at TEAM AT UI.VISION - Thanks!
+Ui.Vision'ı doğrudan [Chrome, Edge veya Firefox mağazalarından yükleyebilirsiniz](https://ui.vision/rpa). Bu, Ui.Vision RPA yazılımını kullanmanın en kolay ve önerilen yoludur. Eski sürümlere [RPA yazılım arşivinden](https://ui.vision/rpa/archive) ulaşabilirsiniz.
 
-# To build the extension bundle
+Aşağıdaki bilgiler sadece geliştiriciler içindir ve onlara yöneliktir:
+
+Proje Node V20.11.1 ve NPM V10.2.4 sürümlerini kullanmaktadır.
+
+Herhangi bir sorunuz olursa lütfen TEAM AT UI.VISION adresi üzerinden bizimle iletişime geçin - Teşekkürler!
+
+# Uzantı paketini derlemek için
 
 ```bash
 npm i -f
@@ -44,20 +44,15 @@ npm run build
 npm run build-ff 	
 ```
 
-And the build files are in `dist` and `dist_ff` folders.
+Derleme dosyaları `dist` ve `dist_ff` klasörlerinde yer alır.
 
-# To develop
+# Geliştirme yapmak için
 ```bash
 npm i -f
 
 npm run ext
 ```
 
-The built files during development are also in `dist` and `dist_ff` folders
+Geliştirme sırasındaki derleme dosyaları da `dist` ve `dist_ff` klasörlerinde yer alır.
 
-Once done, the ready-to-use extension code appears in the /dist directory (Chrome) or /dist_ff directory (Firefox).
-
-
-
-
-
+İşlem tamamlandığında, kullanıma hazır uzantı kodu /dist dizininde (Chrome) veya /dist_ff dizininde (Firefox) görünür.
