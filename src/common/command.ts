@@ -1,4 +1,6 @@
 
+// @ts-ignore
+import { t } from './i18n';
 
 export enum CommandScope {
   All = 1,
@@ -7,140 +9,140 @@ export enum CommandScope {
 }
 
 export const commandScopes = {
-    'open': CommandScope.WebOnly,
-    'openBrowser': CommandScope.WebOnly,
-    'click': CommandScope.WebOnly,
-    'clickAndWait': CommandScope.WebOnly,
-    'saveItem': CommandScope.WebOnly,
-    'select': CommandScope.WebOnly,
-    'selectAndWait': CommandScope.WebOnly,
-    'addSelection': CommandScope.WebOnly,
-    'removeSelection': CommandScope.WebOnly,
-    'type': CommandScope.WebOnly,
-    'pause': CommandScope.All,
-    'waitForPageToLoad': CommandScope.WebOnly,
-    'selectFrame': CommandScope.WebOnly,
-    'assertAlert': CommandScope.WebOnly,
-    'assertConfirmation': CommandScope.WebOnly,
-    'assertPrompt': CommandScope.WebOnly,
-    'answerOnNextPrompt': CommandScope.WebOnly,
-    'store': CommandScope.All,
-    'storeText': CommandScope.WebOnly,
-    'storeTitle': CommandScope.WebOnly,
-    'storeAttribute': CommandScope.WebOnly,
-    'storeXpathCount': CommandScope.WebOnly,
-    'assertText': CommandScope.WebOnly,
-    'assertTitle': CommandScope.WebOnly,
-    'clickAt': CommandScope.WebOnly,
-    'echo': CommandScope.All,
-    'mouseOver': CommandScope.WebOnly,
-    'verifyText': CommandScope.WebOnly,
-    'verifyTitle': CommandScope.WebOnly,
-    'sendKeys': CommandScope.WebOnly,
-    'dragAndDropToObject': CommandScope.WebOnly,
-    'selectWindow': CommandScope.WebOnly,
-    'captureScreenshot': CommandScope.WebOnly,
-    'captureDesktopScreenshot': CommandScope.DesktopOnly,
-    'refresh': CommandScope.WebOnly,
-    'assert': CommandScope.All,
-    'assertElementPresent': CommandScope.WebOnly,
-    'assertElementNotPresent': CommandScope.WebOnly,
-    'assertEditable': CommandScope.WebOnly,
-    'assertNotEditable': CommandScope.WebOnly,
-    'verify': CommandScope.All,
-    'verifyElementPresent': CommandScope.WebOnly,
-    'verifyElementNotPresent': CommandScope.WebOnly,
-    'verifyEditable': CommandScope.WebOnly,
-    'verifyNotEditable': CommandScope.WebOnly,
-    'deleteAllCookies': CommandScope.WebOnly,
-    'label': CommandScope.All,
-    'gotoLabel': CommandScope.All,
-    'csvRead': CommandScope.All,
-    'csvReadArray': CommandScope.All,
-    'csvSave': CommandScope.All,
-    'csvSaveArray': CommandScope.All,
-    'storeValue': CommandScope.WebOnly,
-    'assertValue': CommandScope.WebOnly,
-    'verifyValue': CommandScope.WebOnly,
-    'storeChecked': CommandScope.WebOnly,
-    'captureEntirePageScreenshot': CommandScope.WebOnly,
-    'onDownload': CommandScope.WebOnly,
-    'throwError': CommandScope.All,
-    'comment': CommandScope.All,
-    'waitForElementVisible': CommandScope.WebOnly,
-    'waitForElementNotVisible': CommandScope.WebOnly,
-    'waitForElementPresent': CommandScope.WebOnly,
-    'waitForElementNotPresent': CommandScope.WebOnly,
-    'onError': CommandScope.All,
-    'sourceSearch': CommandScope.WebOnly,
-    'sourceExtract': CommandScope.WebOnly,
-    'storeImage': CommandScope.WebOnly,
-    'localStorageExport': CommandScope.All,
-    'visionLimitSearchArea': CommandScope.All,
-    'visionLimitSearchAreaRelative': CommandScope.All,
-    'visionLimitSearchAreabyTextRelative': CommandScope.All,
-    'visualSearch': CommandScope.All,
-    'visualVerify': CommandScope.All,
-    'visualAssert': CommandScope.All,
-    'visualGetPixelColor': CommandScope.All,
-    'editContent': CommandScope.WebOnly,
-    'bringBrowserToForeground': CommandScope.All,
-    'bringIDEandBrowserToBackground': CommandScope.All,
-    'setWindowSize': CommandScope.All,
-    'prompt': CommandScope.WebOnly,
+  'open': CommandScope.WebOnly,
+  'openBrowser': CommandScope.WebOnly,
+  'click': CommandScope.WebOnly,
+  'clickAndWait': CommandScope.WebOnly,
+  'saveItem': CommandScope.WebOnly,
+  'select': CommandScope.WebOnly,
+  'selectAndWait': CommandScope.WebOnly,
+  'addSelection': CommandScope.WebOnly,
+  'removeSelection': CommandScope.WebOnly,
+  'type': CommandScope.WebOnly,
+  'pause': CommandScope.All,
+  'waitForPageToLoad': CommandScope.WebOnly,
+  'selectFrame': CommandScope.WebOnly,
+  'assertAlert': CommandScope.WebOnly,
+  'assertConfirmation': CommandScope.WebOnly,
+  'assertPrompt': CommandScope.WebOnly,
+  'answerOnNextPrompt': CommandScope.WebOnly,
+  'store': CommandScope.All,
+  'storeText': CommandScope.WebOnly,
+  'storeTitle': CommandScope.WebOnly,
+  'storeAttribute': CommandScope.WebOnly,
+  'storeXpathCount': CommandScope.WebOnly,
+  'assertText': CommandScope.WebOnly,
+  'assertTitle': CommandScope.WebOnly,
+  'clickAt': CommandScope.WebOnly,
+  'echo': CommandScope.All,
+  'mouseOver': CommandScope.WebOnly,
+  'verifyText': CommandScope.WebOnly,
+  'verifyTitle': CommandScope.WebOnly,
+  'sendKeys': CommandScope.WebOnly,
+  'dragAndDropToObject': CommandScope.WebOnly,
+  'selectWindow': CommandScope.WebOnly,
+  'captureScreenshot': CommandScope.WebOnly,
+  'captureDesktopScreenshot': CommandScope.DesktopOnly,
+  'refresh': CommandScope.WebOnly,
+  'assert': CommandScope.All,
+  'assertElementPresent': CommandScope.WebOnly,
+  'assertElementNotPresent': CommandScope.WebOnly,
+  'assertEditable': CommandScope.WebOnly,
+  'assertNotEditable': CommandScope.WebOnly,
+  'verify': CommandScope.All,
+  'verifyElementPresent': CommandScope.WebOnly,
+  'verifyElementNotPresent': CommandScope.WebOnly,
+  'verifyEditable': CommandScope.WebOnly,
+  'verifyNotEditable': CommandScope.WebOnly,
+  'deleteAllCookies': CommandScope.WebOnly,
+  'label': CommandScope.All,
+  'gotoLabel': CommandScope.All,
+  'csvRead': CommandScope.All,
+  'csvReadArray': CommandScope.All,
+  'csvSave': CommandScope.All,
+  'csvSaveArray': CommandScope.All,
+  'storeValue': CommandScope.WebOnly,
+  'assertValue': CommandScope.WebOnly,
+  'verifyValue': CommandScope.WebOnly,
+  'storeChecked': CommandScope.WebOnly,
+  'captureEntirePageScreenshot': CommandScope.WebOnly,
+  'onDownload': CommandScope.WebOnly,
+  'throwError': CommandScope.All,
+  'comment': CommandScope.All,
+  'waitForElementVisible': CommandScope.WebOnly,
+  'waitForElementNotVisible': CommandScope.WebOnly,
+  'waitForElementPresent': CommandScope.WebOnly,
+  'waitForElementNotPresent': CommandScope.WebOnly,
+  'onError': CommandScope.All,
+  'sourceSearch': CommandScope.WebOnly,
+  'sourceExtract': CommandScope.WebOnly,
+  'storeImage': CommandScope.WebOnly,
+  'localStorageExport': CommandScope.All,
+  'visionLimitSearchArea': CommandScope.All,
+  'visionLimitSearchAreaRelative': CommandScope.All,
+  'visionLimitSearchAreabyTextRelative': CommandScope.All,
+  'visualSearch': CommandScope.All,
+  'visualVerify': CommandScope.All,
+  'visualAssert': CommandScope.All,
+  'visualGetPixelColor': CommandScope.All,
+  'editContent': CommandScope.WebOnly,
+  'bringBrowserToForeground': CommandScope.All,
+  'bringIDEandBrowserToBackground': CommandScope.All,
+  'setWindowSize': CommandScope.All,
+  'prompt': CommandScope.WebOnly,
 
-    'XRun': CommandScope.All,
-    'XRunAndWait': CommandScope.All,
-    'XClick': CommandScope.All,
-    'XClickRelative': CommandScope.All,
-    'XClickTextRelative': CommandScope.All,
-    'XClickText': CommandScope.All,
-    'XMoveText': CommandScope.All,
-    'XMoveTextRelative': CommandScope.All,
-    'XType': CommandScope.All,
-    'XMove': CommandScope.All,
-    'XMoveRelative': CommandScope.All,
-    'XMouseWheel': CommandScope.All,
-    'XDesktopAutomation': CommandScope.All,
+  'XRun': CommandScope.All,
+  'XRunAndWait': CommandScope.All,
+  'XClick': CommandScope.All,
+  'XClickRelative': CommandScope.All,
+  'XClickTextRelative': CommandScope.All,
+  'XClickText': CommandScope.All,
+  'XMoveText': CommandScope.All,
+  'XMoveTextRelative': CommandScope.All,
+  'XType': CommandScope.All,
+  'XMove': CommandScope.All,
+  'XMoveRelative': CommandScope.All,
+  'XMouseWheel': CommandScope.All,
+  'XDesktopAutomation': CommandScope.All,
 
-    'OCRSearch': CommandScope.All,
-    'OCRExtractRelative': CommandScope.All,
-    'OCRExtractbyTextRelative': CommandScope.All,
-    'OCRExtractScreenshot': CommandScope.All,
+  'OCRSearch': CommandScope.All,
+  'OCRExtractRelative': CommandScope.All,
+  'OCRExtractbyTextRelative': CommandScope.All,
+  'OCRExtractScreenshot': CommandScope.All,
 
-    'aiPrompt': CommandScope.All,
-    'aiScreenXY': CommandScope.All,
-    'aiComputerUse': CommandScope.All,
+  'aiPrompt': CommandScope.All,
+  'aiScreenXY': CommandScope.All,
+  'aiComputerUse': CommandScope.All,
 
-    'setProxy': CommandScope.All,
-    'run': CommandScope.All,
+  'setProxy': CommandScope.All,
+  'run': CommandScope.All,
 
-    'executeScript': CommandScope.All,
-    'executeScript_Sandbox': CommandScope.All,
+  'executeScript': CommandScope.All,
+  'executeScript_Sandbox': CommandScope.All,
 
-    'check': CommandScope.WebOnly,
-    'uncheck': CommandScope.WebOnly,
-    'assertChecked': CommandScope.WebOnly,
-    'assertNotChecked': CommandScope.WebOnly,
-    'verifyChecked': CommandScope.WebOnly,
-    'verifyNotChecked': CommandScope.WebOnly,
+  'check': CommandScope.WebOnly,
+  'uncheck': CommandScope.WebOnly,
+  'assertChecked': CommandScope.WebOnly,
+  'assertNotChecked': CommandScope.WebOnly,
+  'verifyChecked': CommandScope.WebOnly,
+  'verifyNotChecked': CommandScope.WebOnly,
 
-    //'while',
-    // 'endWhile',
-    'do': CommandScope.All,
-    'repeatIf': CommandScope.All,
-    //'if',
-    'else': CommandScope.All,
-    'elseif': CommandScope.All,
-    // 'endif',
-    'end': CommandScope.All,
-    'if': CommandScope.All,      // war _v2
-    'while': CommandScope.All,   // war _v2
-    'gotoIf': CommandScope.All, // war _v2
-    'times': CommandScope.All,
-    'forEach': CommandScope.All,
-    'break': CommandScope.All,
-    'continue': CommandScope.All
+  //'while',
+  // 'endWhile',
+  'do': CommandScope.All,
+  'repeatIf': CommandScope.All,
+  //'if',
+  'else': CommandScope.All,
+  'elseif': CommandScope.All,
+  // 'endif',
+  'end': CommandScope.All,
+  'if': CommandScope.All,      // war _v2
+  'while': CommandScope.All,   // war _v2
+  'gotoIf': CommandScope.All, // war _v2
+  'times': CommandScope.All,
+  'forEach': CommandScope.All,
+  'break': CommandScope.All,
+  'continue': CommandScope.All
 }
 
 export type Command = keyof typeof commandScopes
@@ -155,7 +157,7 @@ export const availableCommands = (() => {
 
 export const availableCommandsForDesktop = availableCommands.filter(isCommandAvailableForDesktop)
 
-export function normalizeCommandName (str: string) {
+export function normalizeCommandName(str: string) {
   if (!str) {
     return '';
   }
@@ -167,29 +169,38 @@ export function normalizeCommandName (str: string) {
   return index === -1 ? str : availableCommands[index]
 }
 
-export function commandText (cmd: string) {
+export function commandText(cmd: string) {
+  let suffix = ''
   switch (cmd) {
     case 'ifxxx':  //war _v1
     case 'whilexxx':
     case 'gotoIfxxx':
-      return cmd + '_v1_deprecated'
+      suffix = '_v1_deprecated'
+      break
 
     case 'storeEval':
     case 'endif':
     case 'endwhile':
     case 'resize':
-      return cmd + '_deprecated'
+      suffix = '_deprecated'
+      break
 
     default:
-      return cmd
+      suffix = ''
   }
+
+  const baseCmd = cmd + suffix
+  const translationKey = 'command_' + cmd
+  const translated = t(translationKey)
+
+  return (translated && translated !== translationKey) ? `${baseCmd} (${translated})` : baseCmd
 }
 
-export function isValidCmd (str: string) {
+export function isValidCmd(str: string) {
   return availableCommands.indexOf(str) !== -1
 }
 
-export function isExtensionResourceOnlyCommand (str: string) {
+export function isExtensionResourceOnlyCommand(str: string) {
   switch (str) {
     case 'if':
     case 'while':
@@ -212,7 +223,7 @@ export function isExtensionResourceOnlyCommand (str: string) {
   }
 }
 
-export function canCommandReadImage (str: string) {
+export function canCommandReadImage(str: string) {
   switch (str) {
     case 'visualSearch':
     case 'visualVerify':
@@ -234,7 +245,7 @@ export function canCommandReadImage (str: string) {
   }
 }
 
-export function canCommandReadCsv (str: string) {
+export function canCommandReadCsv(str: string) {
   switch (str) {
     case 'csvRead':
     case 'csvReadArray':
@@ -245,7 +256,7 @@ export function canCommandReadCsv (str: string) {
   }
 }
 
-export function canCommandRunMacro (str: string) {
+export function canCommandRunMacro(str: string) {
   switch (str) {
     case 'run':
       return true
@@ -255,7 +266,7 @@ export function canCommandRunMacro (str: string) {
   }
 }
 
-export function doesCommandSupportTargetOptions (str: string) {
+export function doesCommandSupportTargetOptions(str: string) {
   switch (str) {
     case 'click':
     case 'saveItem':
@@ -303,7 +314,7 @@ export function doesCommandSupportTargetOptions (str: string) {
   }
 }
 
-export function canCommandFind (str: string): boolean {
+export function canCommandFind(str: string): boolean {
   switch (str) {
     case 'echo':
     case 'open':
@@ -370,7 +381,7 @@ export function canCommandFind (str: string): boolean {
   }
 }
 
-export function canCommandSelect (str: string): boolean {
+export function canCommandSelect(str: string): boolean {
   const canFind = canCommandFind(str)
 
   if (canFind) {
@@ -387,7 +398,7 @@ export function canCommandSelect (str: string): boolean {
   }
 }
 
-export function isCommandAvailableForDesktop (command: string): boolean {
+export function isCommandAvailableForDesktop(command: string): boolean {
   const scope: CommandScope = commandScopes[command as Command]
 
   if (!scope) {
@@ -402,7 +413,7 @@ export type IndentResult = {
   nextIndent: number;
 }
 
-export function indentCreatedByCommand (str: string): IndentResult {
+export function indentCreatedByCommand(str: string): IndentResult {
   switch (str) {
     case 'if':
     case 'if_v2':
@@ -441,29 +452,29 @@ export function indentCreatedByCommand (str: string): IndentResult {
 }
 
 export type ImageTarget = {
-  fileName:   string;
+  fileName: string;
   confidence?: number;
-  index?:      number;
-  imageUrl?:  string;
+  index?: number;
+  imageUrl?: string;
 }
 
-export function parseImageTarget (target: string): ImageTarget | null {
+export function parseImageTarget(target: string): ImageTarget | null {
   if (!target || !target.length) {
     return null
   }
 
   const reg = /^([^@#]+?\.png)(?:@([\d.]+))?(?:#(\d+))?(?:\[([^\]]+)\])?$/
-  const m   = target.match(reg)
+  const m = target.match(reg)
 
   if (!m) {
     return null
   }
   // throw new Error(`Target should be like 'abc.png@0.8#1'`)
 
-  const fileName   = m[1]
+  const fileName = m[1]
   const confidence = m[2] ? parseFloat(m[2]) : undefined
-  const index      = m[3] ? (parseInt(m[3]) - 1) : undefined
-  const imageUrl   = m[4]
+  const index = m[3] ? (parseInt(m[3]) - 1) : undefined
+  const imageUrl = m[4]
 
   return { fileName, confidence, index, imageUrl }
 }
